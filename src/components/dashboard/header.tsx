@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession, signOut } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -10,11 +11,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { userProfile } from "@/lib/mock-data";
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 
 export function Header() {
+  const { data: session } = useSession();
+
+  if (!session) return null;
+
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
       <div className="md:hidden">
@@ -25,24 +29,22 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src={userProfile.avatarUrl} alt={userProfile.username} data-ai-hint="avatar user" />
-                  <AvatarFallback>{userProfile.username.charAt(0)}</AvatarFallback>
+                  <AvatarImage src={session.user?.image ?? ""} alt={session.user?.name ?? ""} />
+                  <AvatarFallback>{session.user?.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>{userProfile.username}</DropdownMenuLabel>
+            <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
                 <User className="mr-2 h-4 w-4"/>
                 <span>프로필</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-                <Link href="/">
-                    <LogOut className="mr-2 h-4 w-4"/>
-                    <span>로그아웃</span>
-                </Link>
+            <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })}>
+              <LogOut className="mr-2 h-4 w-4"/>
+              <span>로그아웃</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

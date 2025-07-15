@@ -1,3 +1,5 @@
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { Header } from "@/components/dashboard/header";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
 import {
@@ -5,12 +7,19 @@ import {
   Sidebar,
   SidebarInset,
 } from "@/components/ui/sidebar";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/");
+  }
+
   return (
     <SidebarProvider>
       <Sidebar>
