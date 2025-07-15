@@ -6,6 +6,7 @@ import * as z from "zod";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import Link from 'next/link'; // Link 컴포넌트를 import 합니다.
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -32,7 +33,7 @@ export function LoginForm() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     const result = await signIn("credentials", {
-      redirect: false, // 직접 리디렉션 처리
+      redirect: false,
       username: values.username,
       password: values.password,
     });
@@ -86,6 +87,14 @@ export function LoginForm() {
             <Button variant="outline" className="w-full" onClick={() => signIn("google", { callbackUrl: "/dashboard" })}>
               Google로 로그인
             </Button>
+            
+            {/* 이 부분이 추가되었습니다. */}
+            <Link href="/signup" className="w-full">
+              <Button variant="secondary" className="w-full">
+                회원가입
+              </Button>
+            </Link>
+
           </CardFooter>
         </form>
       </Form>
