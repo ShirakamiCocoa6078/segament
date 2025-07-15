@@ -9,8 +9,12 @@ export async function completeSignUp(data: any) {
     const { email, name, image, nickname, username, password } = data;
 
     try {
+        // 자신을 제외한 다른 사용자가 해당 아이디나 닉네임을 사용하는지 확인
         const existingUser = await prisma.user.findFirst({
-            where: { OR: [{ username }, { nickname }] }
+            where: {
+                NOT: { email },
+                OR: [{ username }, { nickname }]
+            }
         });
 
         if (existingUser) {
@@ -19,16 +23,23 @@ export async function completeSignUp(data: any) {
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        // This should be `create` because the user is not in the DB yet.
-        await prisma.user.create({
-            data: {
-              email,
-              name,
-              image,
-              nickname,
-              username,
-              hashedPassword,
+        // 사용자가 존재하면 업데이트, 없으면 생성 (upsert 사용)
+        await prisma.user.upsert({
+            where: { email },
+            update: {
+                nickname,
+                username,
+                hashedPassword,
             },
+            create: {
+                email,
+                name,
+                image,
+                nickname,
+                username,
+                hashedPassword,
+                emailVerified: new Date(), // Google 인증을 통해 이메일이 확인됨
+            }
         });
 
         return { success: true };

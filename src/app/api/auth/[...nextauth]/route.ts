@@ -15,37 +15,40 @@ export const authOptions: NextAuthOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
+      // Google 로그인인 경우
       if (account?.provider === "google") {
-        const userExists = await prisma.user.findUnique({
+        const userInDb = await prisma.user.findUnique({
           where: { email: user.email! },
         });
 
-        if (userExists) {
-          return true; // 기존 유저면 로그인 허용
-        } else {
-          // 신규 유저면 회원가입 페이지로 리디렉션
-          const params = new URLSearchParams();
-          if (user.email) params.append("email", user.email);
-          if (user.name) params.append("name", user.name);
-          if (user.image) params.append("image", user.image);
-          
+        // 사용자가 존재하지만 닉네임이 없다면, 추가 정보 입력 페이지로 리디렉션
+        if (userInDb && !userInDb.nickname) {
+          const params = new URLSearchParams({
+            email: user.email || '',
+            name: user.name || '',
+            image: user.image || '',
+          });
           return `/signup?${params.toString()}`;
         }
       }
-      return true; // Google 로그인이 아닌 경우
+      // 그 외의 경우는 모두 로그인 허용
+      return true;
     },
     async session({ session, user }) {
+      // 세션에 사용자 ID와 닉네임 추가
       const dbUser = await prisma.user.findUnique({ where: { email: user.email! } });
-      // @ts-ignore
-      session.user.id = user.id;
-      // @ts-ignore
-      session.user.nickname = dbUser?.nickname; // 세션에 닉네임 추가
+      if (session.user) {
+        // @ts-ignore
+        session.user.id = user.id;
+        // @ts-ignore
+        session.user.nickname = dbUser?.nickname;
+      }
       return session;
     },
   },
 }
 
-const handler = NextAuth(authOptions)
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST } 
