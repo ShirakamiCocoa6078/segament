@@ -119,7 +119,7 @@ export function SignupForm() {
       </CardHeader>
       <Form {...form}>
         {/* `handleSubmit`이 `processSignUp`을 호출하도록 연결 */}
-        <form onSubmit={form.handleSubmit(processSignUp, onInvalidSubmit)} className="space-y-4" noValidate>
+        <form onSubmit={form.handleSubmit(() => alert("폼 제출 성공!"))} className="space-y-4" noValidate>
           <CardContent className="space-y-4">
             <FormField
               control={form.control}
