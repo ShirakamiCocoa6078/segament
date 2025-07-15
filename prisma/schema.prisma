@@ -2,22 +2,27 @@ generator client {
   provider = "prisma-client-js"
 }
 
+//Vercel Postgres DB 연결 정보를 추가합니다.
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 model User {
-  id            String    @id @default(cuid())
-  name          String? // Google 프로필 이름
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  nickname      String?   @unique // 추가: 사용자 닉네임
-  username      String?   @unique // 추가: 사용자 아이디
-  hashedPassword String?  // 추가: 해싱된 비밀번호
-  accounts      Account[]
-  sessions      Session[]
+  id             String    @id @default(cuid())
+  name           String?
+  // email은 Google 연동 시에만 저장되며, null이 아닐 경우 고유해야 합니다.
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  
+  // username은 모든 유저에게 필수이며, 로그인 시 사용됩니다.
+  username       String    @unique
+  // nickname은 대시보드 등에서 표시될 이름입니다.
+  nickname       String?
+  hashedPassword String?   // 비밀번호는 해싱하여 저장합니다.
+
+  accounts Account[]
+  sessions Session[]
 }
 
 model Account {
@@ -53,4 +58,4 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-} 
+}

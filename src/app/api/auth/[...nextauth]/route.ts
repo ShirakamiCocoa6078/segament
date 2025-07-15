@@ -1,70 +1,111 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
+    // 1. Google 로그인 제공자
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
+    // 2. 아이디/비밀번호 로그인 제공자
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error("아이디와 비밀번호를 입력해주세요.");
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { username: credentials.username }
+        });
+
+        // 사용자가 없거나, 비밀번호 필드가 없으면(Google 유저) 로그인 실패
+        if (!user || !user.hashedPassword) {
+          throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
+
+        if (!isPasswordCorrect) {
+          throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        return user;
+      }
+    })
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
   callbacks: {
-    // 1. 로그인 시도 시 가장 먼저 호출됩니다.
+    // Google 로그인 시도 시 가입 여부 판단
     async signIn({ user, account }) {
       if (account?.provider === "google") {
-        // 2. DB에서 이메일로 사용자를 찾습니다.
-        // PrismaAdapter가 이 시점에 기본적인 User, Account 레코드를 생성합니다.
         const userInDb = await prisma.user.findUnique({
           where: { email: user.email! },
         });
 
-        // 3. 사용자는 존재하지만, nickname이 없다면 추가 정보 입력이 필요한 신규 유저입니다.
-        if (userInDb && !userInDb.nickname) {
+        // DB에 유저는 있지만 username이 없다면 = 추가 정보 입력이 필요한 신규 유저
+        if (userInDb && !userInDb.username) {
           const params = new URLSearchParams({
             email: user.email || '',
-            name: user.name || '',
+            name: user.name || '', // Google 이름은 임시로만 사용
             image: user.image || '',
           });
-          // 4. 회원가입 페이지로 리디렉션합니다.
           return `/signup?${params.toString()}`;
         }
       }
-      // 5. 기존 유저이거나 다른 방식의 로그인이면 통과시킵니다.
       return true;
     },
     
-    // JWT 토큰에 닉네임 정보를 추가합니다.
-    async jwt({ token, user }) {
-        if (user) {
-            const dbUser = await prisma.user.findUnique({ where: { email: user.email! } });
-            token.id = user.id;
-            token.nickname = dbUser?.nickname;
-        }
-        return token;
-    },
-
-    // 6. 세션 객체에 닉네임을 포함시켜 클라이언트(대시보드 등)에서 사용할 수 있게 합니다.
+    // 세션에 닉네임 정보를 포함
     async session({ session, token }: { session: any; token: any }) {
-      if (session.user) {
+      if (token) {
         session.user.id = token.id;
-        // 구글 이름(token.name)이 아닌, DB의 닉네임(token.nickname)을 세션에 저장합니다.
-        session.user.name = token.nickname || token.name; 
+        session.user.name = token.nickname; // 모든 곳에서 구글 이름 대신 닉네임 사용
         session.user.nickname = token.nickname;
+        session.user.username = token.username;
       }
       return session;
     },
+
+    // JWT 토큰에 DB의 최신 정보를 담음
+    async jwt({ token, user }) {
+      if (user) {
+        const dbUser = await prisma.user.findFirst({
+          where: {
+            OR: [{ id: user.id }, { email: user.email }],
+          }
+        });
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.nickname = dbUser.nickname;
+          token.username = dbUser.username;
+        }
+      }
+      return token;
+    },
   },
+  pages: {
+    signIn: '/', // 로그인 페이지 경로
+  }
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };
