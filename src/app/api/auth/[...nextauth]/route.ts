@@ -24,20 +24,16 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.username || !credentials?.password) {
           throw new Error("아이디와 비밀번호를 입력해주세요.");
         }
-
         const user = await prisma.user.findUnique({
           where: { username: credentials.username }
         });
-
         if (!user || !user.hashedPassword) {
           throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
-
         const isPasswordCorrect = await bcrypt.compare(
           credentials.password,
           user.hashedPassword
         );
-
         if (!isPasswordCorrect) {
           throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
@@ -48,45 +44,56 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   callbacks: {
+    // ================== 여기가 핵심 수정 부분입니다 ==================
     async signIn({ user, account }) {
       if (account?.provider === "google") {
-        const userInDb = await prisma.user.findUnique({
+        // Prisma Adapter가 사용자를 생성/연결한 후, DB에서 직접 확인합니다.
+        const userExists = await prisma.user.findUnique({
           where: { email: user.email! },
+          select: { username: true } // username 필드만 선택하여 확인
         });
 
-        // Prisma Adapter가 User를 생성한 후, username이 없으면(추가 정보 미입력) 회원가입 페이지로 보냅니다.
-        if (userInDb && !userInDb.username) {
+        // 사용자가 존재하지만, username이 없다면(null 또는 빈 문자열)
+        // 추가 정보 입력이 필요한 신규 사용자입니다.
+        if (userExists && !userExists.username) {
           const params = new URLSearchParams({
             email: user.email || '',
             name: user.name || '',
             image: user.image || '',
           });
+          // 회원가입 페이지로 리디렉션합니다.
           return `/signup?${params.toString()}`;
         }
       }
+      // 그 외 모든 경우 (기존 Google 유저, 일반 로그인 등)는 로그인을 허용합니다.
       return true;
     },
+    // ===============================================================
+    
     async session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user.id = token.id;
-        session.user.name = token.nickname; // 중요: 세션의 이름을 닉네임으로 설정
+        session.user.name = token.nickname;
         session.user.nickname = token.nickname;
       }
       return session;
     },
     async jwt({ token, user }) {
-      const dbUser = await prisma.user.findFirst({
-        where: { id: token.sub || user?.id },
-      });
-      if (dbUser) {
-        token.id = dbUser.id;
-        token.nickname = dbUser.nickname;
+      // user 객체가 있을 때(로그인 시) DB에서 최신 정보를 가져옵니다.
+      if (user) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.nickname = dbUser.nickname;
+        }
       }
       return token;
     },
   },
   pages: {
-    signIn: '/', // 커스텀 로그인 페이지 경로
+    signIn: '/',
   }
 };
 
