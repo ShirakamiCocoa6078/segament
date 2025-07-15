@@ -10,12 +10,10 @@ const prisma = new PrismaClient();
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    // 1. Google 로그인 제공자
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    // 2. 아이디/비밀번호 로그인 제공자
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -31,7 +29,6 @@ export const authOptions: NextAuthOptions = {
           where: { username: credentials.username }
         });
 
-        // 사용자가 없거나, 비밀번호 필드가 없으면(Google 유저) 로그인 실패
         if (!user || !user.hashedPassword) {
           throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
@@ -44,28 +41,24 @@ export const authOptions: NextAuthOptions = {
         if (!isPasswordCorrect) {
           throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
-
         return user;
       }
     })
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
   callbacks: {
-    // Google 로그인 시도 시 가입 여부 판단
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         const userInDb = await prisma.user.findUnique({
           where: { email: user.email! },
         });
 
-        // DB에 유저는 있지만 username이 없다면 = 추가 정보 입력이 필요한 신규 유저
+        // Prisma Adapter가 User를 생성한 후, username이 없으면(추가 정보 미입력) 회원가입 페이지로 보냅니다.
         if (userInDb && !userInDb.username) {
           const params = new URLSearchParams({
             email: user.email || '',
-            name: user.name || '', // Google 이름은 임시로만 사용
+            name: user.name || '',
             image: user.image || '',
           });
           return `/signup?${params.toString()}`;
@@ -73,37 +66,27 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    
-    // 세션에 닉네임 정보를 포함
     async session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user.id = token.id;
-        session.user.name = token.nickname; // 모든 곳에서 구글 이름 대신 닉네임 사용
+        session.user.name = token.nickname; // 중요: 세션의 이름을 닉네임으로 설정
         session.user.nickname = token.nickname;
-        session.user.username = token.username;
       }
       return session;
     },
-
-    // JWT 토큰에 DB의 최신 정보를 담음
     async jwt({ token, user }) {
-      if (user) {
-        const dbUser = await prisma.user.findFirst({
-          where: {
-            OR: [{ id: user.id }, { email: user.email }],
-          }
-        });
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.nickname = dbUser.nickname;
-          token.username = dbUser.username;
-        }
+      const dbUser = await prisma.user.findFirst({
+        where: { id: token.sub || user?.id },
+      });
+      if (dbUser) {
+        token.id = dbUser.id;
+        token.nickname = dbUser.nickname;
       }
       return token;
     },
   },
   pages: {
-    signIn: '/', // 로그인 페이지 경로
+    signIn: '/', // 커스텀 로그인 페이지 경로
   }
 };
 
