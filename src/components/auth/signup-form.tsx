@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -13,8 +12,8 @@ import { useState, useMemo } from "react";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { completeSignUp } from "@/app/auth/actions";
+import { cn } from "@/lib/utils";
 
-// Zod 스키마: 사용자가 직접 입력하는 필드만 유효성을 검사합니다.
 const formSchema = z.object({
   nickname: z.string().min(2, "닉네임은 2자 이상이어야 합니다."),
   username: z.string().min(4, "아이디는 4자 이상이어야 합니다."),
@@ -22,13 +21,13 @@ const formSchema = z.object({
 });
 
 export function SignupForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'available' | 'unavailable'>('idle');
 
-  // Google로부터 받은 데이터는 useMemo를 사용해 한 번만 가져옵니다.
   const googleUserData = useMemo(() => ({
     email: searchParams.get("email") || "",
     name: searchParams.get("name") || "",
@@ -70,20 +69,29 @@ export function SignupForm() {
     }
   };
 
-  // 폼 제출 로직
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (usernameStatus !== 'available') {
-      toast({ variant: "destructive", title: "확인 필요", description: "아이디 중복 확인을 진행해주세요." });
+      toast({
+        variant: "destructive",
+        title: "확인 필요",
+        description: "아이디 중복 확인을 먼저 진행해주세요.",
+      });
       return;
     }
 
     try {
-      // 서버 액션을 호출할 때, 폼 데이터와 Google 계정 데이터를 합쳐서 보냅니다.
       const result = await completeSignUp({ ...values, ...googleUserData });
       if (result.error) throw new Error(result.error);
 
-      toast({ title: "회원가입 성공!", description: "잠시 후 자동으로 로그인됩니다." });
-      signIn("google", { callbackUrl: "/dashboard" });
+      // ================== 여기를 수정합니다 ==================
+      toast({
+        title: "회원가입 완료",
+        description: "다시 로그인 해주세요.",
+      });
+      // 대시보드가 아닌 홈('/')으로 이동시킵니다.
+      router.push('/'); 
+      // =======================================================
+
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -102,7 +110,7 @@ export function SignupForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <CardContent className="space-y-4">
-            {/* 닉네임, 아이디, 비밀번호 필드 */}
+            {/* 닉네임, 아이디, 비밀번호 필드들 */}
             <FormField
               control={form.control}
               name="nickname"
