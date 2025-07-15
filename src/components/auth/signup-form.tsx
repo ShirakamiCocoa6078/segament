@@ -38,6 +38,7 @@ export function SignupForm() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: 'onChange', // 유효성 검사 모드 변경
     defaultValues: {
       email: searchParams.get("email") || "",
       name: searchParams.get("name") || "",
@@ -61,25 +62,34 @@ export function SignupForm() {
     }
     setUsernameStatus('checking');
     try {
-      const response = await fetch('/api/auth/check-username', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setUsernameStatus(data.isAvailable ? 'available' : 'unavailable');
-      } else {
-        setUsernameStatus('idle');
-        toast({ variant: "destructive", title: "오류", description: data.error || "아이디 확인 중 오류가 발생했습니다." });
-      }
+        const response = await fetch('/api/auth/check-username', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+            setUsernameStatus(data.isAvailable ? 'available' : 'unavailable');
+        } else {
+            setUsernameStatus('idle');
+            toast({ variant: "destructive", title: "오류", description: data.error || "아이디 확인 중 오류가 발생했습니다." });
+        }
     } catch (error) {
-      setUsernameStatus('idle');
-      toast({ variant: "destructive", title: "오류", description: "네트워크 오류가 발생했습니다." });
+        setUsernameStatus('idle');
+        toast({ variant: "destructive", title: "오류", description: "네트워크 오류가 발생했습니다." });
     }
   }
   
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  // 1. react-hook-form의 유효성 검사를 통과했을 때만 실행될 함수
+  const onValidSubmit = (values: z.infer<typeof formSchema>) => {
+    // 2. 아이디 중복 확인이 완료되었는지 최종 체크
+    if (usernameStatus !== 'available') {
+      triggerShake('check-button');
+      toast({ variant: "destructive", title: "아이디 중복 확인 필요", description: "아이디 중복 확인을 해주세요." });
+      return;
+    }
+    
+    // 3. 모든 검사를 통과하면 서버로 데이터를 전송
     toast({ title: "회원가입 중...", description: "잠시만 기다려주세요." });
     startTransition(async () => {
       try {
@@ -87,30 +97,22 @@ export function SignupForm() {
         if (result.error) {
           throw new Error(result.error);
         }
-        toast({ title: "회원가입 성공", description: "로그인 페이지로 이동합니다." });
-        router.push('/');
+        toast({ title: "회원가입 성공", description: "로그인을 진행합니다." });
+        signIn("google", { callbackUrl: "/dashboard" });
       } catch (error: any) {
         toast({
           variant: "destructive",
-          title: "회원가입 정보 등록에 실패했습니다.",
-          description: "다시 시도해주세요.",
+          title: "회원가입 실패",
+          description: error.message || "다시 시도해주세요.",
         });
       }
     });
   };
   
-  const handleFinalSubmit = async () => {
-    if (usernameStatus !== 'available') {
-      triggerShake('check-button');
-      return;
-    }
-    const isValid = await form.trigger();
-    if (!isValid) {
-      const errorField = Object.keys(form.formState.errors)[0] as ShakeTarget;
-      triggerShake(errorField);
-      return;
-    }
-    onSubmit(form.getValues());
+  // react-hook-form 유효성 검사 실패 시 실행될 함수
+  const onInvalidSubmit = (errors: any) => {
+    const errorField = Object.keys(errors)[0] as ShakeTarget;
+    triggerShake(errorField);
   };
 
   return (
@@ -120,7 +122,8 @@ export function SignupForm() {
         <CardDescription>추가 정보를 입력해주세요.</CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={(e) => { e.preventDefault(); handleFinalSubmit(); }} className="space-y-4">
+        {/* 4. form.handleSubmit을 사용하여 제출 로직을 연결합니다. */}
+        <form onSubmit={form.handleSubmit(onValidSubmit, onInvalidSubmit)} className="space-y-4">
           <CardContent className="space-y-4">
             <FormField
               control={form.control}
@@ -170,7 +173,8 @@ export function SignupForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="button" onClick={handleFinalSubmit} className="w-full" disabled={isPending}>
+            {/* 5. 버튼의 type을 "submit"으로 변경합니다. */}
+            <Button type="submit" className="w-full" disabled={isPending}>
               {isPending && <Loader2 className="animate-spin mr-2" />}
               {isPending ? '가입 진행 중...' : '회원가입 완료'}
             </Button>
