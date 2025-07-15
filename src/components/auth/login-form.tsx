@@ -52,11 +52,11 @@ export function LoginForm() {
   };
 
   // Google 로그인 처리 함수
+  // Google 로그인 처리 함수
   const handleGoogleSignIn = () => {
     setIsLoading(true);
-    signIn("google", { callbackUrl: "/dashboard" });
-    // 버튼이 다시 활성화되도록 로딩 상태를 짧게 유지 후 해제
-    setTimeout(() => setIsLoading(false), 3000); 
+    // callbackUrl을 새로운 확인 페이지로 지정합니다.
+    signIn("google", { callbackUrl: "/auth/verify" });
   };
 
   return (
@@ -94,12 +94,11 @@ export function LoginForm() {
               <span className="px-2 text-xs text-muted-foreground">OR</span>
               <Separator className="flex-1" />
             </div>
-            {/* Google 로그인 버튼: type="button"으로 변경하고 onClick 이벤트로 처리 */}
+            {/* Google 로그인 버튼의 onClick 이벤트를 수정합니다. */}
             <Button type="button" variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
               {isLoading && <Loader2 className="animate-spin mr-2" />}
               Google로 로그인
             </Button>
-            
             <Link href="/signup" className="w-full">
               <Button variant="secondary" className="w-full" disabled={isLoading}>
                 회원가입
