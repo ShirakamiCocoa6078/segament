@@ -82,13 +82,18 @@ export function SignupForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
         try {
-            const result = await completeSignUp(values);
-            if(result.error) {
-                throw new Error(result.error);
+            const signupResult = await completeSignUp(values);
+            if (signupResult.error) {
+                throw new Error(signupResult.error);
             }
-            toast({ title: "회원가입 성공", description: "로그인을 진행합니다." });
-            // 회원가입 성공 후 Google로 다시 로그인 시도
-            signIn("google", { callbackUrl: "/dashboard" });
+            toast({
+                title: "회원가입 성공",
+                description: "로그인 페이지로 이동합니다.",
+            });
+            
+            // 로그인 페이지 (루트)로 리디렉션
+            router.push('/');
+
         } catch (error: any) {
             toast({
                 variant: "destructive",
