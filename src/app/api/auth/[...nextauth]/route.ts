@@ -44,32 +44,26 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   callbacks: {
-    // ================== 여기가 핵심 수정 부분입니다 ==================
     async signIn({ user, account }) {
       if (account?.provider === "google") {
-        // Prisma Adapter가 사용자를 생성/연결한 후, DB에서 직접 확인합니다.
-        const userExists = await prisma.user.findUnique({
+        const userInDb = await prisma.user.findUnique({
           where: { email: user.email! },
-          select: { username: true } // username 필드만 선택하여 확인
+          select: { username: true } 
         });
 
-        // 사용자가 존재하지만, username이 없다면(null 또는 빈 문자열)
-        // 추가 정보 입력이 필요한 신규 사용자입니다.
-        if (userExists && !userExists.username) {
+        // 사용자가 DB에 있지만, username이 없다면 신규 유저로 판단
+        if (userInDb && !userInDb.username) {
           const params = new URLSearchParams({
             email: user.email || '',
             name: user.name || '',
             image: user.image || '',
           });
-          // 회원가입 페이지로 리디렉션합니다.
+          // 정상적으로 /signup 페이지로 리디렉션
           return `/signup?${params.toString()}`;
         }
       }
-      // 그 외 모든 경우 (기존 Google 유저, 일반 로그인 등)는 로그인을 허용합니다.
       return true;
     },
-    // ===============================================================
-    
     async session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user.id = token.id;
@@ -79,11 +73,8 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async jwt({ token, user }) {
-      // user 객체가 있을 때(로그인 시) DB에서 최신 정보를 가져옵니다.
       if (user) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-        });
+        const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
         if (dbUser) {
           token.id = dbUser.id;
           token.nickname = dbUser.nickname;

@@ -6,7 +6,7 @@ import * as z from "zod";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import Link from 'next/link'; // Link 컴포넌트를 import 합니다.
+import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,7 @@ export function LoginForm() {
     defaultValues: { username: "", password: "" },
   });
 
+  // 아이디/비밀번호 로그인 제출 함수
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     const result = await signIn("credentials", {
@@ -44,10 +45,18 @@ export function LoginForm() {
         title: "로그인 실패",
         description: result.error,
       });
-      setIsLoading(false);
     } else {
       router.push("/dashboard");
     }
+    setIsLoading(false);
+  };
+
+  // Google 로그인 처리 함수
+  const handleGoogleSignIn = () => {
+    setIsLoading(true);
+    signIn("google", { callbackUrl: "/dashboard" });
+    // 버튼이 다시 활성화되도록 로딩 상태를 짧게 유지 후 해제
+    setTimeout(() => setIsLoading(false), 3000); 
   };
 
   return (
@@ -62,19 +71,20 @@ export function LoginForm() {
             <FormField control={form.control} name="username" render={({ field }) => (
               <FormItem>
                 <FormLabel>아이디</FormLabel>
-                <FormControl><Input placeholder="아이디 입력" {...field} /></FormControl>
+                <FormControl><Input placeholder="아이디 입력" {...field} disabled={isLoading} /></FormControl>
                 <FormMessage />
               </FormItem>
             )} />
             <FormField control={form.control} name="password" render={({ field }) => (
               <FormItem>
                 <FormLabel>비밀번호</FormLabel>
-                <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
+                <FormControl><Input type="password" placeholder="••••••••" {...field} disabled={isLoading} /></FormControl>
                 <FormMessage />
               </FormItem>
             )} />
           </CardContent>
           <CardFooter className="flex-col gap-4">
+            {/* 일반 로그인 버튼: type="submit" */}
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="animate-spin mr-2" />}
               로그인
@@ -84,17 +94,17 @@ export function LoginForm() {
               <span className="px-2 text-xs text-muted-foreground">OR</span>
               <Separator className="flex-1" />
             </div>
-            <Button variant="outline" className="w-full" onClick={() => signIn("google", { callbackUrl: "/dashboard" })}>
+            {/* Google 로그인 버튼: type="button"으로 변경하고 onClick 이벤트로 처리 */}
+            <Button type="button" variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
+              {isLoading && <Loader2 className="animate-spin mr-2" />}
               Google로 로그인
             </Button>
             
-            {/* 이 부분이 추가되었습니다. */}
             <Link href="/signup" className="w-full">
-              <Button variant="secondary" className="w-full">
+              <Button variant="secondary" className="w-full" disabled={isLoading}>
                 회원가입
               </Button>
             </Link>
-
           </CardFooter>
         </form>
       </Form>
