@@ -9,10 +9,13 @@ datasource db {
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
+  name          String? // Google 프로필 이름
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  nickname      String?   @unique // 추가: 사용자 닉네임
+  username      String?   @unique // 추가: 사용자 아이디
+  hashedPassword String?  // 추가: 해싱된 비밀번호
   accounts      Account[]
   sessions      Session[]
 }
