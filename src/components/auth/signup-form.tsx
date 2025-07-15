@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { completeSignUp } from "@/app/auth/actions";
 import { cn } from "@/lib/utils";
 
+// 폼 유효성 검사를 위한 Zod 스키마
 const formSchema = z.object({
   nickname: z.string().min(2, { message: "닉네임은 2자 이상이어야 합니다." }),
   username: z.string().min(4, { message: "아이디는 4자 이상이어야 합니다." }),
@@ -30,7 +31,8 @@ export function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
+  // isSubmitting 상태를 통해 제출 진행 상태를 명확히 관리합니다.
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable'>('idle');
   const [shakeTarget, setShakeTarget] = useState<ShakeTarget>('none');
   const [shakeKey, setShakeKey] = useState(0);
@@ -52,62 +54,62 @@ export function SignupForm() {
     setShakeTarget(target);
     setShakeKey(prev => prev + 1);
   };
-  
+
   const handleCheckUsername = async () => {
     const username = form.getValues("username");
     if (username.length < 4) {
-        form.setError("username", { message: "아이디는 4자 이상이어야 합니다." });
-        triggerShake('username');
-        return;
+      form.setError("username", { message: "아이디는 4자 이상이어야 합니다." });
+      triggerShake('username');
+      return;
     }
     setUsernameStatus('checking');
     try {
-        const response = await fetch('/api/auth/check-username', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-            setUsernameStatus(data.isAvailable ? 'available' : 'unavailable');
-        } else {
-            setUsernameStatus('idle');
-            toast({ variant: "destructive", title: "오류", description: data.error || "아이디 확인 중 오류가 발생했습니다." });
-        }
+      const response = await fetch('/api/auth/check-username', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+      });
+      const data = await response.json();
+      setUsernameStatus(data.isAvailable ? 'available' : 'unavailable');
     } catch (error) {
-        setUsernameStatus('idle');
-        toast({ variant: "destructive", title: "오류", description: "네트워크 오류가 발생했습니다." });
+      setUsernameStatus('idle');
+      toast({ variant: "destructive", title: "오류", description: "아이디 확인 중 오류가 발생했습니다." });
     }
-  }
-  
-  const onValidSubmit = (values: z.infer<typeof formSchema>) => {
+  };
+
+  // react-hook-form의 handleSubmit이 호출할 최종 제출 함수
+  const processSignUp = async (values: z.infer<typeof formSchema>) => {
+    // 아이디 중복 확인이 완료되었는지 최종적으로 다시 한번 확인합니다.
     if (usernameStatus !== 'available') {
       triggerShake('check-button');
-      toast({ variant: "destructive", title: "아이디 중복 확인 필요", description: "아이디 중복 확인을 해주세요." });
+      toast({ variant: "destructive", title: "확인 필요", description: "아이디 중복 확인을 해주세요." });
       return;
     }
-    
-    startTransition(async () => {
-      try {
-        const result = await completeSignUp(values);
-        if (result.error) throw new Error(result.error);
-        
-        toast({ title: "회원가입 성공", description: "로그인을 진행합니다." });
-        signIn("google", { callbackUrl: "/dashboard" });
-      } catch (error: any) {
-        toast({
-          variant: "destructive",
-          title: "회원가입 실패",
-          description: error.message,
-        });
-      }
-    });
+
+    setIsSubmitting(true); // 제출 시작 상태로 변경
+
+    try {
+      const result = await completeSignUp(values);
+      if (result.error) throw new Error(result.error);
+
+      toast({ title: "회원가입 성공", description: "잠시 후 자동으로 로그인됩니다." });
+      signIn("google", { callbackUrl: "/dashboard" });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "회원가입 실패",
+        description: error.message,
+      });
+      setIsSubmitting(false); // 실패 시 제출 상태 해제
+    }
   };
-  
+
+  // 유효성 검사 실패 시 호출될 함수
   const onInvalidSubmit = (errors: any) => {
     const errorField = Object.keys(errors)[0] as ShakeTarget;
     triggerShake(errorField);
   };
+
 
   return (
     <Card className="w-full max-w-sm shadow-2xl bg-card/80 backdrop-blur-sm">
@@ -116,7 +118,8 @@ export function SignupForm() {
         <CardDescription>추가 정보를 입력해주세요.</CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onValidSubmit, onInvalidSubmit)} className="space-y-4" noValidate>
+        {/* `handleSubmit`이 `processSignUp`을 호출하도록 연결 */}
+        <form onSubmit={form.handleSubmit(processSignUp, onInvalidSubmit)} className="space-y-4" noValidate>
           <CardContent className="space-y-4">
             <FormField
               control={form.control}
@@ -141,7 +144,7 @@ export function SignupForm() {
                     <FormControl>
                       <Input placeholder="사용할 아이디" {...field} onChange={(e) => { field.onChange(e); setUsernameStatus('idle'); }} className={cn(shakeKey > 0 && shakeTarget === 'username' && 'shake border-red-500/50')} />
                     </FormControl>
-                    <Button type="button" variant="outline" onClick={handleCheckUsername} disabled={usernameStatus === 'checking'} className={cn(shakeKey > 0 && shakeTarget === 'check-button' && 'shake bg-red-500/10 border-red-500/50')}>
+                    <Button type="button" variant="outline" onClick={handleCheckUsername} disabled={usernameStatus === 'checking'}>
                       {usernameStatus === 'checking' ? <Loader2 className="h-4 w-4 animate-spin" /> : "중복 확인"}
                     </Button>
                   </div>
@@ -166,13 +169,14 @@ export function SignupForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
-              {isPending && <Loader2 className="animate-spin mr-2" />}
-              {isPending ? '가입 진행 중...' : '회원가입'}
+            {/* 버튼의 비활성화 조건은 isSubmitting 상태 하나로만 관리합니다. */}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="animate-spin mr-2" />}
+              {isSubmitting ? '가입 진행 중...' : '회원가입'}
             </Button>
           </CardFooter>
         </form>
       </Form>
     </Card>
   );
-} 
+}
