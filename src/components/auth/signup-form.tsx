@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -38,7 +37,7 @@ export function SignupForm() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    mode: 'onChange', // 유효성 검사 모드 변경
+    mode: 'onChange',
     defaultValues: {
       email: searchParams.get("email") || "",
       name: searchParams.get("name") || "",
@@ -58,6 +57,7 @@ export function SignupForm() {
     const username = form.getValues("username");
     if (username.length < 4) {
         form.setError("username", { message: "아이디는 4자 이상이어야 합니다." });
+        triggerShake('username');
         return;
     }
     setUsernameStatus('checking');
@@ -80,36 +80,30 @@ export function SignupForm() {
     }
   }
   
-  // 1. react-hook-form의 유효성 검사를 통과했을 때만 실행될 함수
   const onValidSubmit = (values: z.infer<typeof formSchema>) => {
-    // 2. 아이디 중복 확인이 완료되었는지 최종 체크
     if (usernameStatus !== 'available') {
       triggerShake('check-button');
       toast({ variant: "destructive", title: "아이디 중복 확인 필요", description: "아이디 중복 확인을 해주세요." });
       return;
     }
     
-    // 3. 모든 검사를 통과하면 서버로 데이터를 전송
-    toast({ title: "회원가입 중...", description: "잠시만 기다려주세요." });
     startTransition(async () => {
       try {
         const result = await completeSignUp(values);
-        if (result.error) {
-          throw new Error(result.error);
-        }
+        if (result.error) throw new Error(result.error);
+        
         toast({ title: "회원가입 성공", description: "로그인을 진행합니다." });
         signIn("google", { callbackUrl: "/dashboard" });
       } catch (error: any) {
         toast({
           variant: "destructive",
           title: "회원가입 실패",
-          description: error.message || "다시 시도해주세요.",
+          description: error.message,
         });
       }
     });
   };
   
-  // react-hook-form 유효성 검사 실패 시 실행될 함수
   const onInvalidSubmit = (errors: any) => {
     const errorField = Object.keys(errors)[0] as ShakeTarget;
     triggerShake(errorField);
@@ -122,8 +116,7 @@ export function SignupForm() {
         <CardDescription>추가 정보를 입력해주세요.</CardDescription>
       </CardHeader>
       <Form {...form}>
-        {/* 4. form.handleSubmit을 사용하여 제출 로직을 연결합니다. */}
-        <form onSubmit={form.handleSubmit(onValidSubmit, onInvalidSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onValidSubmit, onInvalidSubmit)} className="space-y-4" noValidate>
           <CardContent className="space-y-4">
             <FormField
               control={form.control}
@@ -132,7 +125,7 @@ export function SignupForm() {
                 <FormItem>
                   <FormLabel>닉네임</FormLabel>
                   <FormControl>
-                    <Input placeholder="사용할 닉네임" {...field} disabled={isPending} className={cn(shakeKey > 0 && shakeTarget === 'nickname' && 'shake border-red-500/50')} />
+                    <Input placeholder="사용할 닉네임" {...field} className={cn(shakeKey > 0 && shakeTarget === 'nickname' && 'shake border-red-500/50')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -146,9 +139,9 @@ export function SignupForm() {
                   <FormLabel>아이디</FormLabel>
                   <div className="flex gap-2">
                     <FormControl>
-                      <Input placeholder="사용할 아이디" {...field} onChange={(e) => { field.onChange(e); setUsernameStatus('idle'); }} disabled={isPending} className={cn(shakeKey > 0 && shakeTarget === 'username' && 'shake border-red-500/50')} />
+                      <Input placeholder="사용할 아이디" {...field} onChange={(e) => { field.onChange(e); setUsernameStatus('idle'); }} className={cn(shakeKey > 0 && shakeTarget === 'username' && 'shake border-red-500/50')} />
                     </FormControl>
-                    <Button type="button" variant="outline" onClick={handleCheckUsername} disabled={usernameStatus === 'checking' || isPending} className={cn(shakeKey > 0 && shakeTarget === 'check-button' && 'shake bg-red-500/10 border-red-500/50')}>
+                    <Button type="button" variant="outline" onClick={handleCheckUsername} disabled={usernameStatus === 'checking'} className={cn(shakeKey > 0 && shakeTarget === 'check-button' && 'shake bg-red-500/10 border-red-500/50')}>
                       {usernameStatus === 'checking' ? <Loader2 className="h-4 w-4 animate-spin" /> : "중복 확인"}
                     </Button>
                   </div>
@@ -165,7 +158,7 @@ export function SignupForm() {
                 <FormItem>
                   <FormLabel>비밀번호</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} disabled={isPending} className={cn(shakeKey > 0 && shakeTarget === 'password' && 'shake border-red-500/50')} />
+                    <Input type="password" placeholder="••••••••" {...field} className={cn(shakeKey > 0 && shakeTarget === 'password' && 'shake border-red-500/50')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,10 +166,9 @@ export function SignupForm() {
             />
           </CardContent>
           <CardFooter>
-            {/* 5. 버튼의 type을 "submit"으로 변경합니다. */}
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button type="submit" className="w-full">
               {isPending && <Loader2 className="animate-spin mr-2" />}
-              {isPending ? '가입 진행 중...' : '회원가입 완료'}
+              {isPending ? '가입 진행 중...' : '회원가입'}
             </Button>
           </CardFooter>
         </form>
