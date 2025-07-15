@@ -13,7 +13,7 @@ import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { signUpUser } from "@/app/auth/actions";
 
-// 스키마에서 이메일 관련 정의를 완전히 제거합니다.
+// Zod 스키마 정의
 const formSchema = z.object({
   nickname: z.string().min(2, "닉네임은 2자 이상이어야 합니다."),
   username: z.string().min(4, "아이디는 4자 이상이어야 합니다."),
@@ -24,43 +24,70 @@ export function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  
+
   const isGoogleSignUp = useMemo(() => searchParams.has("email"), [searchParams]);
-  
+
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'available' | 'unavailable'>('idle');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
-    defaultValues: { nickname: "", username: "", password: "" },
+    defaultValues: {
+      nickname: "",
+      username: "",
+      password: "",
+    },
   });
 
   const { isSubmitting } = form.formState;
 
-  const handleCheckUsername = async () => { /* 이전과 동일 */ };
+  const handleCheckUsername = async () => {
+    const isUsernameValid = await form.trigger("username");
+    if (!isUsernameValid) return;
+    setIsCheckingUsername(true);
+    const username = form.getValues("username");
+    try {
+      const response = await fetch('/api/auth/check-username', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      setUsernameStatus(data.isAvailable ? 'available' : 'unavailable');
+    } catch (error) {
+      toast({ variant: "destructive", title: "오류", description: "아이디를 확인하는 중 문제가 발생했습니다." });
+      setUsernameStatus('idle');
+    } finally {
+      setIsCheckingUsername(false);
+    }
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (usernameStatus !== 'available') {
-        toast({ variant: "destructive", title: "확인 필요", description: "아이디 중복 확인을 진행해주세요." });
-        return;
+      toast({ variant: "destructive", title: "확인 필요", description: "아이디 중복 확인을 진행해주세요." });
+      return;
     }
 
     try {
       let submissionData: any = { ...values };
-      // Google 연동 가입일 경우에만, 숨겨진 이메일 정보를 추가합니다.
       if (isGoogleSignUp) {
         submissionData.email = searchParams.get("email");
       }
-      
+
       const result = await signUpUser(submissionData);
       if (result.error) throw new Error(result.error);
 
       toast({ title: "회원가입 완료", description: "로그인 페이지로 이동합니다. 다시 로그인 해주세요." });
       router.push('/');
-        
+
     } catch (error: any) {
-      toast({ variant: "destructive", title: "회원가입 실패", description: error.message });
+      toast({
+        variant: "destructive",
+        title: "회원가입 실패",
+        description: error.message,
+      });
     }
   };
 
@@ -73,12 +100,59 @@ export function SignupForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <CardContent className="space-y-4">
-            {/* 이메일 입력 필드가 완전히 제거되었습니다. */}
-            
-            {/* 닉네임, 아이디, 비밀번호 필드 */}
-            <FormField control={form.control} name="nickname" render={/* ... */ } />
-            <FormField control={form.control} name="username" render={/* ... */ } />
-            <FormField control={form.control} name="password" render={/* ... */ } />
+            <FormField
+              control={form.control}
+              name="nickname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>닉네임</FormLabel>
+                  <FormControl>
+                    <Input placeholder="사용할 닉네임" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>아이디</FormLabel>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        placeholder="사용할 아이디"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setUsernameStatus('idle');
+                        }}
+                      />
+                    </FormControl>
+                    <Button type="button" variant="outline" onClick={handleCheckUsername} disabled={isCheckingUsername}>
+                      {isCheckingUsername ? <Loader2 className="h-4 w-4 animate-spin" /> : "중복 확인"}
+                    </Button>
+                  </div>
+                  {usernameStatus === 'available' && <p className="text-sm text-green-600 flex items-center gap-1 mt-2"><CheckCircle className="h-4 w-4" /> 사용 가능한 아이디입니다.</p>}
+                  {usernameStatus === 'unavailable' && <p className="text-sm text-red-600 flex items-center gap-1 mt-2"><XCircle className="h-4 w-4" /> 이미 존재하는 아이디입니다.</p>}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>비밀번호</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="••••••••" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
