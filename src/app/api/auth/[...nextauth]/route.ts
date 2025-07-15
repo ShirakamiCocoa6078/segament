@@ -27,21 +27,24 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          throw new Error("아이디와 비밀번호를 입력해주세요.");
+          throw new Error('아이디와 비밀번호를 입력해주세요.');
         }
-        
+
         const user = await prisma.user.findUnique({
           where: { username: credentials.username }
         });
 
         if (!user || !user.hashedPassword) {
-          throw new Error("존재하지 않는 아이디이거나, 비밀번호가 설정되지 않은 계정입니다.");
+          throw new Error('존재하지 않는 계정이거나 비밀번호가 틀렸습니다.');
         }
 
-        const isValid = await bcrypt.compare(credentials.password, user.hashedPassword);
+        const isCorrectPassword = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
 
-        if (!isValid) {
-          throw new Error("비밀번호가 일치하지 않습니다.");
+        if (!isCorrectPassword) {
+          throw new Error('존재하지 않는 계정이거나 비밀번호가 틀렸습니다.');
         }
 
         return user;
@@ -105,11 +108,10 @@ export const authOptions: NextAuthOptions = {
     },
 
     // jwt: JWT가 생성되거나 업데이트될 때 호출
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
         console.log("--- jwt Callback ---");
         console.log("Token:", JSON.stringify(token, null, 2));
         console.log("User:", JSON.stringify(user, null, 2));
-        console.log("Account:", JSON.stringify(account, null, 2));
         if (user) { // 로그인 직후
             const dbUser = await prisma.user.findUnique({ where: { email: user.email! } });
             token.id = user.id;
@@ -124,8 +126,8 @@ export const authOptions: NextAuthOptions = {
       console.log("Session:", JSON.stringify(session, null, 2));
       console.log("Token:", JSON.stringify(token, null, 2));
       if (session.user) {
-        session.user.id = token.id;
-        session.user.nickname = token.nickname;
+        session.user.id = token.id as string;
+        session.user.nickname = token.nickname as string;
       }
       console.log("Final Session:", JSON.stringify(session, null, 2));
       return session;

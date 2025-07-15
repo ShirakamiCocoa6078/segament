@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { useState, useTransition } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // 회원가입 처리를 위한 서버 액션 import
@@ -39,6 +39,7 @@ export function SignupForm() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable'>('idle');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,6 +52,32 @@ export function SignupForm() {
       password: "",
     },
   });
+
+  const handleCheckUsername = async () => {
+    const username = form.getValues("username");
+    if (username.length < 4) {
+        form.setError("username", { message: "아이디는 4자 이상이어야 합니다." });
+        return;
+    }
+    setUsernameStatus('checking');
+    try {
+      const response = await fetch('/api/auth/check-username', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUsernameStatus(data.isAvailable ? 'available' : 'unavailable');
+      } else {
+        setUsernameStatus('idle');
+        toast({ variant: "destructive", title: "오류", description: data.error || "아이디 확인 중 오류가 발생했습니다." });
+      }
+    } catch (error) {
+      setUsernameStatus('idle');
+      toast({ variant: "destructive", title: "오류", description: "네트워크 오류가 발생했습니다." });
+    }
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
@@ -101,9 +128,24 @@ export function SignupForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>아이디</FormLabel>
-                  <FormControl>
-                    <Input placeholder="사용할 아이디" {...field} disabled={isPending} />
-                  </FormControl>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        placeholder="사용할 아이디"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setUsernameStatus('idle');
+                        }}
+                        disabled={isPending}
+                      />
+                    </FormControl>
+                    <Button type="button" variant="outline" onClick={handleCheckUsername} disabled={usernameStatus === 'checking' || isPending}>
+                      {usernameStatus === 'checking' ? <Loader2 className="h-4 w-4 animate-spin" /> : "중복 확인"}
+                    </Button>
+                  </div>
+                  {usernameStatus === 'available' && <p className="text-sm text-green-600 flex items-center gap-1 mt-2"><CheckCircle className="h-4 w-4" /> 사용 가능한 아이디입니다.</p>}
+                  {usernameStatus === 'unavailable' && <p className="text-sm text-red-600 flex items-center gap-1 mt-2"><XCircle className="h-4 w-4" /> 이미 존재하는 아이디입니다.</p>}
                   <FormMessage />
                 </FormItem>
               )}
@@ -123,7 +165,7 @@ export function SignupForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button type="submit" className="w-full" disabled={isPending || usernameStatus !== 'available'}>
               {isPending && <Loader2 className="animate-spin mr-2" />}
               {isPending ? '가입 중...' : '회원가입 완료'}
             </Button>
