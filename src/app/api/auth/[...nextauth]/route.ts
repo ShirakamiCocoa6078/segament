@@ -1,7 +1,9 @@
 import NextAuth, { type NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
+import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
+import bcrypt from 'bcrypt';
 import { type JWT } from "next-auth/jwt";
 
 const prisma = new PrismaClient()
@@ -17,6 +19,34 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error("아이디와 비밀번호를 입력해주세요.");
+        }
+        
+        const user = await prisma.user.findUnique({
+          where: { username: credentials.username }
+        });
+
+        if (!user || !user.hashedPassword) {
+          throw new Error("존재하지 않는 아이디이거나, 비밀번호가 설정되지 않은 계정입니다.");
+        }
+
+        const isValid = await bcrypt.compare(credentials.password, user.hashedPassword);
+
+        if (!isValid) {
+          throw new Error("비밀번호가 일치하지 않습니다.");
+        }
+
+        return user;
+      }
+    })
   ],
 
   // 3. NextAuth Secret 키 설정
@@ -33,11 +63,10 @@ export const authOptions: NextAuthOptions = {
   // 6. 콜백 함수 (디버깅 로그 추가)
   callbacks: {
     // signIn: 사용자가 로그인을 시도할 때 호출
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       console.log("--- signIn Callback Start ---");
       console.log("User:", JSON.stringify(user, null, 2));
       console.log("Account:", JSON.stringify(account, null, 2));
-      console.log("Profile:", JSON.stringify(profile, null, 2));
 
       if (account?.provider === "google") {
         try {
@@ -76,10 +105,11 @@ export const authOptions: NextAuthOptions = {
     },
 
     // jwt: JWT가 생성되거나 업데이트될 때 호출
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
         console.log("--- jwt Callback ---");
         console.log("Token:", JSON.stringify(token, null, 2));
         console.log("User:", JSON.stringify(user, null, 2));
+        console.log("Account:", JSON.stringify(account, null, 2));
         if (user) { // 로그인 직후
             const dbUser = await prisma.user.findUnique({ where: { email: user.email! } });
             token.id = user.id;

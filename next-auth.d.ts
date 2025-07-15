@@ -11,6 +11,7 @@ declare module 'next-auth' {
 
   interface User {
     nickname?: string | null;
+    hashedPassword?: string | null;
   }
 }
 
