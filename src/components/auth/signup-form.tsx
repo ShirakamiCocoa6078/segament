@@ -80,26 +80,40 @@ export function SignupForm() {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    // 1. onSubmit 함수가 시작되었는지 확인
+    console.log("Form submission started. Values:", values);
+
     startTransition(async () => {
+        // 2. startTransition 콜백이 실행되는지 확인
+        console.log("Submission transition has started.");
         try {
-            const signupResult = await completeSignUp(values);
-            if (signupResult.error) {
-                throw new Error(signupResult.error);
+            // 3. 서버 액션 호출 직전에 로그 출력
+            console.log("Attempting to call 'completeSignUp' server action...");
+            const result = await completeSignUp(values);
+
+            // 4. 서버 액션의 결과를 확인
+            console.log("Server action result:", result);
+
+            if (result?.error) {
+                console.error("Error from server action:", result.error);
+                throw new Error(result.error);
             }
-            toast({
-                title: "회원가입 성공",
-                description: "로그인 페이지로 이동합니다.",
-            });
-            
-            // 로그인 페이지 (루트)로 리디렉션
-            router.push('/');
+
+            // 5. 회원가입 성공 및 로그인 시도 직전에 로그 출력
+            console.log("Sign up successful. Attempting to call signIn('google').");
+            toast({ title: "회원가입 성공", description: "로그인을 진행합니다." });
+            signIn("google", { callbackUrl: "/dashboard" });
 
         } catch (error: any) {
+            // 6. 에러가 발생했다면 콘솔에 상세히 기록
+            console.error("Caught an error during the signup process:", error);
             toast({
                 variant: "destructive",
                 title: "회원가입 실패",
                 description: error.message,
             });
+        } finally {
+            console.log("Submission transition finished.");
         }
     });
   }
