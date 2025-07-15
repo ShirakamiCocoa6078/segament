@@ -10,18 +10,45 @@ const prisma = new PrismaClient();
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    // ... GoogleProvider, CredentialsProvider ...
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error("아이디와 비밀번호를 입력해주세요.");
+        }
+        const user = await prisma.user.findUnique({
+          where: { username: credentials.username }
+        });
+        if (!user || !user.hashedPassword) {
+          throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
+        const isPasswordCorrect = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
+        if (!isPasswordCorrect) {
+          throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
+        return user;
+      }
+    })
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   callbacks: {
-    // signIn 콜백은 이제 특별한 리디렉션 로직이 필요 없습니다.
-    // 어댑터가 유저를 생성/연결하고, /auth/verify 페이지가 나머지를 처리합니다.
+    // 이제 리디렉션 로직은 /auth/verify 페이지가 담당하므로,
+    // signIn 콜백은 항상 true를 반환하여 통과시킵니다.
     async signIn({ user, account }) {
       return true;
     },
-    
-    // session과 jwt 콜백은 닉네임 처리를 위해 그대로 유지합니다.
     async session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user.id = token.id;
