@@ -1,118 +1,50 @@
-import NextAuth, { type NextAuthOptions } from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
-import CredentialsProvider from "next-auth/providers/credentials"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
-import bcrypt from 'bcrypt';
-import { type JWT } from "next-auth/jwt";
+import NextAuth, { type NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-// 디버깅을 위해 NextAuthOptions를 별도로 정의합니다.
 export const authOptions: NextAuthOptions = {
-  // 1. Prisma 어댑터 설정
   adapter: PrismaAdapter(prisma),
-
-  // 2. 인증 제공자 설정
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" }
-      },
-      async authorize(credentials) {
-        if (!credentials?.username || !credentials?.password) {
-          throw new Error('아이디와 비밀번호를 입력해주세요.');
-        }
-
-        const user = await prisma.user.findUnique({
-          where: { username: credentials.username }
-        });
-
-        if (!user || !user.hashedPassword) {
-          throw new Error('존재하지 않는 계정이거나 비밀번호가 틀렸습니다.');
-        }
-
-        const isCorrectPassword = await bcrypt.compare(
-          credentials.password,
-          user.hashedPassword
-        );
-
-        if (!isCorrectPassword) {
-          throw new Error('존재하지 않는 계정이거나 비밀번호가 틀렸습니다.');
-        }
-
-        return user;
-      }
-    })
   ],
-
-  // 3. NextAuth Secret 키 설정
   secret: process.env.NEXTAUTH_SECRET,
-
-  // 4. 디버그 모드 활성화 (개발 환경에서 상세 로그 출력)
-  debug: process.env.NODE_ENV === 'development',
-
-  // 5. 세션 전략 설정
   session: {
     strategy: "jwt",
   },
-
-  // 6. 콜백 함수 (디버깅 로그 추가)
   callbacks: {
-    // signIn: 사용자가 로그인을 시도할 때 호출
+    // 1. 로그인 시도 시 가장 먼저 호출됩니다.
     async signIn({ user, account }) {
-      console.log("--- signIn Callback Start ---");
-      console.log("User:", JSON.stringify(user, null, 2));
-      console.log("Account:", JSON.stringify(account, null, 2));
-
       if (account?.provider === "google") {
-        try {
-          const userInDb = await prisma.user.findUnique({
-            where: { email: user.email! },
+        // 2. DB에서 이메일로 사용자를 찾습니다.
+        // PrismaAdapter가 이 시점에 기본적인 User, Account 레코드를 생성합니다.
+        const userInDb = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
+
+        // 3. 사용자는 존재하지만, nickname이 없다면 추가 정보 입력이 필요한 신규 유저입니다.
+        if (userInDb && !userInDb.nickname) {
+          const params = new URLSearchParams({
+            email: user.email || '',
+            name: user.name || '',
+            image: user.image || '',
           });
-
-          console.log("User in DB:", JSON.stringify(userInDb, null, 2));
-
-          if (userInDb && !userInDb.nickname) {
-            console.log("Redirecting to signup page for profile completion.");
-            const params = new URLSearchParams({
-              email: user.email || '',
-              name: user.name || '',
-              image: user.image || '',
-            });
-            console.log("--- signIn Callback End (Redirecting) ---");
-            // 리디렉션은 상대 경로가 아닌 전체 URL을 반환해야 할 수 있습니다.
-            // NEXTAUTH_URL 환경변수를 꼭 확인하세요.
-            return `/signup?${params.toString()}`;
-          }
-
-          console.log("User exists and has nickname, or is a new user handled by adapter. Allowing sign in.");
-          console.log("--- signIn Callback End (Success) ---");
-          return true; // 로그인 허용
-
-        } catch (error) {
-          console.error("Error in signIn callback:", error);
-          console.log("--- signIn Callback End (Error) ---");
-          return false; // 오류 발생 시 로그인 거부
+          // 4. 회원가입 페이지로 리디렉션합니다.
+          return `/signup?${params.toString()}`;
         }
       }
-      console.log("Not a Google provider. Allowing sign in.");
-      console.log("--- signIn Callback End (Non-Google) ---");
+      // 5. 기존 유저이거나 다른 방식의 로그인이면 통과시킵니다.
       return true;
     },
-
-    // jwt: JWT가 생성되거나 업데이트될 때 호출
+    
+    // JWT 토큰에 닉네임 정보를 추가합니다.
     async jwt({ token, user }) {
-        console.log("--- jwt Callback ---");
-        console.log("Token:", JSON.stringify(token, null, 2));
-        console.log("User:", JSON.stringify(user, null, 2));
-        if (user) { // 로그인 직후
+        if (user) {
             const dbUser = await prisma.user.findUnique({ where: { email: user.email! } });
             token.id = user.id;
             token.nickname = dbUser?.nickname;
@@ -120,44 +52,19 @@ export const authOptions: NextAuthOptions = {
         return token;
     },
 
-    // session: 세션이 접근될 때마다 호출
-    async session({ session, token }: { session: any; token: JWT }) {
-      console.log("--- session Callback ---");
-      console.log("Session:", JSON.stringify(session, null, 2));
-      console.log("Token:", JSON.stringify(token, null, 2));
+    // 6. 세션 객체에 닉네임을 포함시켜 클라이언트(대시보드 등)에서 사용할 수 있게 합니다.
+    async session({ session, token }: { session: any; token: any }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.nickname = token.nickname as string;
+        session.user.id = token.id;
+        // 구글 이름(token.name)이 아닌, DB의 닉네임(token.nickname)을 세션에 저장합니다.
+        session.user.name = token.nickname || token.name; 
+        session.user.nickname = token.nickname;
       }
-      console.log("Final Session:", JSON.stringify(session, null, 2));
       return session;
     },
-  },
-
-  // 7. 이벤트 콜백 (로그인 성공/실패 시 로그 기록)
-  events: {
-    async signIn(message) {
-      console.log("Sign In Event:", JSON.stringify(message, null, 2));
-    },
-    async signOut(message) {
-      console.log("Sign Out Event:", JSON.stringify(message, null, 2));
-    },
-    async createUser(message) {
-      console.log("Create User Event:", JSON.stringify(message, null, 2));
-    },
-    async linkAccount(message) {
-      console.log("Link Account Event:", JSON.stringify(message, null, 2));
-    },
-    async session(message) {
-      // 세션 이벤트는 너무 자주 발생하므로 필요할 때만 활성화
-      // console.log("Session Event:", message);
-    },
-    async error(message) {
-        console.error("Authentication Error Event:", message);
-    }
   },
 };
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };
