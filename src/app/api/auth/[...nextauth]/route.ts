@@ -44,53 +44,53 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   callbacks: {
-    async signIn({ user, account, profile }) {
+    // signIn 콜백의 역할을 명확히 합니다.
+    async signIn({ user, account }) {
+      // OAuth 제공자(Google)를 통한 로그인일 때만 실행
       if (account?.provider === "google") {
-        const userExists = await prisma.user.findUnique({
+        // PrismaAdapter가 User와 Account 생성을 완료한 후, DB에서 직접 확인합니다.
+        const userInDb = await prisma.user.findUnique({
           where: { email: user.email! },
-          select: { username: true },
+          select: { username: true } // username 존재 여부만 확인
         });
 
-        // 새로운 구글 사용자이거나, 기존 사용자이지만 추가 정보(username)를 입력하지 않은 경우
-        if (!userExists?.username) {
-          const googleProfile = profile as any;
+        // username이 없다면, 추가 정보 입력이 필요한 신규 사용자입니다.
+        if (userInDb && !userInDb.username) {
           const params = new URLSearchParams({
-            email: user.email!,
-            name: googleProfile.name,
-            image: googleProfile.picture,
+            email: user.email || '',
+            name: user.name || '',
+            image: user.image || '',
           });
-          // 추가 정보 입력 페이지로 리디렉션
+          // 회원가입 페이지로 리디렉션합니다.
           return `/signup?${params.toString()}`;
         }
       }
-      // 일반 로그인 또는 이미 가입 완료된 구글 사용자의 경우
+      // 그 외의 경우(기존 Google 유저, 일반 로그인 등)는 모두 로그인을 허용합니다.
       return true;
     },
-    async session({ session, token }) {
-      // 세션의 user 객체에 토큰의 정보를 추가합니다.
-      session.user.id = token.id as string;
-      session.user.username = token.username as string;
-      session.user.nickname = token.nickname as string;
-      return session;
-    },
+    
+    // JWT 토큰과 세션에 닉네임 정보를 올바르게 포함시킵니다.
     async jwt({ token, user }) {
-      // 최초 로그인 시, DB에서 사용자 정보를 조회하여 토큰에 추가 정보를 저장합니다.
       if (user) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-        });
+        const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
         if (dbUser) {
           token.id = dbUser.id;
-          token.username = dbUser.username;
           token.nickname = dbUser.nickname;
         }
       }
       return token;
     },
+    async session({ session, token }: { session: any; token: any }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.name = token.nickname; // 모든 곳에서 닉네임이 표시되도록 설정
+        session.user.nickname = token.nickname;
+      }
+      return session;
+    },
   },
   pages: {
     signIn: '/',
-    error: '/', // 에러 발생 시 리디렉션될 페이지
   }
 };
 
