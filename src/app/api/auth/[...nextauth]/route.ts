@@ -44,24 +44,44 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   callbacks: {
-    // 이제 리디렉션 로직은 /auth/verify 페이지가 담당하므로,
-    // signIn 콜백은 항상 true를 반환하여 통과시킵니다.
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        const userExists = await prisma.user.findUnique({
+          where: { email: user.email! },
+          select: { username: true },
+        });
+
+        // 새로운 구글 사용자이거나, 기존 사용자이지만 추가 정보(username)를 입력하지 않은 경우
+        if (!userExists?.username) {
+          const googleProfile = profile as any;
+          const params = new URLSearchParams({
+            email: user.email!,
+            name: googleProfile.name,
+            image: googleProfile.picture,
+          });
+          // 추가 정보 입력 페이지로 리디렉션
+          return `/signup?${params.toString()}`;
+        }
+      }
+      // 일반 로그인 또는 이미 가입 완료된 구글 사용자의 경우
       return true;
     },
-    async session({ session, token }: { session: any; token: any }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.name = token.nickname;
-        session.user.nickname = token.nickname;
-      }
+    async session({ session, token }) {
+      // 세션의 user 객체에 토큰의 정보를 추가합니다.
+      session.user.id = token.id as string;
+      session.user.username = token.username as string;
+      session.user.nickname = token.nickname as string;
       return session;
     },
     async jwt({ token, user }) {
+      // 최초 로그인 시, DB에서 사용자 정보를 조회하여 토큰에 추가 정보를 저장합니다.
       if (user) {
-        const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
         if (dbUser) {
           token.id = dbUser.id;
+          token.username = dbUser.username;
           token.nickname = dbUser.nickname;
         }
       }
@@ -70,6 +90,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/',
+    error: '/', // 에러 발생 시 리디렉션될 페이지
   }
 };
 

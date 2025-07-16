@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { signUpUser } from "@/app/auth/actions";
@@ -39,6 +39,16 @@ export function SignupForm() {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (isGoogleSignUp) {
+      const nameFromGoogle = searchParams.get("name");
+      if (nameFromGoogle) {
+        form.setValue("nickname", nameFromGoogle);
+      }
+    }
+  }, [isGoogleSignUp, searchParams, form]);
+
 
   const { isSubmitting } = form.formState;
 
@@ -74,6 +84,8 @@ export function SignupForm() {
       let submissionData: any = { ...values };
       if (isGoogleSignUp) {
         submissionData.email = searchParams.get("email");
+        submissionData.image = searchParams.get("image");
+        submissionData.name = searchParams.get("name"); // name도 함께 전송
       }
 
       const result = await signUpUser(submissionData);

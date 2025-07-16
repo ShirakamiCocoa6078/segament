@@ -13,8 +13,8 @@ model User {
   email          String?   @unique   // Google 연동 시에만 저장
   emailVerified  DateTime?
   image          String?
-  username       String    @unique   // 모든 유저에게 필수, 로그인 ID
-  nickname       String?   // 모든 유저에게 필수, 표시될 이름
+  username       String?   @unique   // 모든 유저에게 필수, 로그인 ID. Google 최초 가입 시에는 null.
+  nickname       String?   // 가입 완료 시 필수, 표시될 이름
   hashedPassword String?   // 일반 가입 시 필수
 
   accounts Account[]
