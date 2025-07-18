@@ -1,5 +1,4 @@
 import { ProfileDisplay } from "@/components/dashboard/profile-display";
-import { PersonalizedTips } from "@/components/dashboard/personalized-tips";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChunithmIcon, MaimaiIcon } from "@/components/icons";
 import { chunithmData, maimaiData } from "@/lib/mock-data";
@@ -65,9 +64,6 @@ export default function DashboardPage() {
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <ProfileDisplay />
-        </div>
-        <div>
-          <PersonalizedTips />
         </div>
       </div>
     </div>
