@@ -10,20 +10,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// --- 기본 사용자 모델 ---
+// userProfile 데이터를 포함합니다.
 model User {
   id             String    @id @default(cuid())
   name           String?
   email          String?   @unique
   emailVerified  DateTime?
-  image          String?
-  username       String?   @unique   // Google 최초 로그인 시 비어있을 수 있도록 선택사항
-  nickname       String?
   hashedPassword String?
 
-  accounts Account[]
-  sessions Session[]
+  // --- userProfile 데이터 ---
+  username       String?   @unique
+  avatarUrl      String?
+  lastJoin       DateTime?
+  lastUpdateData DateTime?
+
+  // --- 관계 및 인증용 모델 ---
+  accounts        Account[]
+  sessions        Session[]
+  chunithmProfile ChunithmProfile?
 }
 
+// --- NextAuth 관련 모델 ---
 model Account {
   id                 String  @id @default(cuid())
   userId             String
@@ -37,9 +45,7 @@ model Account {
   scope              String?
   id_token           String?
   session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([provider, providerAccountId])
 }
 
@@ -51,10 +57,58 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
 
-  @@unique([identifier, token])
+// ==========================================
+//        CHUNITHM 관련 모델
+// ==========================================
+
+// --- chunithmData를 관리하는 메인 프로필 ---
+model ChunithmProfile {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt      DateTime  @updatedAt
+
+  rating         Float
+  playCount      Int
+  title          String[]
+  courseResult   String?
+  allCourseClear String?
+
+  character     ChunithmCharacter?
+  records       ChunithmRecord[]
+  ratingHistory ChunithmRatingHistory[]
+}
+
+// --- chunithmData.avatarLevel.chunithm ---
+model ChunithmCharacter {
+  id        String  @id @default(cuid())
+  profileId String  @unique
+  profile   ChunithmProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  name      String
+  level     Int
+}
+
+// --- chunithmData.recentPlays ---
+model ChunithmRecord {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   ChunithmProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  song      String
+  score     Int
+  rank      String
+  constant  Float
+  isNew     Boolean  // ✨ isNew: true/false 필드 추가
+  playedAt  DateTime @default(now())
+}
+
+// --- chunithmData.ratingHistory ---
+model ChunithmRatingHistory {
+  id         String   @id @default(cuid())
+  profileId  String
+  profile    ChunithmProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  name       String
+  rating     Float
+  recordedAt DateTime @default(now())
 }
