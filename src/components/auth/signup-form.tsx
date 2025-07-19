@@ -42,11 +42,11 @@ export function SignupForm() {
         </div>
       </CardContent>
       <CardFooter className="flex gap-2">
-        <Button className="flex-1">
-          가입하기
-        </Button>
         <Button variant="destructive" className="flex-1">
           취소
+        </Button>
+        <Button className="flex-1">
+          회원가입
         </Button>
       </CardFooter>
     </Card>
