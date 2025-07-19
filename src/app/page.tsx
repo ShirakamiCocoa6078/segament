@@ -1,6 +1,8 @@
-"use client"
-import { LoginForm } from "@/components/auth/login-form";
+"use client";
+
+import { Button } from "@/components/ui/button";
 import { SegamentLogo } from "@/components/icons";
+import { signIn } from "next-auth/react";
 
 export default function Home() {
   return (
@@ -16,7 +18,13 @@ export default function Home() {
             <p className="max-w-md mb-8 text-lg text-foreground/80 font-body">
                 츄니즘 및 마이마이 프로필화
             </p>
-            <LoginForm />
+            <Button 
+              onClick={() => signIn('google')}
+              size="lg"
+              className="px-8 py-3 text-lg"
+            >
+              Google 계정으로 계속하기
+            </Button>
         </div>
     </main>
   );
