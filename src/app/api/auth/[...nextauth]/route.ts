@@ -2,7 +2,7 @@
 
 import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma"; // 생성한 전역 Prisma Client 인스턴스를 import
 
 export const authOptions: AuthOptions = {
