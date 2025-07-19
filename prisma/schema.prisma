@@ -1,54 +1,57 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-  provider = "prisma-client-js"
-}
-
+// 1. 데이터 소스 및 클라이언트 생성기 설정
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// --- 기본 사용자 모델 ---
-// userProfile 데이터를 포함합니다.
-model User {
-  id             String    @id @default(cuid())
-  name           String?
-  email          String?   @unique
-  emailVerified  DateTime?
-  hashedPassword String?
-
-  // --- userProfile 데이터 ---
-  username       String?   @unique
-  avatarUrl      String?
-  lastJoin       DateTime?
-  lastUpdateData DateTime?
-
-  // --- 관계 및 인증용 모델 ---
-  accounts        Account[]
-  sessions        Session[]
-  chunithmProfile ChunithmProfile?
+generator client {
+  provider = "prisma-client-js"
 }
 
-// --- NextAuth 관련 모델 ---
+
+// 2. NextAuth.js 호환 모델
+// 사용자의 기본 계정 정보. 모든 게임 프로필의 시작점.
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // 관계 설정
+  accounts         Account[]
+  sessions         Session[]
+  ChunithmProfile  ChunithmProfile?
+  MaimaiProfile    MaimaiProfile?
+  OngekiProfile    OngekiProfile?
+}
+
+// 소셜 로그인 등 OAuth 계정 정보
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?
-  access_token       String?
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?
-  session_state      String?
-  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
 }
 
+// 사용자 로그인 세션 정보
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -57,58 +60,83 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// 이메일 인증 등에서 사용하는 임시 토큰
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-// ==========================================
-//        CHUNITHM 관련 모델
-// ==========================================
+  @@unique([identifier, token])
+}
 
-// --- chunithmData를 관리하는 메인 프로필 ---
+
+// 3. Segament 고유 모델
+// 게임별 프로필, 플레이로그, 레이팅로그를 정의
+
+// ======== CHUNITHM 관련 모델 ========
 model ChunithmProfile {
-  id             String    @id @default(cuid())
-  userId         String    @unique
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  updatedAt      DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  playerName    String
+  rating        Float     @default(0)
+  overPower     Float     @default(0)
+  title         String?
+  character     String?
+  playCount     Int       @default(0)
+  firstPlayDate DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  rating         Float
-  playCount      Int
-  title          String[]
-  courseResult   String?
-  allCourseClear String?
-
-  character     ChunithmCharacter?
-  records       ChunithmRecord[]
-  ratingHistory ChunithmRatingHistory[]
+  // 관계 설정
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playlogs  ChunithmPlaylog[]
+  ratinglogs ChunithmRatingLog[]
 }
 
-// --- chunithmData.avatarLevel.chunithm ---
-model ChunithmCharacter {
-  id        String  @id @default(cuid())
-  profileId String  @unique
-  profile   ChunithmProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  name      String
-  level     Int
+model ChunithmPlaylog {
+  profileId   String
+  musicId     String   // segament-data-updater에서 생성하는 고유 ID
+  difficulty  String   // 'BAS', 'ADV', 'EXP', 'MAS', 'ULT'
+  score       Int      @default(0)
+  rank        String?
+  isAllJustice Boolean @default(false)
+  isFullCombo  Boolean @default(false)
+  
+  // 관계 설정
+  profile ChunithmProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  // 복합 기본 키 설정: 한 유저가 특정 곡의 특정 난이도에 대해 하나의 기록만 갖도록 보장
+  @@id([profileId, musicId, difficulty])
 }
 
-// --- chunithmData.recentPlays ---
-model ChunithmRecord {
+model ChunithmRatingLog {
   id        String   @id @default(cuid())
   profileId String
-  profile   ChunithmProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  rating    Float
+  changedAt DateTime @default(now())
 
-  song      String
-  score     Int
-  rank      String
-  constant  Float
-  isNew     Boolean  // ✨ isNew: true/false 필드 추가
-  playedAt  DateTime @default(now())
+  // 관계 설정
+  profile ChunithmProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // 인덱스 설정: 특정 유저의 레이팅 기록을 빠르게 조회하기 위함
+  @@index([profileId])
 }
 
-// --- chunithmData.ratingHistory ---
-model ChunithmRatingHistory {
-  id         String   @id @default(cuid())
-  profileId  String
-  profile    ChunithmProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  name       String
-  rating     Float
-  recordedAt DateTime @default(now())
+
+// ======== MAIMAI 관련 모델 (미래 확장용) ========
+model MaimaiProfile {
+  id            String @id @default(cuid())
+  userId        String @unique
+  // ... (MAIMAI 프로필 관련 필드 추가 예정)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ======== ONGEKI 관련 모델 (미래 확장용) ========
+model OngekiProfile {
+  id            String @id @default(cuid())
+  userId        String @unique
+  // ... (ONGEKI 프로필 관련 필드 추가 예정)
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
