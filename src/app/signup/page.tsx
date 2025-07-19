@@ -1,3 +1,5 @@
+"use client";
+
 import { SignupForm } from "@/components/auth/signup-form";
 import { SegamentLogo } from "@/components/icons";
 import { Suspense } from "react";
