@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 interface ChunithmProfile {
   id: string;
@@ -42,6 +43,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<DashboardData | null>(null);
+  const [profileExists, setProfileExists] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -51,12 +53,19 @@ export default function DashboardPage() {
         
         const response = await fetch('/api/dashboard');
         
+        if (response.status === 404) {
+          // 프로필이 없는 경우
+          setProfileExists(false);
+          return;
+        }
+        
         if (!response.ok) {
           throw new Error('데이터를 불러오는 데 실패했습니다.');
         }
         
         const dashboardData = await response.json();
         setData(dashboardData);
+        setProfileExists(true);
       } catch (err) {
         setError(err instanceof Error ? err.message : '데이터를 불러오는 데 실패했습니다.');
       } finally {
