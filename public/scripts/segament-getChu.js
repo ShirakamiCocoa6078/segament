@@ -13,9 +13,6 @@
 
     if (segamentImportWindow) {
       try {
-        // ==========================================================
-        // ===== 기존 segament-getChu.js 데이터 추출 로직 시작 =====
-        // ==========================================================
         const isInternational = location.hostname === 'chunithm-net-eng.com';
         const region = isInternational ? 'INTL' : 'JP';
         const baseUrl = isInternational ?
@@ -44,7 +41,7 @@
                 const value = utils.normalize(row.querySelector('td').innerText);
                 playerInfo[key] = value;
             });
-            // 추가적인 데이터 파싱 (예: 레이팅, OP)
+            
             const ratingElement = doc.querySelector('.rating_block .rating_value');
             if (ratingElement) playerInfo.rating = parseFloat(ratingElement.innerText);
             
@@ -54,11 +51,11 @@
             return playerInfo;
         };
 
-        const collectAllMusicPlays = async (doc, token) => {
+        const collectAllMusicPlays = async (token) => {
             let page = 1;
             const plays = [];
             while (true) {
-                const pageDoc = await utils.fetchPageDoc(`${baseUrl}record/musicGenre/send${token}&page=${page}`);
+                const pageDoc = await utils.fetchPageDoc(`${baseUrl}record/musicGenre/send?token=${token}&page=${page}`);
                 const musicBlocks = pageDoc.querySelectorAll('.w428.musiclist_box.pointer');
                 if (musicBlocks.length === 0)
                     break;
@@ -74,7 +71,7 @@
                         const lampSrc = lamps[i] ? lamps[i].src : '';
                         
                         plays.push({ 
-                            title: title, // 나중에 musicId로 변환 필요
+                            title: title,
                             difficulty: difficulty, 
                             score: score,
                             isFullCombo: lampSrc.includes('fullcombo'),
@@ -83,7 +80,6 @@
                     });
                 });
                 page++;
-                // 개발 중 무한 루프 방지를 위해 임시로 페이지 제한
                 if (page > 30) {
                      console.warn('[Segament] 페이지 제한(30)에 도달하여 수집을 중단합니다.');
                      break;
@@ -91,21 +87,19 @@
             }
             return plays;
         };
-        // --- 데이터 수집 실행 ---
-        const homeDoc = await utils.fetchPageDoc(baseUrl + 'home/');
-        const tokenElement = homeDoc.querySelector('.resend_form a');
-        if (!tokenElement) throw new Error("토큰을 찾을 수 없습니다. CHUNITHM-NET에 로그인되어 있는지 확인해주세요.");
 
-        const token = new URLSearchParams(tokenElement.href.split('?')[1]).get('token');
-        
+        // --- 데이터 수집 실행 ---
         const playerDataDoc = await utils.fetchPageDoc(baseUrl + 'home/playerData/');
-        const profileData = collectPlayerData(playerDataDoc);
         
-        const musicRecordDoc = await utils.fetchPageDoc(baseUrl + 'record/musicGenre/');
-        const playlogsData = await collectAllMusicPlays(musicRecordDoc, token);
-        // ==========================================================
-        // ===== 기존 segament-getChu.js 데이터 추출 로직 끝 =====
-        // ==========================================================
+        // [수정] playerData 페이지 내의 'Record' 탭 링크에서 토큰을 찾습니다.
+        const recordLinkElement = playerDataDoc.querySelector('a[href*="record/musicGenre/"]');
+        if (!recordLinkElement) throw new Error("토큰을 찾을 수 없습니다. CHUNITHM-NET의 HTML 구조가 변경되었을 수 있습니다.");
+        
+        const token = new URLSearchParams(recordLinkElement.href.split('?')[1]).get('token');
+        if (!token) throw new Error("링크에서 토큰을 추출하는 데 실패했습니다.");
+
+        const profileData = collectPlayerData(playerDataDoc);
+        const playlogsData = await collectAllMusicPlays(token);
         
         const payload = {
             gameType: 'CHUNITHM',
@@ -120,18 +114,15 @@
 
       } catch (error) {
         console.error('[Segament] 데이터 추출 중 오류:', error);
-        segamentImportWindow.postMessage({ type: 'SEGAMENT_ERROR', payload: error.message }, segamentOrigin);
+        segamentImportWindow.postMessage({ type: 'SEGAMENT_ERROR', payload: { message: error.message } }, segamentOrigin);
       }
     }
     
     window.removeEventListener('message', handleRequestMessage);
   };
 
-  // --- 스크립트 실행 시작점 ---
   console.log('[Segament] 북마크릿이 실행되었습니다.');
-  
   segamentImportWindow = window.open(`${segamentOrigin}/import`, '_blank');
-  
   window.addEventListener('message', handleRequestMessage);
 
 })();
