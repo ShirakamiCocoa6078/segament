@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import RegisterProfileDialog from '@/components/dashboard/RegisterProfileDialog';
 
 interface ChunithmProfile {
   id: string;
@@ -128,9 +129,7 @@ export default function DashboardPage() {
               데이터를 관리하려면 게임 프로필을 등록해주세요.
             </p>
           </div>
-          <Button size="lg" className="px-8">
-            게임 프로필 등록하기
-          </Button>
+          <RegisterProfileDialog />
         </div>
       )}
 
