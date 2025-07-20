@@ -1,15 +1,14 @@
 // 파일 경로: public/scripts/segament-getChu.js
 
 (function() {
-  // 이 스크립트의 다른 부분에서 이 함수들을 사용한다고 가정합니다.
-  // 실제 getChu.js 파일에 있는 함수명으로 대체해야 할 수 있습니다.
-  async function getProfileData() { /* ... 기존 프로필 추출 로직 ... */ }
-  async function getPlaylogs() { /* ... 기존 플레이로그 추출 로직 ... */ }
-  async function getCourses() { /* ... 기존 코스 기록 추출 로직 ... */ }
-
   /**
-   * 화면에 UI 오버레이를 생성하고 제어하는 함수
+   * =================================================
+   * Segament Chunithm Data Getter
+   * 기존 segament-getChu.js의 데이터 추출 로직을 UI 오버레이와 결합
+   * =================================================
    */
+
+  // --- 1. UI 오버레이 생성 및 제어 ---
   function createOverlay() {
     const existingOverlay = document.getElementById('segament-overlay');
     if (existingOverlay) existingOverlay.remove();
@@ -44,9 +43,106 @@
     return { overlay };
   }
 
-  /**
-   * 데이터 추출 및 서버 전송을 담당하는 메인 함수
-   */
+  // --- 기존 segament-getChu.js의 유틸리티 함수들 ---
+  const utils = {
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    async fetchPageDoc(url) {
+      console.log(`[segament getChunithm] GET: ${url}`);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`페이지 로드 실패: ${url} (상태: ${response.status})`);
+      await utils.sleep(250);
+      const html = await response.text();
+      return new DOMParser().parseFromString(html, 'text/html');
+    },
+    async fetchPageDocWithPost(url, token, diff) {
+      const postUrl = `${url}send${diff}`;
+      const body = new URLSearchParams({ genre: '99', token: token, diff: diff });
+      console.log(`[segament getChunithm] POST: ${postUrl}`);
+      const response = await fetch(postUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString()
+      });
+      if (!response.ok) throw new Error(`POST 요청 실패: ${postUrl} (상태: ${response.status})`);
+      await utils.sleep(250);
+      const html = await response.text();
+      return new DOMParser().parseFromString(html, 'text/html');
+    },
+    parseNumber(text) {
+      if (!text) return 0;
+      const match = text.match(/[\d,.]+/g);
+      return match ? parseFloat(match[0].replace(/,/g, '')) : 0;
+    }
+  };
+
+  // --- 기존 segament-getChu.js의 데이터 수집 함수들 ---
+  async function collectPlayerData(homeDoc, playerDataDoc) {
+    const profile = {};
+    profile.team = { name: homeDoc.querySelector('.player_team_name')?.textContent.trim() || null, rank: (homeDoc.querySelector('[class^="player_team_emblem_"]')?.className.match(/player_team_emblem_(\w+)/) || [])[1] || null };
+    const honorElements = homeDoc.querySelectorAll('.player_honor_short');
+    profile.honors = Array.from(honorElements).map(el => ({ name: el.querySelector('.player_honor_text span')?.textContent.trim() || el.querySelector('.player_honor_text')?.textContent.trim() || null, rank: (el.style.backgroundImage.match(/honor_bg_(\w+)\.png/) || [])[1] || 'normal' }));
+    profile.characterIcon = homeDoc.querySelector('.player_chara img')?.src || null;
+    const battleRankImg = homeDoc.querySelector('.player_battlerank img')?.src;
+    if (battleRankImg) { const match = battleRankImg.match(/battle_rank_(\w+?)(\d)\.png/); profile.battleRank = match ? { highRank: match[1], lowRank: parseInt(match[2]) } : null; }
+    profile.level = utils.parseNumber(homeDoc.querySelector('.player_lv')?.textContent);
+    profile.starRank = utils.parseNumber(homeDoc.querySelector('.player_reborn')?.textContent);
+    profile.nickname = homeDoc.querySelector('.player_name_in')?.textContent.trim();
+    const courseEmblemImg = homeDoc.querySelector('.player_classemblem_top img')?.src;
+    profile.courseEmblem = courseEmblemImg ? (courseEmblemImg.match(/classemblem_medal_(\d+)\.png/) || [])[1] : null;
+    const courseBgImg = homeDoc.querySelector('.box_playerprofile')?.style.backgroundImage;
+    profile.courseEmblemBg = courseBgImg ? (courseBgImg.match(/profile_(\w+)\.png/) || [])[1] : null;
+    const ratingImgs = homeDoc.querySelectorAll('.player_rating_num_block img');
+    let ratingStr = '';
+    ratingImgs.forEach(img => { if (img.src.includes('comma')) { ratingStr += '.'; } else { const match = img.src.match(/rating_\w+_(\d\d?)\.png/); if (match) ratingStr += match[1]; } });
+    profile.rating = parseFloat(ratingStr) || 0;
+    const opText = homeDoc.querySelector('.player_overpower_text')?.textContent || '';
+    const opMatch = opText.match(/([\d,.]+)\s*\((\d+\.\d+)%\)/);
+    profile.overpower = opMatch ? { value: utils.parseNumber(opMatch[1]), percent: parseFloat(opMatch[2]) } : { value: 0, percent: 0 };
+    profile.lastPlayDate = homeDoc.querySelector('.player_lastplaydate_text')?.textContent.trim();
+    profile.friendCode = playerDataDoc.querySelector('.user_data_friend_tap span[style*="display:none"]')?.textContent.trim();
+    profile.totalPlayCount = utils.parseNumber(playerDataDoc.querySelector('.user_data_play_count')?.textContent);
+    profile.lastUpdateDate = new Date().toISOString();
+    return profile;
+  }
+
+  async function collectAllMusicPlays(musicRecordDoc, token) {
+    const difficulties = ['Basic', 'Advanced', 'Expert', 'Master', 'Ultima'];
+    const allMusicPlays = {};
+    const parseMusicRecord = (formElement) => {
+      const icons = Array.from(formElement.querySelectorAll('.play_musicdata_icon img')).map(img => (img.src.match(/icon_(\w+)\.png/) || [])[1]);
+      return {
+        title: formElement.querySelector('.music_title')?.textContent.trim(),
+        score: utils.parseNumber(formElement.querySelector('.play_musicdata_highscore')?.textContent),
+        icons: icons,
+        idx: formElement.querySelector('input[name="idx"]')?.value
+      };
+    };
+    for (const diff of difficulties) {
+      const diffDoc = await utils.fetchPageDocWithPost(musicRecordDoc.baseURI.replace('/musicGenre/', '/musicGenre/'), token, diff);
+      const musicForms = diffDoc.querySelectorAll('form[action*="sendMusicDetail"]');
+      allMusicPlays[diff.toUpperCase()] = Array.from(musicForms).map(parseMusicRecord);
+    }
+    return allMusicPlays;
+  }
+
+  async function collectCourse(doc) {
+    const coursePlays = [];
+    const courseFrames = doc.querySelectorAll('form[action*="sendCourseDetail"]');
+    courseFrames.forEach(frame => {
+      const play = {};
+      const musicListBox = frame.querySelector('.musiclist_box');
+      play.className = (musicListBox?.className.match(/bg_class(\d+)/) || [])[1];
+      play.title = frame.querySelector('.music_title')?.textContent.trim();
+      play.score = utils.parseNumber(frame.querySelector('.play_musicdata_highscore')?.textContent);
+      play.icons = Array.from(frame.querySelectorAll('.play_musicdata_icon img')).map(img => (img.src.match(/icon_(\w+)\.png/) || [])[1]);
+      coursePlays.push(play);
+    });
+    return coursePlays;
+  }
+
+  // --- 2. 데이터 추출 및 서버 전송을 담당하는 메인 함수 ---
   async function runImport() {
     const progressDiv = document.getElementById('segament-progress');
     const confirmBtn = document.getElementById('segament-confirm-btn');
@@ -62,39 +158,72 @@
     };
 
     try {
-      updateProgress('✅ 데이터 추출을 시작합니다...');
+        updateProgress('✅ 데이터 추출을 시작합니다...');
 
-      const region = window.location.hostname.includes('-eng') ? 'INTL' : 'JP';
-      updateProgress(`- 지역 감지: ${region}`);
+        // --- 기존 segament-getChu.js 로직 시작 ---
+        const isInternational = location.hostname === 'chunithm-net-eng.com';
+        const region = isInternational ? 'INTL' : 'JP';
+        updateProgress(`- 지역 감지: ${region}`);
 
-      // 기존 데이터 추출 함수 호출 (실제 함수명에 맞게 수정 필요)
-      const profileData = await getProfileData();
-      const playlogsData = await getPlaylogs();
-      const coursesData = await getCourses();
-      updateProgress(`- 프로필 및 플레이로그 ${playlogsData.length}건 발견`);
+        const baseUrl = isInternational ?
+            'https://chunithm-net-eng.com/mobile/' :
+            'https://new.chunithm-net.com/chuni-mobile/html/mobile/';
 
-      updateProgress('🚀 서버로 데이터를 전송합니다...');
+        const urls = {
+          home: `${baseUrl}home/`,
+          playerData: `${baseUrl}home/playerData/`,
+          musicRecord: `${baseUrl}record/musicGenre/`,
+          course: `${baseUrl}record/courseList/`,
+        };
+        
+        // --- 데이터 수집 실행 ---
+        updateProgress('📊 프로필 데이터 수집 중...');
+        const [homeDoc, playerDataDoc] = await Promise.all([utils.fetchPageDoc(urls.home), utils.fetchPageDoc(urls.playerData)]);
+        const playerProfile = await collectPlayerData(homeDoc, playerDataDoc);
+        updateProgress(`- 플레이어: ${playerProfile.nickname} (레이팅: ${playerProfile.rating})`);
+
+        updateProgress('🎵 플레이로그 수집 중...');
+        const musicRecordDoc = await utils.fetchPageDoc(urls.musicRecord);
+        const token = musicRecordDoc.querySelector('input[name="token"]')?.value;
+        if (!token) throw new Error('토큰을 찾을 수 없습니다.');
+        
+        const allMusicPlays = await collectAllMusicPlays(musicRecordDoc, token);
+        const totalPlaylogs = Object.values(allMusicPlays).reduce((sum, plays) => sum + plays.length, 0);
+        updateProgress(`- 플레이 기록: ${totalPlaylogs}건 발견`);
+
+        updateProgress('🏆 코스 데이터 수집 중...');
+        const courseDoc = await utils.fetchPageDoc(urls.course);
+        const coursePlays = await collectCourse(courseDoc);
+        updateProgress(`- 코스 기록: ${coursePlays.length}건 발견`);
+
+        const finalData = {
+          profile: playerProfile,
+          playlogs: allMusicPlays,
+          courses: coursePlays
+        };
+        
+        updateProgress('🚀 서버로 데이터를 전송합니다...');
       
-      const response = await fetch('https://segament.vercel.app/api/v1/import/chunithm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameType: 'CHUNITHM',
-          region: region,
-          profile: profileData,
-          playlogs: playlogsData,
-          courses: coursesData,
-        })
-      });
+        const response = await fetch('https://segament.vercel.app/api/v1/import/chunithm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                gameType: 'CHUNITHM',
+                region: region,
+                profile: finalData.profile,
+                playlogs: finalData.playlogs,
+                courses: finalData.courses
+            })
+        });
 
-      if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`서버 응답 오류 (${response.status}): ${errorData.message || '알 수 없는 오류'}`);
-      }
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`서버 응답 오류 (${response.status}): ${errorData.message || '알 수 없는 오류'}`);
+        }
 
-      updateProgress('🎉 성공! 데이터가 성공적으로 반영되었습니다.');
-      updateProgress('3초 뒤에 이 창은 자동으로 닫힙니다.');
-      setTimeout(() => document.getElementById('segament-overlay')?.remove(), 3000);
+        updateProgress('🎉 성공! 데이터가 성공적으로 반영되었습니다.');
+        updateProgress('3초 뒤에 이 창은 자동으로 닫힙니다.');
+        setTimeout(() => document.getElementById('segament-overlay')?.remove(), 3000);
 
     } catch (error) {
       updateProgress(`❌ 오류 발생: ${error.message}`);
