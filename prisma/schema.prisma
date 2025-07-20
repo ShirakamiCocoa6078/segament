@@ -11,9 +11,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 // 2. NextAuth.js 호환 모델
-// 사용자의 기본 계정 정보. 모든 게임 프로필의 시작점.
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -23,15 +21,11 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // 관계 설정
-  accounts         Account[]
-  sessions         Session[]
-  ChunithmProfile  ChunithmProfile?
-  MaimaiProfile    MaimaiProfile?
-  OngekiProfile    OngekiProfile?
+  accounts     Account[]
+  sessions     Session[]
+  gameProfiles GameProfile[] // User와 GameProfile의 관계를 1:N으로 변경
 }
 
-// 소셜 로그인 등 OAuth 계정 정보
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -51,7 +45,6 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-// 사용자 로그인 세션 정보
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -60,7 +53,6 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// 이메일 인증 등에서 사용하는 임시 토큰
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -69,14 +61,15 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// 3. Segament 통합 모델
 
-// 3. Segament 고유 모델
-// 게임별 프로필, 플레이로그, 레이팅로그를 정의
-
-// ======== CHUNITHM 관련 모델 ========
-model ChunithmProfile {
+// [변경] 여러 게임과 지역의 프로필 정보를 담는 통합 모델
+model GameProfile {
   id            String    @id @default(cuid())
-  userId        String    @unique
+  userId        String
+  gameType      String    // "CHUNITHM", "MAIMAI", "ONGEKI"
+  region        String    // "JP", "INTL"
+
   playerName    String
   rating        Float     @default(0)
   overPower     Float     @default(0)
@@ -87,56 +80,37 @@ model ChunithmProfile {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // 관계 설정
-  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  playlogs  ChunithmPlaylog[]
-  ratinglogs ChunithmRatingLog[]
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playlogs  GamePlaylog[]
+  ratinglogs GameRatingLog[]
+
+  // 한 유저가 특정 게임의 특정 지역 프로필을 하나만 갖도록 보장
+  @@unique([userId, gameType, region])
 }
 
-model ChunithmPlaylog {
+// [변경] 여러 게임의 플레이로그를 담는 통합 모델
+model GamePlaylog {
   profileId   String
-  musicId     String   // segament-data-updater에서 생성하는 고유 ID
-  difficulty  String   // 'BAS', 'ADV', 'EXP', 'MAS', 'ULT'
+  musicId     String
+  difficulty  String
   score       Int      @default(0)
   rank        String?
   isAllJustice Boolean @default(false)
   isFullCombo  Boolean @default(false)
-  
-  // 관계 설정
-  profile ChunithmProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  // 복합 기본 키 설정: 한 유저가 특정 곡의 특정 난이도에 대해 하나의 기록만 갖도록 보장
+  profile GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
   @@id([profileId, musicId, difficulty])
 }
 
-model ChunithmRatingLog {
+// [변경] 여러 게임의 레이팅 로그를 담는 통합 모델
+model GameRatingLog {
   id        String   @id @default(cuid())
   profileId String
   rating    Float
   changedAt DateTime @default(now())
 
-  // 관계 설정
-  profile ChunithmProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  
-  // 인덱스 설정: 특정 유저의 레이팅 기록을 빠르게 조회하기 위함
+  profile GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
   @@index([profileId])
-}
-
-
-// ======== MAIMAI 관련 모델 (미래 확장용) ========
-model MaimaiProfile {
-  id            String @id @default(cuid())
-  userId        String @unique
-  // ... (MAIMAI 프로필 관련 필드 추가 예정)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-// ======== ONGEKI 관련 모델 (미래 확장용) ========
-model OngekiProfile {
-  id            String @id @default(cuid())
-  userId        String @unique
-  // ... (ONGEKI 프로필 관련 필드 추가 예정)
-  
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
