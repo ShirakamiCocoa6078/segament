@@ -20,28 +20,26 @@
             'https://new.chunithm-net.com/chuni-mobile/html/mobile/';
 
         const utils = {
-            fetchPage: async (url) => {
-                const res = await fetch(url);
-                if (res.ok) return await res.text();
-                throw new Error(`Failed to fetch ${url}: ${res.status}`);
-            },
             fetchPageDoc: async (url) => {
-                const html = await utils.fetchPage(url);
-                return new DOMParser().parseFromString(html, 'text/html');
+                const res = await fetch(url);
+                if (res.ok) {
+                    const html = await res.text();
+                    return new DOMParser().parseFromString(html, 'text/html');
+                }
+                throw new Error(`Failed to fetch ${url}: ${res.status}`);
             },
             normalize: (str) => str.normalize('NFKC').trim(),
         };
 
         const collectPlayerData = (doc) => {
             const playerInfo = {};
-            const playerInfoRows = doc.querySelectorAll('.player-info-table .box_player_info tr'); // 내수판/국제판 공통 선택자
+            const playerInfoRows = doc.querySelectorAll('.box_player_info tr');
             playerInfoRows.forEach(row => {
                 const keyElement = row.querySelector('th');
                 const valueElement = row.querySelector('td');
                 if (keyElement && valueElement) {
                    const key = utils.normalize(keyElement.innerText);
                    const value = utils.normalize(valueElement.innerText);
-                   // 더 구체적인 키 이름으로 매핑
                    if (key.includes('PLAYER NAME')) playerInfo.playerName = value;
                    if (key.includes('RATING')) playerInfo.rating = parseFloat(value);
                    if (key.includes('OVER POWER')) playerInfo.overPower = parseFloat(value);
@@ -56,7 +54,9 @@
             let page = 1;
             const plays = [];
             while (true) {
-                const pageDoc = await utils.fetchPageDoc(`${baseUrl}record/musicGenre/send?token=${token}&page=${page}`);
+                // musicGenre 페이지는 POST 요청이 필요할 수 있으므로, GET으로 먼저 시도
+                const url = `${baseUrl}record/musicGenre/send?token=${token}&page=${page}`;
+                const pageDoc = await utils.fetchPageDoc(url);
                 const musicBlocks = pageDoc.querySelectorAll('.w428.musiclist_box.pointer');
                 if (musicBlocks.length === 0) break;
 
@@ -71,7 +71,6 @@
                         const score = parseInt(scores[i].innerText.replace(/,/g, ''));
                         const lampSrc = lamps[i] ? lamps[i].src : '';
                         
-                        // musicId는 서버에서 제목을 기반으로 매칭해야 하므로, 여기서는 제목을 보냅니다.
                         plays.push({ 
                             title: title, 
                             difficulty: difficulty, 
@@ -82,7 +81,7 @@
                     });
                 });
                 page++;
-                if (page > 50) { // 무한 루프 방지
+                if (page > 50) {
                      console.warn('[Segament] 페이지 제한(50)에 도달하여 수집을 중단합니다.');
                      break;
                 }
@@ -91,15 +90,15 @@
         };
 
         // --- 데이터 수집 실행 ---
-        const playerDataDoc = await utils.fetchPageDoc(baseUrl + 'home/playerData/');
-        
-        // [수정] playerData 페이지 내의 'Record' 탭 링크에서 토큰을 찾습니다.
-        const recordLinkElement = playerDataDoc.querySelector('.button_box a[href*="record/"]');
-        if (!recordLinkElement) throw new Error("토큰을 찾을 수 없습니다. CHUNITHM-NET의 HTML 구조가 변경되었을 수 있습니다.");
-        
-        const token = new URLSearchParams(recordLinkElement.href.split('?')[1]).get('token');
-        if (!token) throw new Error("링크에서 토큰을 추출하는 데 실패했습니다.");
+        // [수정] musicGenre 페이지로 먼저 가서 숨겨진 폼에서 토큰을 찾습니다.
+        const musicRecordDoc = await utils.fetchPageDoc(baseUrl + 'record/musicGenre/');
+        const tokenInput = musicRecordDoc.querySelector('input[name="token"]');
+        if (!tokenInput || !tokenInput.value) {
+            throw new Error("토큰을 찾을 수 없습니다. CHUNITHM-NET에 로그인되어 있는지, 또는 HTML 구조가 변경되었는지 확인해주세요.");
+        }
+        const token = tokenInput.value;
 
+        const playerDataDoc = await utils.fetchPageDoc(baseUrl + 'home/playerData/');
         const profileData = collectPlayerData(playerDataDoc);
         const playlogsData = await collectAllMusicPlays(token);
         
