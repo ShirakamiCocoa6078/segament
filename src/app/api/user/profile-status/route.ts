@@ -15,8 +15,8 @@ export async function GET(req: Request) {
   }
 
   try {
-    // DB에서 해당 유저의 ChunithmProfile이 존재하는지 확인합니다.
-    const profile = await prisma.chunithmProfile.findUnique({
+    // DB에서 해당 유저의 gameProfile이 존재하는지 확인합니다.
+    const profile = await prisma.gameProfile.findUnique({
       where: {
         userId: session.user.id,
       },
