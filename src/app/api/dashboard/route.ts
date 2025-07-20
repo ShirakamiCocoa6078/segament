@@ -15,22 +15,26 @@ export async function GET(req: Request) {
   }
 
   try {
-    // 1. 해당 유저의 CHUNITHM 프로필 정보 조회
-    const chunithmProfile = await prisma.chunithmProfile.findUnique({
+    // 1. 해당 유저의 CHUNITHM JP 프로필 정보 조회
+    const profile = await prisma.gameProfile.findUnique({
       where: {
-        userId: session.user.id,
+        userId_gameType_region: {
+          userId: session.user.id,
+          gameType: 'CHUNITHM',
+          region: 'JP'
+        }
       },
     });
 
-    // 프로필이 없으면 404 에러 반환
-    if (!chunithmProfile) {
+    // 프로필이 없으면 즉시 404 에러 반환
+    if (!profile) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    // 2. 해당 유저의 모든 플레이로그 조회
-    const chunithmPlaylogs = await prisma.chunithmPlaylog.findMany({
+    // 2. 해당 프로필의 모든 플레이로그 조회
+    const playlogs = await prisma.gamePlaylog.findMany({
       where: {
-        profileId: chunithmProfile.id,
+        profileId: profile.id,
       },
       orderBy: {
         // 최신 플레이 기록부터 정렬 (createdAt이 없으므로 musicId로 임시 정렬)
@@ -40,8 +44,8 @@ export async function GET(req: Request) {
 
     // 3. 조회한 데이터를 하나의 객체로 묶어서 반환
     const dashboardData = {
-      profile: chunithmProfile,
-      playlogs: chunithmPlaylogs,
+      profile: profile,
+      playlogs: playlogs,
     };
 
     return NextResponse.json(dashboardData, { status: 200 });
