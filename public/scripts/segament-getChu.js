@@ -13,7 +13,7 @@
 
     if (segamentImportWindow) {
       try {
-        const isInternational = location.hostname === 'chunithm-net-eng.com';
+        const isInternational = location.hostname.includes('-eng');
         const region = isInternational ? 'INTL' : 'JP';
         const baseUrl = isInternational ?
             'https://chunithm-net-eng.com/mobile/' :
@@ -33,71 +33,107 @@
 
         const collectPlayerData = (doc) => {
             const playerInfo = {};
-            // 국제판과 내수판 모두를 포괄하는 더 구체적인 선택자 사용
-            const playerInfoRows = doc.querySelectorAll('.box_player_info tr');
-            playerInfoRows.forEach(row => {
-                const keyElement = row.querySelector('th');
-                const valueElement = row.querySelector('td');
-                if (keyElement && valueElement) {
-                   const key = utils.normalize(keyElement.innerText);
-                   const value = utils.normalize(valueElement.innerText);
-                   
-                   // 키워드 기반으로 데이터 매핑
-                   if (key.includes('PLAYER NAME') || key.includes('プレイヤーネーム')) playerInfo.playerName = value;
-                   if (key.includes('RATING')) playerInfo.rating = parseFloat(value);
-                   if (key.includes('OVER POWER')) playerInfo.overPower = parseFloat(value);
-                   if (key.includes('TOTAL PLAYS') || key.includes('プレイ回数')) playerInfo.playCount = parseInt(value.replace(/,/g, ''));
+            
+            // a. 플레이어 이름
+            playerInfo.playerName = utils.normalize(doc.querySelector('.player_name_in')?.innerText);
+
+            // b. 레이팅 (이미지 파싱)
+            const ratingImages = doc.querySelectorAll('.player_rating_num_block img');
+            let ratingStr = '';
+            ratingImages.forEach(img => {
+                if (img.src.includes('comma')) {
+                    ratingStr += '.';
+                } else {
+                    const match = img.src.match(/_(\d\d?)\.png/);
+                    if (match) ratingStr += match[1].slice(-1);
                 }
             });
-            playerInfo.title = utils.normalize(doc.querySelector('.player_name_in .trophy_inner_box a')?.innerText);
+            playerInfo.rating = parseFloat(ratingStr) || 0;
+
+            // c. OVER POWER
+            const opText = utils.normalize(doc.querySelector('.player_overpower_text')?.innerText);
+            if (opText) {
+                playerInfo.overPower = parseFloat(opText.split(' ')[0]);
+            }
+
+            // d. 플레이어 레벨
+            const rebornLv = parseInt(doc.querySelector('.player_reborn')?.innerText || '0');
+            const mainLv = parseInt(doc.querySelector('.player_lv')?.innerText || '0');
+            playerInfo.level = (rebornLv * 100) + mainLv;
+
+            // e. 플레이어 칭호
+            const honors = [];
+            doc.querySelectorAll('.player_honor_short').forEach(honor => {
+                const text = utils.normalize(honor.querySelector('.player_honor_text span')?.innerText);
+                const style = honor.getAttribute('style');
+                let color = 'NORMAL';
+                if (style) {
+                    const match = style.match(/honor_bg_(\w+)\.png/);
+                    if (match) color = match[1].toUpperCase();
+                }
+                honors.push({ text, color });
+            });
+            playerInfo.honors = honors;
+
+            // f. 소속 팀
+            playerInfo.teamName = utils.normalize(doc.querySelector('.player_team_name')?.innerText);
+
+            // g. 최종 플레이
+            playerInfo.lastPlayDate = utils.normalize(doc.querySelector('.player_lastplaydate_text')?.innerText);
+            
+            // h. 배틀 랭크
+            const battleRankImg = doc.querySelector('.player_battlerank img')?.src;
+            if (battleRankImg) playerInfo.battleRankImg = battleRankImg;
+            
+            // i. 프렌드코드
+            playerInfo.friendCode = utils.normalize(doc.querySelector('.user_data_friend_tap span[style*="display:none"]')?.innerText);
+
+            // j. 총 플레이 횟수
+            const playCountText = utils.normalize(doc.querySelector('.user_data_text')?.innerText);
+            if(playCountText) playerInfo.playCount = parseInt(playCountText.replace(/,/g, ''));
+
             return playerInfo;
         };
 
         const collectAllMusicPlays = async (token) => {
-            let page = 1;
             const plays = [];
-            while (true) {
-                const url = `${baseUrl}record/musicGenre/send?token=${token}&page=${page}`;
-                const pageDoc = await utils.fetchPageDoc(url);
-                const musicBlocks = pageDoc.querySelectorAll('.w428.musiclist_box.pointer');
-                if (musicBlocks.length === 0) break;
-
-                musicBlocks.forEach(block => {
+            // 모든 난이도를 순회하며 데이터 수집
+            const difficultiesToFetch = ['basic', 'advanced', 'expert', 'master', 'ultima'];
+            for (const difficulty of difficultiesToFetch) {
+                 const url = `${baseUrl}record/musicGenre/${difficulty}/send?token=${token}`;
+                 const pageDoc = await utils.fetchPageDoc(url);
+                 const musicBlocks = pageDoc.querySelectorAll('.w388.musiclist_box');
+                 
+                 musicBlocks.forEach(block => {
                     const title = utils.normalize(block.querySelector('.music_title')?.innerText);
-                    if (!title) return;
+                    const scoreText = utils.normalize(block.querySelector('.play_musicdata_highscore span.text_b')?.innerText);
+                    if (!title || !scoreText) return;
 
-                    const difficulties = block.querySelectorAll('.play_musicdata_icon');
-                    const scores = block.querySelectorAll('.play_musicdata_score_text');
-                    const lamps = block.querySelectorAll('.play_musicdata_lump');
+                    const score = parseInt(scoreText.replace(/,/g, ''));
+                    const lamps = block.querySelectorAll('.play_musicdata_icon img');
+                    let isFullCombo = false;
+                    let isAllJustice = false;
 
-                    difficulties.forEach((diff, i) => {
-                        const difficulty = diff.src.split('/').pop().split('.')[0].replace('icon_text_', '').toUpperCase();
-                        const score = parseInt(scores[i].innerText.replace(/,/g, ''));
-                        const lampSrc = lamps[i] ? lamps[i].src : '';
-                        
-                        // musicId는 서버에서 제목으로 매칭하므로, title을 보냅니다.
-                        plays.push({ 
-                            title: title, 
-                            difficulty: difficulty, 
-                            score: score,
-                            isFullCombo: lampSrc.includes('fullcombo'),
-                            isAllJustice: lampSrc.includes('alljustice'),
-                         });
+                    lamps.forEach(lamp => {
+                        if (lamp.src.includes('fullcombo')) isFullCombo = true;
+                        if (lamp.src.includes('alljustice')) isAllJustice = true;
                     });
-                });
-                page++;
-                if (page > 50) { // 무한 루프 방지
-                     console.warn('[Segament] 페이지 제한(50)에 도달하여 수집을 중단합니다.');
-                     break;
-                }
+                    
+                    plays.push({ 
+                        title: title, 
+                        difficulty: difficulty.toUpperCase(), 
+                        score: score,
+                        isFullCombo: isFullCombo,
+                        isAllJustice: isAllJustice,
+                     });
+                 });
             }
             return plays;
         };
 
         // --- 데이터 수집 실행 ---
         const musicRecordDoc = await utils.fetchPageDoc(baseUrl + 'record/musicGenre/');
-        const tokenInput = musicRecordDoc.querySelector('input[name="token"]');
-        
+        const tokenInput = musicRecordDoc.querySelector('.box02.w420 form input[name="token"]');
         if (!tokenInput || !tokenInput.value) {
             throw new Error("토큰을 찾을 수 없습니다. CHUNITHM-NET에 로그인되어 있는지, 또는 HTML 구조가 변경되었는지 확인해주세요.");
         }
