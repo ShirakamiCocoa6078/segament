@@ -4,9 +4,7 @@
   let segamentImportWindow = null;
   const segamentOrigin = 'https://segament.vercel.app';
 
-  // 1. 데이터 수신 창으로부터 데이터 요청을 받으면, 데이터를 추출하여 전송합니다.
   const handleRequestMessage = async (event) => {
-    // 보안: Segament 사이트로부터 온 요청인지, 데이터 요청 메시지가 맞는지 확인
     if (event.origin !== segamentOrigin || event.data !== 'REQUEST_SEGAMENT_DATA') {
       return;
     }
@@ -35,17 +33,24 @@
                 const html = await utils.fetchPage(url);
                 return new DOMParser().parseFromString(html, 'text/html');
             },
-            normalize: (str) => str.normalize('NFKC'),
+            normalize: (str) => str.normalize('NFKC').trim(),
         };
 
         const collectPlayerData = (doc) => {
-            const-player-info-table.css-124qg6c-player-info-table tr');
+            const playerInfoRows = doc.querySelectorAll('.player-info-table .css-124qg6c-player-info-table tr');
             const playerInfo = {};
             playerInfoRows.forEach(row => {
                 const key = utils.normalize(row.querySelector('th').innerText);
                 const value = utils.normalize(row.querySelector('td').innerText);
                 playerInfo[key] = value;
             });
+            // 추가적인 데이터 파싱 (예: 레이팅, OP)
+            const ratingElement = doc.querySelector('.rating_block .rating_value');
+            if (ratingElement) playerInfo.rating = parseFloat(ratingElement.innerText);
+            
+            const overPowerElement = doc.querySelector('.rating_block .user_data_ol_op_value');
+            if (overPowerElement) playerInfo.overPower = parseFloat(overPowerElement.innerText);
+
             return playerInfo;
         };
 
@@ -58,32 +63,46 @@
                 if (musicBlocks.length === 0)
                     break;
                 musicBlocks.forEach(block => {
-                    const musicInfo = {};
-                    musicInfo.title = utils.normalize(block.querySelector('.music_title').innerText);
+                    const title = utils.normalize(block.querySelector('.music_title').innerText);
                     const difficulties = block.querySelectorAll('.play_musicdata_icon');
                     const scores = block.querySelectorAll('.play_musicdata_score_text');
+                    const lamps = block.querySelectorAll('.play_musicdata_lump');
+
                     difficulties.forEach((diff, i) => {
-                        const difficulty = diff.src.split('/').pop().split('.')[0].replace('icon_text_', '');
+                        const difficulty = diff.src.split('/').pop().split('.')[0].replace('icon_text_', '').toUpperCase();
                         const score = parseInt(scores[i].innerText.replace(/,/g, ''));
-                        plays.push({ title: musicInfo.title, difficulty, score });
+                        const lampSrc = lamps[i] ? lamps[i].src : '';
+                        
+                        plays.push({ 
+                            title: title, // 나중에 musicId로 변환 필요
+                            difficulty: difficulty, 
+                            score: score,
+                            isFullCombo: lampSrc.includes('fullcombo'),
+                            isAllJustice: lampSrc.includes('alljustice'),
+                         });
                     });
                 });
                 page++;
+                // 개발 중 무한 루프 방지를 위해 임시로 페이지 제한
+                if (page > 30) {
+                     console.warn('[Segament] 페이지 제한(30)에 도달하여 수집을 중단합니다.');
+                     break;
+                }
             }
             return plays;
         };
-        
-        // ... (이하 제공해주신 파일의 나머지 모든 데이터 수집 함수들)
-        // collectCourses, collectHonors, collectCharacters, collectCustomizes, collectWorldsEndPlays ...
-
         // --- 데이터 수집 실행 ---
-        const homeDoc = await utils.fetchPageDoc(baseUrl + 'home/ Aime.html');
-        const token = new URLSearchParams(homeDoc.querySelector('.resend_form a').href.split('?')[1]).get('token');
+        const homeDoc = await utils.fetchPageDoc(baseUrl + 'home/');
+        const tokenElement = homeDoc.querySelector('.resend_form a');
+        if (!tokenElement) throw new Error("토큰을 찾을 수 없습니다. CHUNITHM-NET에 로그인되어 있는지 확인해주세요.");
+
+        const token = new URLSearchParams(tokenElement.href.split('?')[1]).get('token');
         
-        const profileData = collectPlayerData(homeDoc);
-        const playlogsData = await collectAllMusicPlays(homeDoc, token);
-        // const coursesData = await collectCourses(homeDoc, token);
-        // ... 등등
+        const playerDataDoc = await utils.fetchPageDoc(baseUrl + 'home/playerData/');
+        const profileData = collectPlayerData(playerDataDoc);
+        
+        const musicRecordDoc = await utils.fetchPageDoc(baseUrl + 'record/musicGenre/');
+        const playlogsData = await collectAllMusicPlays(musicRecordDoc, token);
         // ==========================================================
         // ===== 기존 segament-getChu.js 데이터 추출 로직 끝 =====
         // ==========================================================
@@ -93,13 +112,10 @@
             region: region,
             profile: profileData,
             playlogs: playlogsData,
-            // courses: coursesData,
-            // ... 등등
         };
 
         console.log('[Segament] 데이터 추출 완료. 수신 창으로 전송합니다.', payload);
         
-        // 2. 추출된 데이터를 `import` 창으로 전송합니다.
         segamentImportWindow.postMessage({ type: 'SEGAMENT_DATA_PAYLOAD', payload: payload }, segamentOrigin);
 
       } catch (error) {
@@ -108,17 +124,14 @@
       }
     }
     
-    // 이 리스너는 한 번만 사용되므로 제거합니다.
     window.removeEventListener('message', handleRequestMessage);
   };
 
   // --- 스크립트 실행 시작점 ---
   console.log('[Segament] 북마크릿이 실행되었습니다.');
   
-  // 3. `/import` 페이지를 새 탭으로 엽니다.
   segamentImportWindow = window.open(`${segamentOrigin}/import`, '_blank');
   
-  // 4. `import` 페이지로부터 데이터 요청을 받을 준비를 합니다.
   window.addEventListener('message', handleRequestMessage);
 
 })();
