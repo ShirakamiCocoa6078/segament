@@ -18,12 +18,16 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+
+  // [추가] 사용자의 고유 API 키. 이 키는 null일 수 있으며, DB에서 유일해야 합니다.
+  apiKey        String?   @unique
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   accounts     Account[]
   sessions     Session[]
-  gameProfiles GameProfile[] // User와 GameProfile의 관계를 1:N으로 변경
+  gameProfiles GameProfile[]
 }
 
 model Account {
