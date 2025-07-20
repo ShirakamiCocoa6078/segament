@@ -1,12 +1,16 @@
-import { ProfileDisplay } from "@/components/dashboard/profile-display";
+'use client';
+
+import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChunithmIcon, MaimaiIcon } from "@/components/icons";
-import { chunithmData, maimaiData } from "@/lib/mock-data";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 
 export default function DashboardPage() {
+  const { data: session, status } = useSession();
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-6">
       <div>
         <h1 className="text-3xl font-bold font-headline">대시보드</h1>
         <p className="text-muted-foreground">
@@ -14,57 +18,111 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              츄니즘 레이팅
-            </CardTitle>
-            <ChunithmIcon className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{chunithmData.rating.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">
-              상위 30 + 최근 베스트 10
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">마이마이 레이팅</CardTitle>
-            <MaimaiIcon className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{maimaiData.rating}</div>
-            <p className="text-xs text-muted-foreground">
-              현재 및 과거 시즌 베스트
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">츄니즘 칭호</CardTitle>
-            <ChunithmIcon className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-             <Badge variant="secondary" className="text-lg">{chunithmData.title}</Badge>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">마이마이 칭호</CardTitle>
-            <MaimaiIcon className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Badge variant="secondary" className="text-lg">{maimaiData.title}</Badge>
-          </CardContent>
-        </Card>
-      </div>
+      {/* 프로필 정보 카드 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>프로필 정보</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {status === 'loading' ? (
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-4 w-[150px]" />
+              <Skeleton className="h-4 w-[100px]" />
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              <div>
+                <p className="text-sm text-muted-foreground">플레이어 이름</p>
+                <p className="text-lg font-semibold">프로필 정보 로딩 중...</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">현재 레이팅</p>
+                <p className="text-lg font-semibold">프로필 정보 로딩 중...</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">칭호</p>
+                <Badge variant="secondary">프로필 정보 로딩 중...</Badge>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <ProfileDisplay />
-        </div>
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* 레이팅 분석 테이블 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>레이팅 분석</CardTitle>
+            <p className="text-sm text-muted-foreground">Best 30 + Recent 10</p>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>곡명</TableHead>
+                  <TableHead>난이도</TableHead>
+                  <TableHead>레이팅</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...Array(5)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <Skeleton className="h-4 w-[120px]" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-[60px]" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-[50px]" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="mt-4 text-center">
+              <p className="text-sm text-muted-foreground">레이팅 정보 로딩 중...</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 최근 플레이 기록 테이블 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>최근 플레이 기록</CardTitle>
+            <p className="text-sm text-muted-foreground">최근 10곡</p>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>곡명</TableHead>
+                  <TableHead>점수</TableHead>
+                  <TableHead>랭크</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...Array(5)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <Skeleton className="h-4 w-[120px]" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-[80px]" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-[40px]" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="mt-4 text-center">
+              <p className="text-sm text-muted-foreground">플레이 기록 로딩 중...</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
