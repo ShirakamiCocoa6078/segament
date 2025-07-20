@@ -1,8 +1,10 @@
 import type {Metadata} from 'next';
 import './globals.css';
+import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
 import AuthProvider from '@/components/auth/auth-provider';
 import AuthRedirector from '@/components/auth/AuthRedirector';
+
 
 export const metadata: Metadata = {
   title: 'Segament',
