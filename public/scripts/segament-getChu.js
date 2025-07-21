@@ -51,15 +51,10 @@
             const opText = utils.normalize(doc.querySelector('.player_overpower_text')?.innerText);
             if (opText) playerInfo.overPower = parseFloat(opText.split(' ')[0]);
             
-            // [수정] 플레이 횟수를 더 안정적인 선택자로 찾습니다.
-            const playCountTitle = doc.querySelector('.user_data_title_play_count');
-            const playCountText = playCountTitle ? utils.normalize(playCountTitle.nextElementSibling.innerText) : '0';
-            playerInfo.playCount = parseInt(playCountText.replace(/,/g, ''));
-            
-            // 기타 정보 수집...
-            const rebornLv = parseInt(doc.querySelector('.player_reborn')?.innerText || '0');
-            const mainLv = parseInt(doc.querySelector('.player_lv')?.innerText || '0');
-            playerInfo.level = (rebornLv * 100) + mainLv;
+            // [최종 수정] 제공해주신 정확한 선택자를 사용하여 playCount를 추출합니다.
+            const playCountElement = doc.querySelector('.user_data_play_count .user_data_text');
+            const playCountText = playCountElement ? utils.normalize(playCountElement.innerText) : '0';
+            playerInfo.playCount = parseInt(playCountText.replace(/,/g, '')) || 0;
 
             return playerInfo;
         };
