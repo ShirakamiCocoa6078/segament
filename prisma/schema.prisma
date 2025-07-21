@@ -1,7 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// 파일 경로: prisma/schema.prisma
 
-// 1. 데이터 소스 및 클라이언트 생성기 설정
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -11,17 +9,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// 2. NextAuth.js 호환 모델
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-
-  // [추가] 사용자의 고유 API 키. 이 키는 null일 수 있으며, DB에서 유일해야 합니다.
-  apiKey        String?   @unique
-
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -65,14 +58,11 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// 3. Segament 통합 모델
-
-// [변경] 여러 게임과 지역의 프로필 정보를 담는 통합 모델
 model GameProfile {
   id            String    @id @default(cuid())
   userId        String
-  gameType      String    // "CHUNITHM", "MAIMAI", "ONGEKI"
-  region        String    // "JP", "INTL"
+  gameType      String
+  region        String
 
   playerName    String
   rating        Float     @default(0)
@@ -88,26 +78,28 @@ model GameProfile {
   playlogs  GamePlaylog[]
   ratinglogs GameRatingLog[]
 
-  // 한 유저가 특정 게임의 특정 지역 프로필을 하나만 갖도록 보장
   @@unique([userId, gameType, region])
 }
 
-// [변경] 여러 게임의 플레이로그를 담는 통합 모델
 model GamePlaylog {
   profileId   String
   musicId     String
   difficulty  String
   score       Int      @default(0)
-  rank        String?
-  isAllJustice Boolean @default(false)
-  isFullCombo  Boolean @default(false)
+  
+  // [추가] 상세 데이터를 저장하기 위한 필드들
+  rank                  String?
+  clearType             String?
+  isFullCombo           Boolean @default(false)
+  isAllJustice          Boolean @default(false)
+  isAllJusticeCritical  Boolean @default(false)
+  fullChainType         Int     @default(0) // 0: 없음, 1: Gold, 2: Platinum
 
   profile GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   @@id([profileId, musicId, difficulty])
 }
 
-// [변경] 여러 게임의 레이팅 로그를 담는 통합 모델
 model GameRatingLog {
   id        String   @id @default(cuid())
   profileId String

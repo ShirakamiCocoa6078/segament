@@ -1,5 +1,4 @@
 // 파일 경로: src/app/api/v1/import/chunithm/route.ts
-
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -45,7 +44,6 @@ export async function POST(req: Request) {
       playCount: parseInt(profile.playCount) || 0,
     };
 
-    // 1. 프로필 정보를 먼저 저장/업데이트합니다.
     const gameProfile = await prisma.gameProfile.upsert({
         where: { userId_gameType_region: { userId: session.user.id, gameType, region } },
         update: {
@@ -65,41 +63,46 @@ export async function POST(req: Request) {
           title: safeProfile.title,
         },
     });
-    
-    // [추가] 새로운 레이팅 정보를 GameRatingLog에 기록합니다.
-    await prisma.gameRatingLog.create({
-        data: {
-            profileId: gameProfile.id,
-            rating: safeProfile.rating,
-        }
-    });
 
-    // 2. 플레이로그가 있는 경우, 개별적으로 처리하여 안정성을 높입니다.
     if (playlogs && playlogs.length > 0) {
-        let successCount = 0;
-        let errorCount = 0;
-
-        for (const log of playlogs) {
-            try {
-                await prisma.gamePlaylog.upsert({
-                    where: {
-                        profileId_musicId_difficulty: {
-                            profileId: gameProfile.id,
-                            musicId: log.title, // musicId는 현재 title을 사용
-                            difficulty: log.difficulty,
+        const chunkSize = 100;
+        for (let i = 0; i < playlogs.length; i += chunkSize) {
+            const chunk = playlogs.slice(i, i + chunkSize);
+            await prisma.$transaction(
+                chunk.map(log => 
+                    prisma.gamePlaylog.upsert({
+                        where: {
+                            profileId_musicId_difficulty: {
+                                profileId: gameProfile.id,
+                                musicId: log.title,
+                                difficulty: log.difficulty,
+                            },
                         },
-                    },
-                    update: { score: log.score, isFullCombo: log.isFullCombo, isAllJustice: log.isAllJustice },
-                    create: { profileId: gameProfile.id, musicId: log.title, score: log.score, difficulty: log.difficulty, isFullCombo: log.isFullCombo, isAllJustice: log.isAllJustice },
-                });
-                successCount++;
-            } catch (e: any) {
-                errorCount++;
-                // 문제가 발생한 곡의 정보만 콘솔에 기록하고, 전체 작업은 계속 진행합니다.
-                console.error(`Failed to upsert playlog for song: ${log.title} (${log.difficulty})`, e.message);
-            }
+                        update: { 
+                            score: log.score, 
+                            rank: log.rank,
+                            clearType: log.clearType,
+                            isFullCombo: log.isFullCombo, 
+                            isAllJustice: log.isAllJustice,
+                            isAllJusticeCritical: log.isAllJusticeCritical,
+                            fullChainType: log.fullChainType
+                        },
+                        create: { 
+                            profileId: gameProfile.id,
+                            musicId: log.title,
+                            difficulty: log.difficulty,
+                            score: log.score,
+                            rank: log.rank,
+                            clearType: log.clearType,
+                            isFullCombo: log.isFullCombo,
+                            isAllJustice: log.isAllJustice,
+                            isAllJusticeCritical: log.isAllJusticeCritical,
+                            fullChainType: log.fullChainType
+                        },
+                    })
+                )
+            );
         }
-        console.log(`[IMPORT_API] Playlog processing complete. Success: ${successCount}, Failed: ${errorCount}`);
     }
     
     return NextResponse.json({ message: 'Data imported successfully.' }, { status: 200, headers: corsHeaders });

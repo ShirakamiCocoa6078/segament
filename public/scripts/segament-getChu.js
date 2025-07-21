@@ -5,15 +5,18 @@
   const segamentOrigin = 'https://segament.vercel.app';
 
   const handleRequestMessage = async (event) => {
-    if (event.origin !== segamentOrigin || event.data !== 'REQUEST_SEGAMENT_DATA') {
-      return;
-    }
+    if (event.origin !== segamentOrigin || event.data !== 'REQUEST_SEGAMENT_DATA') return;
     
     console.log('[Segament] 데이터 요청을 수신했습니다. 추출을 시작합니다.');
 
+    const postMessageToImporter = (type, payload) => {
+        if (segamentImportWindow) {
+            segamentImportWindow.postMessage({ type, payload }, segamentOrigin);
+        }
+    };
+
     if (segamentImportWindow) {
       try {
-        // [수정] 모든 헬퍼 함수들을 이 스코프 안으로 이동시켰습니다.
         const isInternational = location.hostname.includes('-eng');
         const region = isInternational ? 'INTL' : 'JP';
         const baseUrl = isInternational ?
@@ -44,9 +47,8 @@
             const ratingImages = doc.querySelectorAll('.player_rating_num_block img');
             let ratingStr = '';
             ratingImages.forEach(img => {
-                if (img.src.includes('comma')) {
-                    ratingStr += '.';
-                } else {
+                if (img.src.includes('comma')) ratingStr += '.';
+                else {
                     const match = img.src.match(/_(\d\d?)\.png/);
                     if (match) ratingStr += match[1].slice(-1);
                 }
@@ -59,18 +61,23 @@
             const playCountElement = doc.querySelector('.user_data_play_count .user_data_text');
             const playCountText = playCountElement ? utils.normalize(playCountElement.innerText) : '0';
             playerInfo.playCount = parseInt(playCountText.replace(/,/g, '')) || 0;
-
             return playerInfo;
         };
 
         const collectAllMusicPlays = async (token) => {
             const plays = [];
+            const PlayRank = {0:'D',1:'C',2:'B',3:'BB',4:'BBB',5:'A',6:'AA',7:'AAA',8:'S',9:'S+',10:'SS',11:'SS+',12:'SSS',13:'SSS+'};
             const difficultiesToFetch = ['basic', 'advanced', 'expert', 'master', 'ultima'];
+            let totalFetched = 0;
+
             for (const difficulty of difficultiesToFetch) {
                  const url = `${baseUrl}record/musicGenre/send${difficulty}`;
                  const pageDoc = await utils.fetchPostPageDoc(url, token);
                  const musicBlocks = pageDoc.querySelectorAll('.w388.musiclist_box');
+                 totalFetched += musicBlocks.length;
                  
+                 postMessageToImporter('SEGAMENT_PROGRESS', { message: `${difficulty.toUpperCase()} 데이터 분석 중...`, value: (plays.length / 1500) * 100 });
+
                  musicBlocks.forEach(block => {
                     const title = utils.normalize(block.querySelector('.music_title')?.innerText);
                     const scoreText = utils.normalize(block.querySelector('.play_musicdata_highscore span.text_b')?.innerText);
@@ -78,50 +85,52 @@
 
                     const score = parseInt(scoreText.replace(/,/g, ''));
                     const lamps = block.querySelectorAll('.play_musicdata_icon img');
-                    let isFullCombo = false;
-                    let isAllJustice = false;
+                    
+                    let rank = 'D', clearType = 'FAILED', isFullCombo = false, isAllJustice = false, isAllJusticeCritical = false, fullChainType = 0;
 
                     lamps.forEach(lamp => {
-                        if (lamp.src.includes('fullcombo')) isFullCombo = true;
-                        if (lamp.src.includes('alljustice')) isAllJustice = true;
+                        const src = lamp.src;
+                        if(src.includes('icon_clear.png')) clearType = 'CLEAR'; else if(src.includes('icon_hard.png')) clearType = 'HARD'; else if(src.includes('icon_brave.png')) clearType = 'BRAVE'; else if(src.includes('icon_absolute.png')) clearType = 'ABSOLUTE'; else if(src.includes('icon_rank_catastrophy')) clearType = 'CATASTROPHY';
+                        if(src.includes('icon_fullcombo.png')) isFullCombo = true; if(src.includes('icon_alljustice.png')) isAllJustice = true; if(src.includes('icon_alljusticecritical.png')) isAllJusticeCritical = true;
+                        if(src.includes('icon_fullchain.png')) fullChainType = 1; if(src.includes('icon_fullchain2.png')) fullChainType = 2;
+                        const match = src.match(/icon_rank_(\d+)\.png/);
+                        if (match) rank = PlayRank[parseInt(match[1])] || 'D';
                     });
                     
-                    plays.push({ 
-                        title, 
-                        difficulty: difficulty.toUpperCase(), 
-                        score,
-                        isFullCombo,
-                        isAllJustice,
-                     });
+                    plays.push({ title, difficulty: difficulty.toUpperCase(), score, rank, clearType, isFullCombo, isAllJustice, isAllJusticeCritical, fullChainType });
                  });
             }
             return plays;
         };
 
+        postMessageToImporter('SEGAMENT_PROGRESS', { message: '토큰 정보 확인 중...', value: 5 });
         const musicRecordDoc = await utils.fetchPageDoc(baseUrl + 'record/musicGenre/');
         const tokenInput = musicRecordDoc.querySelector('.box02.w420 form input[name="token"]');
-        if (!tokenInput || !tokenInput.value) throw new Error("Token not found. Please ensure you are logged in.");
+        if (!tokenInput || !tokenInput.value) throw new Error("토큰을 찾을 수 없습니다.");
         const token = tokenInput.value;
 
+        postMessageToImporter('SEGAMENT_PROGRESS', { message: '프로필 정보 수집 중...', value: 10 });
         const playerDataDoc = await utils.fetchPageDoc(baseUrl + 'home/playerData/');
         const profileData = collectPlayerData(playerDataDoc);
+        
         const playlogsData = await collectAllMusicPlays(token);
         
         const payload = { gameType: 'CHUNITHM', region, profile: profileData, playlogs: playlogsData };
 
-        console.log('[Segament] Data extraction complete. Sending to import window.', payload);
-        segamentImportWindow.postMessage({ type: 'SEGAMENT_DATA_PAYLOAD', payload }, segamentOrigin);
+        postMessageToImporter('SEGAMENT_PROGRESS', { message: '서버로 데이터 전송 준비 완료', value: 100 });
+        console.log('[Segament] 데이터 추출 완료. 수신 창으로 전송합니다.', payload);
+        postMessageToImporter('SEGAMENT_DATA_PAYLOAD', payload);
 
       } catch (error) {
-        console.error('[Segament] Error during data extraction:', error);
-        segamentImportWindow.postMessage({ type: 'SEGAMENT_ERROR', payload: { message: error.message } }, segamentOrigin);
+        console.error('[Segament] 데이터 추출 중 오류:', error);
+        postMessageToImporter('SEGAMENT_ERROR', { message: error.message });
       }
     }
     
     window.removeEventListener('message', handleRequestMessage);
   };
 
-  console.log('[Segament] Bookmarklet executed.');
+  console.log('[Segament] 북마크릿이 실행되었습니다.');
   segamentImportWindow = window.open(`${segamentOrigin}/import`, '_blank');
   window.addEventListener('message', handleRequestMessage);
 
