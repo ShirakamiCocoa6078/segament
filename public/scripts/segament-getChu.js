@@ -89,7 +89,6 @@
       }
     }
     window.removeEventListener('message', handleRequestMessage);
-  };
 
   console.log('[Segament] 북마크릿이 실행되었습니다.');
   segamentImportWindow = window.open(`${segamentOrigin}/import`, '_blank');
