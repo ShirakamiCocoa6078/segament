@@ -36,54 +36,73 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { gameType, region, profile, playlogsChunk, profileId: existingProfileId } = body;
+    const { gameType, region, profile, playlogs } = body;
 
-    // 요청 타입 1: 프로필 데이터 처리 (첫 번째 요청)
-    if (profile) {
-      const safeProfile = {
-        ...profile,
-        rating: parseFloat(profile.rating) || 0,
-        overPower: parseFloat(profile.overPower) || 0,
-        playCount: parseInt(profile.playCount) || 0,
-      };
+    const safeProfile = {
+      ...profile,
+      rating: parseFloat(profile.rating) || 0,
+      overPower: parseFloat(profile.overPower) || 0,
+      playCount: parseInt(profile.playCount) || 0,
+    };
 
-      const gameProfile = await prisma.gameProfile.upsert({
+    // 1. 프로필 정보를 먼저 저장/업데이트합니다.
+    const gameProfile = await prisma.gameProfile.upsert({
         where: { userId_gameType_region: { userId: session.user.id, gameType, region } },
-        update: { ...safeProfile },
-        create: { userId: session.user.id, gameType, region, ...safeProfile },
-      });
+        update: {
+          playerName: safeProfile.playerName,
+          rating: safeProfile.rating,
+          overPower: safeProfile.overPower,
+          playCount: safeProfile.playCount,
+          title: safeProfile.title,
+        },
+        create: {
+          userId: session.user.id,
+          gameType, region,
+          playerName: safeProfile.playerName,
+          rating: safeProfile.rating,
+          overPower: safeProfile.overPower,
+          playCount: safeProfile.playCount,
+          title: safeProfile.title,
+        },
+    });
+    
+    // [추가] 새로운 레이팅 정보를 GameRatingLog에 기록합니다.
+    await prisma.gameRatingLog.create({
+        data: {
+            profileId: gameProfile.id,
+            rating: safeProfile.rating,
+        }
+    });
 
-      // 프로필 ID를 반환하여 북마크릿이 다음 요청에 사용하도록 합니다.
-      return NextResponse.json({ message: 'Profile chunk processed.', profileId: gameProfile.id }, { status: 200, headers: corsHeaders });
+    // 2. 플레이로그가 있는 경우, 개별적으로 처리하여 안정성을 높입니다.
+    if (playlogs && playlogs.length > 0) {
+        let successCount = 0;
+        let errorCount = 0;
+
+        for (const log of playlogs) {
+            try {
+                await prisma.gamePlaylog.upsert({
+                    where: {
+                        profileId_musicId_difficulty: {
+                            profileId: gameProfile.id,
+                            musicId: log.title, // musicId는 현재 title을 사용
+                            difficulty: log.difficulty,
+                        },
+                    },
+                    update: { score: log.score, isFullCombo: log.isFullCombo, isAllJustice: log.isAllJustice },
+                    create: { profileId: gameProfile.id, musicId: log.title, score: log.score, difficulty: log.difficulty, isFullCombo: log.isFullCombo, isAllJustice: log.isAllJustice },
+                });
+                successCount++;
+            } catch (e: any) {
+                errorCount++;
+                // 문제가 발생한 곡의 정보만 콘솔에 기록하고, 전체 작업은 계속 진행합니다.
+                console.error(`Failed to upsert playlog for song: ${log.title} (${log.difficulty})`, e.message);
+            }
+        }
+        console.log(`[IMPORT_API] Playlog processing complete. Success: ${successCount}, Failed: ${errorCount}`);
     }
-
-    // 요청 타입 2: 플레이로그 청크 처리 (두 번째 이후 요청)
-    if (playlogsChunk && playlogsChunk.length > 0) {
-      if (!existingProfileId) {
-        return NextResponse.json({ error: 'profileId is required for playlog chunks.' }, { status: 400, headers: corsHeaders });
-      }
-
-      // 각 청크는 짧은 시간 안에 끝나므로, 하나의 트랜잭션으로 처리 가능합니다.
-      await prisma.$transaction(
-        playlogsChunk.map(log =>
-          prisma.gamePlaylog.upsert({
-            where: {
-              profileId_musicId_difficulty: {
-                profileId: existingProfileId,
-                musicId: log.title,
-                difficulty: log.difficulty,
-              },
-            },
-            update: { score: log.score, isFullCombo: log.isFullCombo, isAllJustice: log.isAllJustice },
-            create: { profileId: existingProfileId, musicId: log.title, score: log.score, difficulty: log.difficulty, isFullCombo: log.isFullCombo, isAllJustice: log.isAllJustice },
-          })
-        )
-      );
-      
-      return NextResponse.json({ message: 'Playlog chunk processed.' }, { status: 200, headers: corsHeaders });
-    }
-
-    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400, headers: corsHeaders });
+    
+    return NextResponse.json({ message: 'Data imported successfully.' }, { status: 200, headers: corsHeaders });
 
   } catch (error: any) {
     console.error('[IMPORT_API_ERROR]', error);
