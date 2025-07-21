@@ -31,25 +31,30 @@ export async function OPTIONS(req: Request) {
 
 export async function POST(req: Request) {
   const corsHeaders = getCorsHeaders(req);
-  const session = await getServerSession(authOptions);
+  console.log('[IMPORT_API] Received POST request.');
 
+  const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
+    console.error('[IMPORT_API] Authentication failed: No session found.');
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: corsHeaders });
   }
+  console.log(`[IMPORT_API] User authenticated: ${session.user.id}`);
 
   try {
     const body = await req.json();
     const { gameType, region, profile, playlogs } = body;
+    console.log(`[IMPORT_API] Data received for ${gameType} (${region}). Profile: ${profile.playerName}, Playlogs: ${playlogs?.length || 0}`);
 
-    // [수정] 데이터 유효성 검사 및 기본값 할당
     const safeProfile = {
       ...profile,
       rating: parseFloat(profile.rating) || 0,
       overPower: parseFloat(profile.overPower) || 0,
-      playCount: parseInt(profile.playCount) || 0, // NaN이면 0으로 처리
+      playCount: parseInt(profile.playCount) || 0,
     };
 
+    console.log('[IMPORT_API] Starting database transaction.');
     await prisma.$transaction(async (tx) => {
+      console.log('[IMPORT_API] Upserting GameProfile...');
       const gameProfile = await tx.gameProfile.upsert({
         where: {
           userId_gameType_region: {
@@ -76,15 +81,17 @@ export async function POST(req: Request) {
           title: safeProfile.title,
         },
       });
+      console.log(`[IMPORT_API] GameProfile upserted with ID: ${gameProfile.id}`);
 
       if (playlogs && playlogs.length > 0) {
-        // 모든 플레이로그를 한 번에 upsert하기 위해 준비
-        const upsertPromises = playlogs.map(log => tx.gamePlaylog.upsert({
+        console.log(`[IMPORT_API] Upserting ${playlogs.length} playlogs...`);
+        let count = 0;
+        for (const log of playlogs) {
+          await tx.gamePlaylog.upsert({
             where: {
               profileId_musicId_difficulty: {
                 profileId: gameProfile.id,
-                // musicId는 서버에서 title을 기반으로 매칭해야 합니다.
-                musicId: log.title, 
+                musicId: log.title,
                 difficulty: log.difficulty,
               },
             },
@@ -101,16 +108,21 @@ export async function POST(req: Request) {
               isFullCombo: log.isFullCombo,
               isAllJustice: log.isAllJustice,
             },
-        }));
-        // 모든 upsert 작업을 병렬로 실행
-        await Promise.all(upsertPromises);
+          });
+          count++;
+          if (count % 10 === 0) {
+            console.log(`[IMPORT_API] Processed ${count}/${playlogs.length} playlogs...`);
+          }
+        }
+        console.log('[IMPORT_API] All playlogs upserted successfully.');
       }
     });
     
+    console.log('[IMPORT_API] Transaction completed successfully.');
     return NextResponse.json({ message: 'Data imported successfully.' }, { status: 200, headers: corsHeaders });
 
   } catch (error: any) {
-    console.error('[IMPORT_API_ERROR]', error);
+    console.error('[IMPORT_API_ERROR] An error occurred during the import process:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500, headers: corsHeaders });
   }
 }

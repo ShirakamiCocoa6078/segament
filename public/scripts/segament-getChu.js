@@ -1,4 +1,4 @@
-// 파일 경로: public/scripts/segament-getChu.js
+// 파일 경로: public/scripts/segament-getChu.js (테스트용)
 
 (async function() {
   let segamentImportWindow = null;
@@ -51,9 +51,8 @@
             const opText = utils.normalize(doc.querySelector('.player_overpower_text')?.innerText);
             if (opText) playerInfo.overPower = parseFloat(opText.split(' ')[0]);
             
-            // [최종 수정] 제공해주신 정확한 선택자를 사용하여 playCount를 추출합니다.
-            const playCountElement = doc.querySelector('.user_data_play_count .user_data_text');
-            const playCountText = playCountElement ? utils.normalize(playCountElement.innerText) : '0';
+            const playCountTitleElement = doc.querySelector('.user_data_title_play_count');
+            const playCountText = playCountTitleElement ? utils.normalize(playCountTitleElement.nextElementSibling?.innerText) : '0';
             playerInfo.playCount = parseInt(playCountText.replace(/,/g, '')) || 0;
 
             return playerInfo;
@@ -106,14 +105,17 @@
         const profileData = collectPlayerData(playerDataDoc);
         const playlogsData = await collectAllMusicPlays(token);
         
+        // [테스트용 수정] 전체 플레이로그 대신, 처음 50개만 잘라서 보냅니다.
+        const slicedPlaylogs = playlogsData.slice(0, 50);
+
         const payload = {
             gameType: 'CHUNITHM',
             region: region,
             profile: profileData,
-            playlogs: playlogsData,
+            playlogs: slicedPlaylogs, // 잘라낸 데이터를 전송
         };
 
-        console.log('[Segament] 데이터 추출 완료. 수신 창으로 전송합니다.', payload);
+        console.log(`[Segament] 데이터 추출 완료. 전체 ${playlogsData.length}건 중 50건만 테스트로 전송합니다.`, payload);
         
         segamentImportWindow.postMessage({ type: 'SEGAMENT_DATA_PAYLOAD', payload: payload }, segamentOrigin);
 
