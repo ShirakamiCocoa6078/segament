@@ -1,6 +1,7 @@
 // 파일 경로: public/scripts/segament-getChu.js
 
 (async function() {
+  // 모든 로직이 이 즉시 실행 함수 내에 포함되어 외부 모듈(import/export)을 사용하지 않습니다.
   
   let segamentImportWindow = null;
   const segamentOrigin = 'https://segament.vercel.app';
@@ -121,4 +122,24 @@
             gameType: 'CHUNITHM',
             region: region,
             profile: profileData,
-            playlogs:
+            playlogs: playlogsData,
+        };
+
+        console.log('[Segament] 데이터 추출 완료. 수신 창으로 전송합니다.', payload);
+        
+        segamentImportWindow.postMessage({ type: 'SEGAMENT_DATA_PAYLOAD', payload: payload }, segamentOrigin);
+
+      } catch (error) {
+        console.error('[Segament] 데이터 추출 중 오류:', error);
+        segamentImportWindow.postMessage({ type: 'SEGAMENT_ERROR', payload: { message: error.message } }, segamentOrigin);
+      }
+    }
+    
+    window.removeEventListener('message', handleRequestMessage);
+  };
+
+  console.log('[Segament] 북마크릿이 실행되었습니다.');
+  segamentImportWindow = window.open(`${segamentOrigin}/import`, '_blank');
+  window.addEventListener('message', handleRequestMessage);
+
+})();
