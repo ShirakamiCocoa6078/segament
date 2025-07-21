@@ -11,16 +11,11 @@ const allowedOrigins = [
   'https://chunithm-net-eng.com'
 ];
 
-/**
- * 요청의 Origin 헤더를 확인하여 동적으로 CORS 헤더를 생성하는 함수
- * @param {Request} req - 들어온 요청 객체
- * @returns {HeadersInit} - 설정할 CORS 헤더
- */
 const getCorsHeaders = (req: Request) => {
   const origin = req.headers.get('origin') ?? '';
   const headers: HeadersInit = {
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
   };
 
   if (allowedOrigins.includes(origin)) {
@@ -29,7 +24,6 @@ const getCorsHeaders = (req: Request) => {
   
   return headers;
 };
-
 
 export async function OPTIONS(req: Request) {
   return NextResponse.json({}, { headers: getCorsHeaders(req) });
@@ -47,6 +41,14 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { gameType, region, profile, playlogs } = body;
 
+    // [수정] 데이터 유효성 검사 및 기본값 할당
+    const safeProfile = {
+      ...profile,
+      rating: parseFloat(profile.rating) || 0,
+      overPower: parseFloat(profile.overPower) || 0,
+      playCount: parseInt(profile.playCount) || 0, // NaN이면 0으로 처리
+    };
+
     await prisma.$transaction(async (tx) => {
       const gameProfile = await tx.gameProfile.upsert({
         where: {
@@ -57,53 +59,51 @@ export async function POST(req: Request) {
           },
         },
         update: {
-          playerName: profile.playerName,
-          rating: profile.rating,
-          overPower: profile.overPower,
-          playCount: profile.playCount,
-          title: profile.title,
-          character: profile.character,
+          playerName: safeProfile.playerName,
+          rating: safeProfile.rating,
+          overPower: safeProfile.overPower,
+          playCount: safeProfile.playCount,
+          title: safeProfile.title,
         },
         create: {
           userId: session.user.id,
           gameType: gameType,
           region: region,
-          playerName: profile.playerName,
-          rating: profile.rating,
-          overPower: profile.overPower,
-          playCount: profile.playCount,
-          title: profile.title,
-          character: profile.character,
+          playerName: safeProfile.playerName,
+          rating: safeProfile.rating,
+          overPower: safeProfile.overPower,
+          playCount: safeProfile.playCount,
+          title: safeProfile.title,
         },
       });
 
       if (playlogs && playlogs.length > 0) {
-        for (const log of playlogs) {
-          await tx.gamePlaylog.upsert({
+        // 모든 플레이로그를 한 번에 upsert하기 위해 준비
+        const upsertPromises = playlogs.map(log => tx.gamePlaylog.upsert({
             where: {
               profileId_musicId_difficulty: {
                 profileId: gameProfile.id,
-                musicId: log.musicId,
+                // musicId는 서버에서 title을 기반으로 매칭해야 합니다.
+                musicId: log.title, 
                 difficulty: log.difficulty,
               },
             },
             update: {
               score: log.score,
-              rank: log.rank,
               isFullCombo: log.isFullCombo,
               isAllJustice: log.isAllJustice,
             },
             create: {
               profileId: gameProfile.id,
-              musicId: log.musicId,
+              musicId: log.title,
               difficulty: log.difficulty,
               score: log.score,
-              rank: log.rank,
               isFullCombo: log.isFullCombo,
               isAllJustice: log.isAllJustice,
             },
-          });
-        }
+        }));
+        // 모든 upsert 작업을 병렬로 실행
+        await Promise.all(upsertPromises);
       }
     });
     
