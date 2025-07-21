@@ -44,16 +44,10 @@ export async function POST(req: Request) {
       overPower: parseFloat(profile.overPower) || 0,
       playCount: parseInt(profile.playCount) || 0,
     };
-
-    await prisma.$transaction(async (tx) => {
-      const gameProfile = await tx.gameProfile.upsert({
-        where: {
-          userId_gameType_region: {
-            userId: session.user.id,
-            gameType: gameType,
-            region: region,
-          },
-        },
+    
+    // 1. 프로필 정보만 먼저 빠르게 저장/업데이트합니다.
+    const gameProfile = await prisma.gameProfile.upsert({
+        where: { userId_gameType_region: { userId: session.user.id, gameType, region } },
         update: {
           playerName: safeProfile.playerName,
           rating: safeProfile.rating,
@@ -63,47 +57,51 @@ export async function POST(req: Request) {
         },
         create: {
           userId: session.user.id,
-          gameType: gameType,
-          region: region,
+          gameType, region,
           playerName: safeProfile.playerName,
           rating: safeProfile.rating,
           overPower: safeProfile.overPower,
           playCount: safeProfile.playCount,
           title: safeProfile.title,
         },
-      });
-
-      if (playlogs && playlogs.length > 0) {
-        // [수정] for...of 루프 대신 Promise.all을 사용하여 모든 upsert 작업을 병렬로 실행합니다.
-        // 이것이 타임아웃을 해결하는 핵심입니다.
-        const upsertPromises = playlogs.map(log => 
-          tx.gamePlaylog.upsert({
-            where: {
-              profileId_musicId_difficulty: {
-                profileId: gameProfile.id,
-                musicId: log.title,
-                difficulty: log.difficulty,
-              },
-            },
-            update: {
-              score: log.score,
-              isFullCombo: log.isFullCombo,
-              isAllJustice: log.isAllJustice,
-            },
-            create: {
-              profileId: gameProfile.id,
-              musicId: log.title,
-              difficulty: log.difficulty,
-              score: log.score,
-              isFullCombo: log.isFullCombo,
-              isAllJustice: log.isAllJustice,
-            },
-          })
-        );
-        // 모든 DB 작업을 한 번에 실행하고 완료될 때까지 기다립니다.
-        await Promise.all(upsertPromises);
-      }
     });
+
+    // 2. 플레이로그가 있는 경우, 작은 묶음(청크)으로 나누어 처리합니다.
+    if (playlogs && playlogs.length > 0) {
+        const chunkSize = 100; // 한 번에 처리할 데이터 묶음 크기
+        for (let i = 0; i < playlogs.length; i += chunkSize) {
+            const chunk = playlogs.slice(i, i + chunkSize);
+            
+            // prisma.$transaction을 각 청크마다 사용하여 타임아웃을 방지합니다.
+            await prisma.$transaction(
+                chunk.map(log => 
+                    prisma.gamePlaylog.upsert({
+                        where: {
+                            profileId_musicId_difficulty: {
+                                profileId: gameProfile.id,
+                                musicId: log.title,
+                                difficulty: log.difficulty,
+                            },
+                        },
+                        update: {
+                            score: log.score,
+                            isFullCombo: log.isFullCombo,
+                            isAllJustice: log.isAllJustice,
+                        },
+                        create: {
+                            profileId: gameProfile.id,
+                            musicId: log.title,
+                            difficulty: log.difficulty,
+                            score: log.score,
+                            isFullCombo: log.isFullCombo,
+                            isAllJustice: log.isAllJustice,
+                        },
+                    })
+                )
+            );
+            console.log(`[IMPORT_API] Processed chunk ${Math.floor(i / chunkSize) + 1}, logs ${i + 1}-${i + chunk.length}/${playlogs.length}`);
+        }
+    }
     
     return NextResponse.json({ message: 'Data imported successfully.' }, { status: 200, headers: corsHeaders });
 
