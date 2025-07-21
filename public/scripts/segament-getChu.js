@@ -1,135 +1,114 @@
-// 파일 경로: public/scripts/segament-getChu.js (테스트용)
+// 파일 경로: src/app/api/v1/import/chunithm/route.ts
 
-(async function() {
-  let segamentImportWindow = null;
-  const segamentOrigin = 'https://segament.vercel.app';
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import prisma from '@/lib/prisma';
 
-  const handleRequestMessage = async (event) => {
-    if (event.origin !== segamentOrigin || event.data !== 'REQUEST_SEGAMENT_DATA') {
-      return;
-    }
-    
-    console.log('[Segament] 데이터 요청을 수신했습니다. 추출을 시작합니다.');
-
-    if (segamentImportWindow) {
-      try {
-        const isInternational = location.hostname.includes('-eng');
-        const region = isInternational ? 'INTL' : 'JP';
-        const baseUrl = isInternational ?
-            'https://chunithm-net-eng.com/mobile/' :
-            'https://new.chunithm-net.com/chuni-mobile/html/mobile/';
-
-        const utils = {
-            fetchPageDoc: async (url) => {
-                const res = await fetch(url);
-                if (res.ok) {
-                    const html = await res.text();
-                    return new DOMParser().parseFromString(html, 'text/html');
-                }
-                throw new Error(`Failed to fetch ${url}: ${res.status}`);
-            },
-            normalize: (str) => str ? str.normalize('NFKC').trim() : '',
-        };
-
-        const collectPlayerData = (doc) => {
-            const playerInfo = {};
-            
-            playerInfo.playerName = utils.normalize(doc.querySelector('.player_name_in')?.innerText);
-
-            const ratingImages = doc.querySelectorAll('.player_rating_num_block img');
-            let ratingStr = '';
-            ratingImages.forEach(img => {
-                if (img.src.includes('comma')) {
-                    ratingStr += '.';
-                } else {
-                    const match = img.src.match(/_(\d\d?)\.png/);
-                    if (match) ratingStr += match[1].slice(-1);
-                }
-            });
-            playerInfo.rating = parseFloat(ratingStr) || 0;
-
-            const opText = utils.normalize(doc.querySelector('.player_overpower_text')?.innerText);
-            if (opText) playerInfo.overPower = parseFloat(opText.split(' ')[0]);
-            
-            const playCountTitleElement = doc.querySelector('.user_data_title_play_count');
-            const playCountText = playCountTitleElement ? utils.normalize(playCountTitleElement.nextElementSibling?.innerText) : '0';
-            playerInfo.playCount = parseInt(playCountText.replace(/,/g, '')) || 0;
-
-            return playerInfo;
-        };
-
-        const collectAllMusicPlays = async (token) => {
-            let page = 1;
-            const plays = [];
-            const difficultiesToFetch = ['basic', 'advanced', 'expert', 'master', 'ultima'];
-            for (const difficulty of difficultiesToFetch) {
-                 const url = `${baseUrl}record/musicGenre/${difficulty}/send?token=${token}`;
-                 const pageDoc = await utils.fetchPageDoc(url);
-                 const musicBlocks = pageDoc.querySelectorAll('.w388.musiclist_box');
-                 
-                 musicBlocks.forEach(block => {
-                    const title = utils.normalize(block.querySelector('.music_title')?.innerText);
-                    const scoreText = utils.normalize(block.querySelector('.play_musicdata_highscore span.text_b')?.innerText);
-                    if (!title || !scoreText) return;
-
-                    const score = parseInt(scoreText.replace(/,/g, ''));
-                    const lamps = block.querySelectorAll('.play_musicdata_icon img');
-                    let isFullCombo = false;
-                    let isAllJustice = false;
-
-                    lamps.forEach(lamp => {
-                        if (lamp.src.includes('fullcombo')) isFullCombo = true;
-                        if (lamp.src.includes('alljustice')) isAllJustice = true;
-                    });
-                    
-                    plays.push({ 
-                        title: title, 
-                        difficulty: difficulty.toUpperCase(), 
-                        score: score,
-                        isFullCombo: isFullCombo,
-                        isAllJustice: isAllJustice,
-                     });
-                 });
-            }
-            return plays;
-        };
-
-        const musicRecordDoc = await utils.fetchPageDoc(baseUrl + 'record/musicGenre/');
-        const tokenInput = musicRecordDoc.querySelector('.box02.w420 form input[name="token"]');
-        if (!tokenInput || !tokenInput.value) {
-            throw new Error("토큰을 찾을 수 없습니다.");
-        }
-        const token = tokenInput.value;
-
-        const playerDataDoc = await utils.fetchPageDoc(baseUrl + 'home/playerData/');
-        const profileData = collectPlayerData(playerDataDoc);
-        const playlogsData = await collectAllMusicPlays(token);
-        
-        // [테스트용 수정] 전체 플레이로그 대신, 처음 50개만 잘라서 보냅니다.
-        const slicedPlaylogs = playlogsData.slice(0, 50);
-
-        const payload = {
-            gameType: 'CHUNITHM',
-            region: region,
-            profile: profileData,
-            playlogs: slicedPlaylogs, // 잘라낸 데이터를 전송
-        };
-
-        console.log(`[Segament] 데이터 추출 완료. 전체 ${playlogsData.length}건 중 50건만 테스트로 전송합니다.`, payload);
-        
-        segamentImportWindow.postMessage({ type: 'SEGAMENT_DATA_PAYLOAD', payload: payload }, segamentOrigin);
-
-      } catch (error) {
-        console.error('[Segament] 데이터 추출 중 오류:', error);
-        segamentImportWindow.postMessage({ type: 'SEGAMENT_ERROR', payload: { message: error.message } }, segamentOrigin);
-      }
-    }
-    
-    window.removeEventListener('message', handleRequestMessage);
+// CORS 설정은 이전과 동일
+const allowedOrigins = [
+  'https://new.chunithm-net.com',
+  'https://chunithm-net-eng.com'
+];
+const getCorsHeaders = (req: Request) => {
+  const origin = req.headers.get('origin') ?? '';
+  const headers: HeadersInit = {
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
   };
+  if (allowedOrigins.includes(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin;
+  }
+  return headers;
+};
 
-  console.log('[Segament] 북마크릿이 실행되었습니다.');
-  segamentImportWindow = window.open(`${segamentOrigin}/import`, '_blank');
-  window.addEventListener('message', handleRequestMessage);
+export async function OPTIONS(req: Request) {
+  return NextResponse.json({}, { headers: getCorsHeaders(req) });
+}
 
-})();
+export async function POST(req: Request) {
+  const corsHeaders = getCorsHeaders(req);
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: corsHeaders });
+  }
+
+  try {
+    const body = await req.json();
+    const { gameType, region, profile, playlogs } = body;
+
+    const safeProfile = {
+      ...profile,
+      rating: parseFloat(profile.rating) || 0,
+      overPower: parseFloat(profile.overPower) || 0,
+      playCount: parseInt(profile.playCount) || 0,
+    };
+
+    await prisma.$transaction(async (tx) => {
+      const gameProfile = await tx.gameProfile.upsert({
+        where: {
+          userId_gameType_region: {
+            userId: session.user.id,
+            gameType: gameType,
+            region: region,
+          },
+        },
+        update: {
+          playerName: safeProfile.playerName,
+          rating: safeProfile.rating,
+          overPower: safeProfile.overPower,
+          playCount: safeProfile.playCount,
+          title: safeProfile.title,
+        },
+        create: {
+          userId: session.user.id,
+          gameType: gameType,
+          region: region,
+          playerName: safeProfile.playerName,
+          rating: safeProfile.rating,
+          overPower: safeProfile.overPower,
+          playCount: safeProfile.playCount,
+          title: safeProfile.title,
+        },
+      });
+
+      if (playlogs && playlogs.length > 0) {
+        // [수정] for...of 루프 대신 Promise.all을 사용하여 모든 upsert 작업을 병렬로 실행합니다.
+        // 이것이 타임아웃을 해결하는 핵심입니다.
+        const upsertPromises = playlogs.map(log => 
+          tx.gamePlaylog.upsert({
+            where: {
+              profileId_musicId_difficulty: {
+                profileId: gameProfile.id,
+                musicId: log.title,
+                difficulty: log.difficulty,
+              },
+            },
+            update: {
+              score: log.score,
+              isFullCombo: log.isFullCombo,
+              isAllJustice: log.isAllJustice,
+            },
+            create: {
+              profileId: gameProfile.id,
+              musicId: log.title,
+              difficulty: log.difficulty,
+              score: log.score,
+              isFullCombo: log.isFullCombo,
+              isAllJustice: log.isAllJustice,
+            },
+          })
+        );
+        // 모든 DB 작업을 한 번에 실행하고 완료될 때까지 기다립니다.
+        await Promise.all(upsertPromises);
+      }
+    });
+    
+    return NextResponse.json({ message: 'Data imported successfully.' }, { status: 200, headers: corsHeaders });
+
+  } catch (error: any) {
+    console.error('[IMPORT_API_ERROR]', error);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500, headers: corsHeaders });
+  }
+}
