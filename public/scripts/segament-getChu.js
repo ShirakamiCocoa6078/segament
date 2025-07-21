@@ -1,8 +1,6 @@
 // 파일 경로: public/scripts/segament-getChu.js
 
 (async function() {
-  // 모든 로직이 이 즉시 실행 함수 내에 포함되어 외부 모듈(import/export)을 사용하지 않습니다.
-  
   let segamentImportWindow = null;
   const segamentOrigin = 'https://segament.vercel.app';
 
@@ -21,17 +19,7 @@
             'https://chunithm-net-eng.com/mobile/' :
             'https://new.chunithm-net.com/chuni-mobile/html/mobile/';
 
-        // 필요한 유틸리티 함수들을 스크립트 내부에 직접 정의합니다.
         const utils = {
-            fetchPageDoc: async (url) => {
-                const res = await fetch(url);
-                if (res.ok) {
-                    const html = await res.text();
-                    return new DOMParser().parseFromString(html, 'text/html');
-                }
-                throw new Error(`Failed to fetch ${url}: ${res.status}`);
-            },
-            normalize: (str) => str ? str.normalize('NFKC').trim() : '',
             fetchPostPageDoc: async (url, token) => {
                 const formData = new FormData();
                 formData.append('genre', '99');
@@ -44,6 +32,15 @@
                 }
                 throw new Error(`Failed to fetch ${url}: ${res.status}`);
             },
+            fetchPageDoc: async (url) => {
+                const res = await fetch(url);
+                if (res.ok) {
+                    const html = await res.text();
+                    return new DOMParser().parseFromString(html, 'text/html');
+                }
+                throw new Error(`Failed to fetch ${url}: ${res.status}`);
+            },
+            normalize: (str) => str ? str.normalize('NFKC').trim() : '',
         };
 
         const collectPlayerData = (doc) => {
@@ -76,7 +73,8 @@
             const plays = [];
             const difficultiesToFetch = ['basic', 'advanced', 'expert', 'master', 'ultima'];
             for (const difficulty of difficultiesToFetch) {
-                 const url = `${baseUrl}record/musicGenre/send${difficulty}.html`;
+                 // [수정] URL 끝의 .html 제거
+                 const url = `${baseUrl}record/musicGenre/send${difficulty}`;
                  const pageDoc = await utils.fetchPostPageDoc(url, token);
                  const musicBlocks = pageDoc.querySelectorAll('.w388.musiclist_box');
                  
