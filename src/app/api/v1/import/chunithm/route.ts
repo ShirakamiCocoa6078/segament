@@ -28,41 +28,43 @@ export async function OPTIONS(req: Request) {
 export async function POST(req: Request) {
   const corsHeaders = getCorsHeaders(req);
   const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: corsHeaders });
-  }
+  if (!session?.user?.id) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: corsHeaders });
 
   try {
     const body = await req.json();
-    const { gameType, region, profile, playlogs } = body;
+    const { gameType, region, profile, playlogs, bestRatingList, newRatingList } = body;
 
     const safeProfile = {
-      ...profile,
+      playerName: profile.playerName || 'Unknown',
       rating: parseFloat(profile.rating) || 0,
       overPower: parseFloat(profile.overPower) || 0,
+      level: parseInt(profile.level) || 0,
       playCount: parseInt(profile.playCount) || 0,
+      honors: profile.honors || [],
+      teamName: profile.teamName,
+      lastPlayDate: profile.lastPlayDate,
+      battleRankImg: profile.battleRankImg,
+      friendCode: profile.friendCode,
     };
 
     const gameProfile = await prisma.gameProfile.upsert({
         where: { userId_gameType_region: { userId: session.user.id, gameType, region } },
-        update: {
-          playerName: safeProfile.playerName,
-          rating: safeProfile.rating,
-          overPower: safeProfile.overPower,
-          playCount: safeProfile.playCount,
-          title: safeProfile.title,
-        },
-        create: {
-          userId: session.user.id,
-          gameType, region,
-          playerName: safeProfile.playerName,
-          rating: safeProfile.rating,
-          overPower: safeProfile.overPower,
-          playCount: safeProfile.playCount,
-          title: safeProfile.title,
-        },
+        update: { ...safeProfile },
+        create: { userId: session.user.id, gameType, region, ...safeProfile },
     });
+    
+    await Promise.all([
+        prisma.ratingList.upsert({
+            where: { profileId_type: { profileId: gameProfile.id, type: 'BEST' } },
+            update: { list: bestRatingList || [] },
+            create: { profileId: gameProfile.id, type: 'BEST', list: bestRatingList || [] }
+        }),
+        prisma.ratingList.upsert({
+            where: { profileId_type: { profileId: gameProfile.id, type: 'NEW' } },
+            update: { list: newRatingList || [] },
+            create: { profileId: gameProfile.id, type: 'NEW', list: newRatingList || [] }
+        })
+    ]);
 
     if (playlogs && playlogs.length > 0) {
         const chunkSize = 100;
@@ -71,44 +73,15 @@ export async function POST(req: Request) {
             await prisma.$transaction(
                 chunk.map(log => 
                     prisma.gamePlaylog.upsert({
-                        where: {
-                            profileId_musicId_difficulty: {
-                                profileId: gameProfile.id,
-                                musicId: log.title,
-                                difficulty: log.difficulty,
-                            },
-                        },
-                        update: { 
-                            score: log.score, 
-                            rank: log.rank,
-                            clearType: log.clearType,
-                            isFullCombo: log.isFullCombo, 
-                            isAllJustice: log.isAllJustice,
-                            isAllJusticeCritical: log.isAllJusticeCritical,
-                            fullChainType: log.fullChainType
-                        },
-                        create: { 
-                            profileId: gameProfile.id,
-                            musicId: log.title,
-                            difficulty: log.difficulty,
-                            score: log.score,
-                            rank: log.rank,
-                            clearType: log.clearType,
-                            isFullCombo: log.isFullCombo,
-                            isAllJustice: log.isAllJustice,
-                            isAllJusticeCritical: log.isAllJusticeCritical,
-                            fullChainType: log.fullChainType
-                        },
+                        where: { profileId_musicId_difficulty: { profileId: gameProfile.id, musicId: log.title, difficulty: log.difficulty, } },
+                        update: { ...log },
+                        create: { profileId: gameProfile.id, musicId: log.title, ...log },
                     })
                 )
             );
         }
     }
     
-    return NextResponse.json({ message: 'Data imported successfully.' }, { status: 200, headers: corsHeaders });
-
-  } catch (error: any) {
-    console.error('[IMPORT_API_ERROR]', error);
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500, headers: corsHeaders });
-  }
+    return NextResponse.json({ message: 'Data imported successfully.' }, { status: 200 });
+  } catch (error: any) { console.error('[IMPORT_API_ERROR]', error); return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 }); }
 }
