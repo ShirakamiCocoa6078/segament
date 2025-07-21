@@ -1,3 +1,4 @@
+// 파일 경로: src/app/page.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -18,11 +19,7 @@ export default function Home() {
             <p className="max-w-md mb-8 text-lg text-foreground/80 font-body">
                 츄니즘 및 마이마이 프로필화
             </p>
-            <Button 
-              onClick={() => signIn('google')}
-              size="lg"
-              className="px-8 py-3 text-lg"
-            >
+            <Button onClick={() => signIn('google', { callbackUrl: '/dashboard' })}>
               Google 계정으로 계속하기
             </Button>
         </div>
