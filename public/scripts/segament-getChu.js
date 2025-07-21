@@ -13,7 +13,6 @@
 
     if (segamentImportWindow) {
       try {
-        // [수정] 모든 헬퍼 함수들을 이 스코프 안으로 이동시켰습니다.
         const isInternational = location.hostname.includes('-eng');
         const region = isInternational ? 'INTL' : 'JP';
         const baseUrl = isInternational ?
@@ -100,7 +99,7 @@
 
         const musicRecordDoc = await utils.fetchPageDoc(baseUrl + 'record/musicGenre/');
         const tokenInput = musicRecordDoc.querySelector('.box02.w420 form input[name="token"]');
-        if (!tokenInput || !tokenInput.value) throw new Error("Token not found. Please ensure you are logged in.");
+        if (!tokenInput || !tokenInput.value) throw new Error("토큰을 찾을 수 없습니다.");
         const token = tokenInput.value;
 
         const playerDataDoc = await utils.fetchPageDoc(baseUrl + 'home/playerData/');
@@ -109,7 +108,7 @@
         
         const payload = { gameType: 'CHUNITHM', region, profile: profileData, playlogs: playlogsData };
 
-        console.log('[Segament] Data extraction complete. Sending to import window.', payload);
+        console.log('[Segament] 데이터 추출 완료. 수신 창으로 전송합니다.', payload);
         segamentImportWindow.postMessage({ type: 'SEGAMENT_DATA_PAYLOAD', payload }, segamentOrigin);
 
       } catch (error) {

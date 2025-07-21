@@ -36,55 +36,60 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    // [수정] 이제 profile 또는 playlogsChunk 둘 중 하나만 처리합니다.
-    const { gameType, region, profile, playlogsChunk, isFirstChunk, isLastChunk } = body;
+    const { gameType, region, profile, playlogs } = body;
 
-    // 첫 번째 청크는 프로필 정보를 포함합니다.
-    if (isFirstChunk && profile) {
-      const safeProfile = {
-        ...profile,
-        rating: parseFloat(profile.rating) || 0,
-        overPower: parseFloat(profile.overPower) || 0,
-        playCount: parseInt(profile.playCount) || 0,
-      };
+    const safeProfile = {
+      ...profile,
+      rating: parseFloat(profile.rating) || 0,
+      overPower: parseFloat(profile.overPower) || 0,
+      playCount: parseInt(profile.playCount) || 0,
+    };
 
-      const gameProfile = await prisma.gameProfile.upsert({
+    const gameProfile = await prisma.gameProfile.upsert({
         where: { userId_gameType_region: { userId: session.user.id, gameType, region } },
-        update: { ...safeProfile },
-        create: { userId: session.user.id, gameType, region, ...safeProfile },
-      });
+        update: {
+          playerName: safeProfile.playerName,
+          rating: safeProfile.rating,
+          overPower: safeProfile.overPower,
+          playCount: safeProfile.playCount,
+          title: safeProfile.title,
+        },
+        create: {
+          userId: session.user.id,
+          gameType, region,
+          playerName: safeProfile.playerName,
+          rating: safeProfile.rating,
+          overPower: safeProfile.overPower,
+          playCount: safeProfile.playCount,
+          title: safeProfile.title,
+        },
+    });
 
-      // 프로필 ID를 반환하여 북마크릿이 다음 요청에 사용하도록 합니다.
-      return NextResponse.json({ message: 'Profile chunk processed.', profileId: gameProfile.id }, { status: 200, headers: corsHeaders });
+    if (playlogs && playlogs.length > 0) {
+        const chunkSize = 100; // 한 번에 처리할 데이터 묶음 크기
+        for (let i = 0; i < playlogs.length; i += chunkSize) {
+            const chunk = playlogs.slice(i, i + chunkSize);
+            
+            await prisma.$transaction(
+                chunk.map(log => 
+                    prisma.gamePlaylog.upsert({
+                        where: {
+                            profileId_musicId_difficulty: {
+                                profileId: gameProfile.id,
+                                musicId: log.title,
+                                difficulty: log.difficulty,
+                            },
+                        },
+                        update: { score: log.score, isFullCombo: log.isFullCombo, isAllJustice: log.isAllJustice },
+                        create: { profileId: gameProfile.id, musicId: log.title, score: log.score, difficulty: log.difficulty, isFullCombo: log.isFullCombo, isAllJustice: log.isAllJustice },
+                    })
+                )
+            );
+            console.log(`[IMPORT_API] Processed chunk, logs ${i + 1}-${i + chunk.length}/${playlogs.length}`);
+        }
     }
-
-    // 두 번째부터는 플레이로그 청크만 처리합니다.
-    if (playlogsChunk && playlogsChunk.length > 0) {
-      const { profileId } = body;
-      if (!profileId) {
-        return NextResponse.json({ error: 'profileId is required for playlog chunks.' }, { status: 400, headers: corsHeaders });
-      }
-
-      await prisma.$transaction(
-        playlogsChunk.map(log =>
-          prisma.gamePlaylog.upsert({
-            where: {
-              profileId_musicId_difficulty: {
-                profileId: profileId,
-                musicId: log.title,
-                difficulty: log.difficulty,
-              },
-            },
-            update: { score: log.score, isFullCombo: log.isFullCombo, isAllJustice: log.isAllJustice },
-            create: { profileId, musicId: log.title, ...log },
-          })
-        )
-      );
-      
-      return NextResponse.json({ message: `Playlog chunk processed. isLastChunk: ${isLastChunk}` }, { status: 200, headers: corsHeaders });
-    }
-
-    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400, headers: corsHeaders });
+    
+    return NextResponse.json({ message: 'Data imported successfully.' }, { status: 200, headers: corsHeaders });
 
   } catch (error: any) {
     console.error('[IMPORT_API_ERROR]', error);
