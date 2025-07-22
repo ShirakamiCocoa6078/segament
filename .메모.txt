@@ -1,0 +1,20 @@
+<form action="https://new.chunithm-net.com/chuni-mobile/html/mobile/record/musicGenre/sendMusicDetail/" method="post" accept-charset="utf-8">
+							<div class="w388 musiclist_box bg_master">
+								<div class="music_title">MegiddØ</div>
+									<!-- ◆スコア -->
+									<div class="play_musicdata_highscore">
+										SCORE：<span class="text_b">1,008,384</span>
+									</div>
+								<input type="hidden" name="diff" value="3">
+								<input type="hidden" name="genre" value="99">
+								<input type="hidden" name="idx" value="2768">
+								<input type="hidden" name="token" value="d25b50cfb25e89a3c1175cdc4f0e1780">
+							</div>
+						</form>
+
+여기서, input 항목에 있는 hidden 값들을 이용해서 diff, genre, idx값을 받을 수 있음. 
+기존 segament ID 값을 이용하지 않고, 츄니즘 측에서 제공하는 악곡별 idx값을 이용해서 악곡 정보를 가져올 수 있음.
+국제판과 내수판의 ID 값이 같은지는 확인되지 않음. (위 코드는 내수판 HTML 코드, https://new.chunithm-net.com/chuni-mobile/html/mobile/home/playerData/ratingDetailBest/)
+diff 값은 0~4까지 존재하며, 0 basic, 1 advanced, 2 expert, 3 master, 4 ultima를 의미함.
+genre 값은 알아볼 필요가 있음.
+추가적으로, 악곡 상세 페이지를 로드하는데 URL 자체는 변경되지 않으므로, URL 이외의 특정 악곡 데이터를 파악하고 표시하는 방식을 알아내야함.
