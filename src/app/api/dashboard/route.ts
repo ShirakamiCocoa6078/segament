@@ -1,5 +1,4 @@
 // 파일 경로: src/app/api/dashboard/route.ts
-
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -16,6 +15,9 @@ export async function GET() {
       where: { id: session.user.id },
       include: {
         gameProfiles: {
+          include: {
+            gameData: false, // 메인 대시보드에서는 무거운 상세 데이터는 제외합니다.
+          },
           orderBy: {
             updatedAt: 'desc',
           },
@@ -23,18 +25,13 @@ export async function GET() {
       },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!user || !user.gameProfiles || user.gameProfiles.length === 0) {
+      // 수정: profiles 배열을 반환하도록 통일합니다.
+      return NextResponse.json({ profiles: [] });
     }
 
-    // 수정: GameProfile이 없는 경우를 명시적으로 처리
-    if (!user.gameProfiles || user.gameProfiles.length === 0) {
-      return NextResponse.json({ profile: null });
-    }
-
-    // 기존 로직: 첫 번째 프로필을 반환
-    const firstProfile = user.gameProfiles[0];
-    return NextResponse.json({ profile: firstProfile });
+    // 수정: 모든 프로필 목록을 반환합니다.
+    return NextResponse.json({ profiles: user.gameProfiles });
 
   } catch (error) {
     console.error('API Error in /api/dashboard:', error);
