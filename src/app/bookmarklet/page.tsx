@@ -1,47 +1,23 @@
+// 파일 경로: /src/app/bookmarklet/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, Download } from 'lucide-react';
+import { bookmarkletLoaderCode } from '@/lib/bookmarklet'; // 수정: bookmarkletLoaderCode를 직접 import
 
 export default function BookmarkletPage() {
-  const [bookmarkletCode, setBookmarkletCode] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchBookmarkletCode = async () => {
-      try {
-        const response = await fetch('/segament-getChu.js');
-        if (!response.ok) {
-          throw new Error('Failed to fetch bookmarklet code');
-        }
-        const code = await response.text();
-        setBookmarkletCode(code);
-      } catch (error) {
-        console.error('Error fetching bookmarklet code:', error);
-        toast({
-          title: "에러",
-          description: "북마크릿 코드를 불러올 수 없습니다.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchBookmarkletCode();
-  }, [toast]);
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(bookmarkletCode);
+      // 수정: 정적으로 import된 코드를 사용
+      await navigator.clipboard.writeText(bookmarkletLoaderCode);
       toast({
         title: "복사 완료",
-        description: "코드가 복사되었습니다!",
+        description: "코드가 클립보드에 복사되었습니다!",
       });
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
@@ -88,8 +64,7 @@ export default function BookmarkletPage() {
                   <h3 className="font-semibold mb-2 text-amber-800">⚠️ 주의사항:</h3>
                   <ul className="list-disc list-inside space-y-1 text-sm text-amber-700">
                     <li>CHUNITHM-NET에 먼저 로그인되어 있어야 합니다.</li>
-                    <li>Segament에도 로그인되어 있어야 하며, CHUNITHM 프로필이 생성되어 있어야 합니다.</li>
-                    <li>데이터 수집에는 시간이 걸릴 수 있습니다.</li>
+                    <li>Segament에도 로그인되어 있어야 합니다.</li>
                     <li>팝업 차단기가 활성화되어 있으면 정상 작동하지 않을 수 있습니다.</li>
                   </ul>
                 </div>
@@ -107,7 +82,6 @@ export default function BookmarkletPage() {
                 </span>
                 <Button 
                   onClick={copyToClipboard}
-                  disabled={isLoading || !bookmarkletCode}
                   size="sm"
                 >
                   <Copy className="h-4 w-4 mr-2" />
@@ -120,17 +94,12 @@ export default function BookmarkletPage() {
             </CardHeader>
             <CardContent>
               <Textarea
-                value={isLoading ? '북마크릿 코드를 불러오는 중...' : bookmarkletCode}
+                value={bookmarkletLoaderCode} // 수정: 로딩 없이 바로 코드 표시
                 readOnly
-                rows={15}
+                rows={5} // 수정: 코드가 짧아졌으므로 줄 수 조정
                 className="font-mono text-xs"
-                placeholder="북마크릿 코드가 여기에 표시됩니다..."
+                placeholder="javascript:..."
               />
-              {!isLoading && !bookmarkletCode && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  북마크릿 코드를 불러올 수 없습니다. /public/segament-getChu.js 파일을 확인해주세요.
-                </p>
-              )}
             </CardContent>
           </Card>
 
@@ -146,18 +115,8 @@ export default function BookmarkletPage() {
                   <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
                     <li>CHUNITHM-NET에 로그인되어 있는지 확인</li>
                     <li>Segament에 로그인되어 있는지 확인</li>
-                    <li>CHUNITHM 프로필이 생성되어 있는지 확인</li>
                     <li>브라우저의 팝업 차단 설정 확인</li>
                     <li>개발자 도구(F12)에서 콘솔 에러 메시지 확인</li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold">데이터가 정상적으로 가져와지지 않는 경우:</h4>
-                  <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
-                    <li>잠시 후 다시 시도해보세요</li>
-                    <li>CHUNITHM-NET의 페이지 구조가 변경되었을 가능성이 있습니다</li>
-                    <li>문제가 지속되면 개발팀에 문의해주세요</li>
                   </ul>
                 </div>
               </div>

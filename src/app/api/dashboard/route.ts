@@ -5,39 +5,39 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 
-export async function GET(req: Request) {
+export async function GET() {
   const session = await getServerSession(authOptions);
-
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
   try {
-    // 현재는 CHUNITHM JP 프로필을 기본으로 가져옵니다.
-    const gameProfile = await prisma.gameProfile.findUnique({
-      where: {
-        userId_gameType_region: {
-          userId: session.user.id,
-          gameType: 'CHUNITHM',
-          region: 'JP', // 추후 이 부분을 동적으로 변경할 수 있습니다.
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: {
+        gameProfiles: {
+          orderBy: {
+            updatedAt: 'desc',
+          },
         },
       },
     });
 
-    if (!gameProfile) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const playlogs = await prisma.gamePlaylog.findMany({
-      where: {
-        profileId: gameProfile.id,
-      },
-    });
+    // 수정: GameProfile이 없는 경우를 명시적으로 처리
+    if (!user.gameProfiles || user.gameProfiles.length === 0) {
+      return NextResponse.json({ profile: null });
+    }
 
-    return NextResponse.json({ gameProfile, playlogs }, { status: 200 });
+    // 기존 로직: 첫 번째 프로필을 반환
+    const firstProfile = user.gameProfiles[0];
+    return NextResponse.json({ profile: firstProfile });
 
   } catch (error) {
-    console.error('[DASHBOARD_API_ERROR]', error);
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    console.error('API Error in /api/dashboard:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
