@@ -73,6 +73,7 @@
             playerInfo.playCount = parseInt(playCountText.replace(/,/g, '')) || 0;
             return playerInfo;
         };
+
         const collectRatingList = async (url) => {
             const doc = await utils.fetchPageDoc(url);
             const musicForms = doc.querySelectorAll('.w388.musiclist_box');
@@ -92,6 +93,7 @@
             });
             return ratingList;
         };
+        
         const collectAllMusicPlays = async (token) => {
             const plays = [];
             const PlayRank = {0:'D',1:'C',2:'B',3:'BB',4:'BBB',5:'A',6:'AA',7:'AAA',8:'S',9:'S+',10:'SS',11:'SS+',12:'SSS',13:'SSS+'};
@@ -110,18 +112,18 @@
 
                     const score = parseInt(scoreText.replace(/,/g, ''));
                     const lamps = block.querySelectorAll('.play_musicdata_icon img');
-                    let rank = 'D', clearType = 'FAILED', isFullCombo = false, isAllJustice = false, isAllJusticeCritical = false, fullChainType = 0;
+                    let rank = 'D', clearType = 0, comboType = 0, fullChainType = 0;
 
                     lamps.forEach(lamp => {
                         const src = lamp.src;
-                        if(src.includes('icon_clear.png')) clearType = 'CLEAR'; else if(src.includes('icon_hard.png')) clearType = 'HARD'; else if(src.includes('icon_brave.png')) clearType = 'BRAVE'; else if(src.includes('icon_absolute.png')) clearType = 'ABSOLUTE'; else if(src.includes('icon_rank_catastrophy')) clearType = 'CATASTROPHY';
-                        if(src.includes('icon_fullcombo.png')) isFullCombo = true; if(src.includes('icon_alljustice.png')) isAllJustice = true; if(src.includes('icon_alljusticecritical.png')) isAllJusticeCritical = true;
-                        if(src.includes('icon_fullchain.png')) fullChainType = 1; if(src.includes('icon_fullchain2.png')) fullChainType = 2;
+                        if(src.includes('icon_clear.png')) clearType = 1; else if(src.includes('icon_hard.png')) clearType = 2; else if(src.includes('icon_brave.png')) clearType = 3; else if(src.includes('icon_absolute.png')) clearType = 4; else if(src.includes('icon_rank_catastrophy')) clearType = 5;
+                        if(src.includes('icon_fullcombo.png')) comboType = 1; else if(src.includes('icon_alljustice.png')) comboType = 2; else if(src.includes('icon_alljusticecritical.png')) comboType = 3;
+                        if(src.includes('icon_fullchain2.png')) fullChainType = 2; else if(src.includes('icon_fullchain.png')) fullChainType = 1;
                         const match = src.match(/icon_rank_(\d+)\.png/);
                         if (match) rank = PlayRank[parseInt(match[1])] || 'D';
                     });
                     
-                    plays.push({ title, difficulty: difficulty.toUpperCase(), score, rank, clearType, isFullCombo, isAllJustice, isAllJusticeCritical, fullChainType });
+                    plays.push({ title, difficulty: difficulty.toUpperCase(), score, rank, clearType, comboType, fullChainType });
                  });
             }
             return plays;
@@ -143,10 +145,20 @@
             collectRatingList(baseUrl + 'home/playerData/ratingDetailRecent/')
         ]);
         
-        const payload = { gameType: 'CHUNITHM', region, profile: profileData, playlogs: playlogsData, bestRatingList, newRatingList };
+        const payload = {
+            gameType: 'CHUNITHM',
+            region,
+            profile: profileData,
+            gameData: {
+                playlogs: playlogsData,
+                ratingLists: {
+                    best: bestRatingList,
+                    recent: newRatingList
+                }
+            }
+        };
 
         console.log('[Segament] 최종 추출 데이터:', payload);
-
         postMessageToImporter('SEGAMENT_PROGRESS', { message: '데이터 추출 완료. 서버로 전송합니다.', value: 100 });
         postMessageToImporter('SEGAMENT_DATA_PAYLOAD', payload);
 

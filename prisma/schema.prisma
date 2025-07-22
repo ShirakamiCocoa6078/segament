@@ -17,10 +17,9 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-
-  accounts     Account[]
-  sessions     Session[]
-  gameProfiles GameProfile[]
+  accounts      Account[]
+  sessions      Session[]
+  gameProfiles  GameProfile[]
 }
 
 model Account {
@@ -65,46 +64,32 @@ model GameProfile {
   overPower     Float     @default(0)
   level         Int       @default(0)
   playCount     Int       @default(0)
-  
-  // 상세 프로필 정보
   honors        Json?
   teamName      String?
   lastPlayDate  String?
   battleRankImg String?
   friendCode    String?
-
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // GameData와의 1:1 관계 설정
+  gameData      GameData?
 
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  playlogs    GamePlaylog[]
-  ratingLists RatingList[]
   @@unique([userId, gameType, region])
 }
 
-model GamePlaylog {
-  profileId   String
-  musicId     String
-  difficulty  String
-  score       Int      @default(0)
-  rank        String?
-  clearType   String?
-  isFullCombo Boolean @default(false)
-  isAllJustice Boolean @default(false)
-  isAllJusticeCritical Boolean @default(false)
-  fullChainType Int @default(0)
-
-  profile GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  @@id([profileId, musicId, difficulty])
-}
-
-model RatingList {
-  id          String   @id @default(cuid())
-  profileId   String
-  type        String   // "BEST" 또는 "NEW"
-  list        Json
+// --- 신규 모델 ---
+// 기존의 GamePlaylog와 RatingList를 대체합니다.
+model GameData {
+  id          String @id @default(cuid())
+  profileId   String @unique
+  
+  // 플레이 기록 전체를 담는 JSON 필드
+  playlogs    Json?
+  // 레이팅 리스트(Best, New)를 담는 JSON 필드
+  ratingLists Json?
+  
   updatedAt   DateTime @updatedAt
-
-  profile GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  @@unique([profileId, type])
+  profile     GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }

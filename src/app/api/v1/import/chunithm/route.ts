@@ -21,60 +21,36 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { gameType, region, profile, playlogs, bestRatingList, newRatingList } = body;
+    const { gameType, region, profile, gameData } = body;
 
     if (!profile || !profile.playerName) {
       return NextResponse.json({ message: 'Player name is missing.' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-    if (!user) {
-      return NextResponse.json({ message: 'User not found.' }, { status: 404 });
-    }
+    const result = await prisma.$transaction(async (tx) => {
+      const gameProfile = await tx.gameProfile.upsert({
+        where: { userId_gameType_region: { userId: session.user.id, gameType, region } },
+        update: profile,
+        create: { ...profile, userId: session.user.id, gameType, region },
+      });
 
-    const gameProfile = await prisma.gameProfile.upsert({
-      where: { userId_gameType_region: { userId: user.id, gameType, region } },
-      update: profile,
-      create: { ...profile, userId: user.id, gameType, region },
+      await tx.gameData.upsert({
+        where: { profileId: gameProfile.id },
+        update: {
+          playlogs: gameData.playlogs,
+          ratingLists: gameData.ratingLists,
+        },
+        create: {
+          profileId: gameProfile.id,
+          playlogs: gameData.playlogs,
+          ratingLists: gameData.ratingLists,
+        }
+      });
+
+      return gameProfile;
     });
-    
-    await prisma.ratingList.upsert({
-      where: { profileId_type: { profileId: gameProfile.id, type: 'BEST' } },
-      update: { list: bestRatingList },
-      create: { profileId: gameProfile.id, type: 'BEST', list: bestRatingList },
-    });
-    
-    await prisma.ratingList.upsert({
-        where: { profileId_type: { profileId: gameProfile.id, type: 'NEW' } },
-        update: { list: newRatingList },
-        create: { profileId: gameProfile.id, type: 'NEW', list: newRatingList },
-    });
 
-
-    if (playlogs && playlogs.length > 0) {
-      const chunkSize = 100;
-      for (let i = 0; i < playlogs.length; i += chunkSize) {
-        const chunk = playlogs.slice(i, i + chunkSize);
-        await prisma.$transaction(
-          chunk.map(log => {
-            const { title, ...playlogData } = log;
-            const musicId = title;
-
-            return prisma.gamePlaylog.upsert({
-              where: { profileId_musicId_difficulty: { profileId: gameProfile.id, musicId, difficulty: log.difficulty } },
-              update: playlogData,
-              create: {
-                profileId: gameProfile.id,
-                musicId,
-                ...playlogData
-              },
-            });
-          })
-        );
-      }
-    }
-    
-    return NextResponse.json({ message: 'Data imported successfully.' }, { status: 200 });
+    return NextResponse.json({ message: 'Data imported successfully.', profileId: result.id }, { status: 200 });
   } catch (error) {
     console.error('API Error in /api/v1/import/chunithm:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
