@@ -6,6 +6,9 @@
   const handleRequestMessage = async (event) => {
     if (event.origin !== segamentOrigin || event.data !== 'REQUEST_SEGAMENT_DATA') return;
     
+    // 수정: 리스너를 즉시 제거하여 중복 실행을 방지합니다.
+    window.removeEventListener('message', handleRequestMessage);
+
     const postMessageToImporter = (type, payload) => {
         if (segamentImportWindow) segamentImportWindow.postMessage({ type, payload }, segamentOrigin);
     };
@@ -146,11 +149,14 @@
         postMessageToImporter('SEGAMENT_PROGRESS', { message: '데이터 추출 완료. 서버로 전송합니다.', value: 100 });
         postMessageToImporter('SEGAMENT_DATA_PAYLOAD', payload);
 
-      } catch (error) { console.error('[Segament] 데이터 추출 중 오류:', error); postMessageToImporter('SEGAMENT_ERROR', { message: error.message }); }
+    } catch (error) {
+        console.error('[Segament] 데이터 추출 중 오류:', error);
+        postMessageToImporter('SEGAMENT_ERROR', { message: error.message });
     }
-    window.removeEventListener('message', handleRequestMessage);
-  };
+  }; // 수정: handleRequestMessage 함수가 여기서 올바르게 닫힙니다.
+
   console.log('[Segament] 북마크릿이 실행되었습니다.');
   segamentImportWindow = window.open(`${segamentOrigin}/import`, '_blank');
   window.addEventListener('message', handleRequestMessage);
 })();
+// 수정: 파일 끝의 불필요한 '}'를 제거했습니다.
