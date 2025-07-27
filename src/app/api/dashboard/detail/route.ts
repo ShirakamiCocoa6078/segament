@@ -4,13 +4,9 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
-
-// A-1 단계에서 생성한 유틸리티 함수를 import 합니다.
 import { calculateRating } from '@/lib/ratingUtils';
-// 마스터 데이터를 import 합니다.
 import songData from '@/../data/chunithmSongData.json';
 
-// songData를 idx 기반으로 빠르게 조회할 수 있도록 Map 형태로 변환합니다.
 const songMap = new Map(songData.map(song => [song.meta.id.toString(), song]));
 
 export async function GET(request: NextRequest) {
@@ -45,27 +41,28 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    // --- 레이팅 계산 로직 추가 ---
-    const processRatingList = (list: any[]) => {
+    const processList = (list: any[]) => {
       if (!list) return [];
       return list.map(item => {
-        const songInfo = songMap.get(item.id);
+        const songInfo = songMap.get(item.id.toString());
         const difficultyKey = item.difficulty.toLowerCase();
-
+        
         if (songInfo && songInfo.data[difficultyKey]) {
           const constant = songInfo.data[difficultyKey].const;
+          const level = songInfo.data[difficultyKey].level; // 수정: 레벨 정보 추가
           const ratingValue = calculateRating(constant, item.score);
-          return { ...item, const: constant, ratingValue: ratingValue };
+          // 수정: 반환 객체에 level 포함
+          return { ...item, level, const: constant, ratingValue };
         }
-        return { ...item, const: 0, ratingValue: 0 }; // 마스터 데이터에 없는 경우
+        return { ...item, level: 'N/A', const: 0, ratingValue: 0 };
       });
     };
 
     const enrichedGameData = {
-        ...gameProfile.gameData,
+        playlogs: processList(gameProfile.gameData.playlogs),
         ratingLists: {
-            best: processRatingList(gameProfile.gameData.ratingLists.best),
-            new: processRatingList(gameProfile.gameData.ratingLists.new)
+            best: processList(gameProfile.gameData.ratingLists.best),
+            new: processList(gameProfile.gameData.ratingLists.new)
         }
     };
     

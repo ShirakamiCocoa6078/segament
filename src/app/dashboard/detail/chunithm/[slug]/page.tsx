@@ -4,16 +4,20 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SongRatingTable } from '@/components/dashboard/SongRatingTable'; // B단계에서 생성한 컴포넌트
+import { SongDataTable } from '@/components/dashboard/SongDataTable'; // 통합 테이블 컴포넌트 import
 
-interface Song {
+// --- 타입 정의 ---
+// TODO: 향후 이 타입 정의들은 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
+interface SongData {
   id: string;
   title: string;
-  difficulty: string;
   score: number;
+  level: string;
+  difficulty: string;
   const: number;
   ratingValue: number;
 }
+
 interface ProfileDetail {
   playerName: string;
   rating: number;
@@ -21,14 +25,14 @@ interface ProfileDetail {
   overPower: number;
   playCount: number;
   gameData?: {
-    playlogs: any[];
+    playlogs: SongData[];
     ratingLists: {
-        best: any[];
-        new: any[];
+        best: SongData[];
+        new: SongData[];
     };
   }
 }
-
+// --- 타입 정의 끝 ---
 
 export default function ChunithmDetailPage() {
   const params = useParams();
@@ -86,13 +90,16 @@ export default function ChunithmDetailPage() {
         <TabsList>
           <TabsTrigger value="best">Best</TabsTrigger>
           <TabsTrigger value="new">New</TabsTrigger>
-          <TabsTrigger value="all" disabled>All Records (WIP)</TabsTrigger>
+          <TabsTrigger value="all">All Records</TabsTrigger>
         </TabsList>
         <TabsContent value="best">
-            <SongRatingTable songs={profile.gameData?.ratingLists.best || []} />
+            <SongDataTable data={profile.gameData?.ratingLists.best || []} />
         </TabsContent>
         <TabsContent value="new">
-            <SongRatingTable songs={profile.gameData?.ratingLists.new || []} />
+            <SongDataTable data={profile.gameData?.ratingLists.new || []} />
+        </TabsContent>
+        <TabsContent value="all">
+            <SongDataTable data={profile.gameData?.playlogs || []} />
         </TabsContent>
       </Tabs>
     </div>
