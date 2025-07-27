@@ -71,7 +71,7 @@ export function PlayerCard({ profile }: { profile: ProfileDetail }) {
 
     return (
         <div 
-            className="relative w-full max-w-4xl mx-auto aspect-[1024/200] bg-cover bg-center rounded-lg overflow-hidden text-white font-bold"
+            className="relative w-[512px] h-[203px] mx-auto bg-cover bg-center rounded-lg overflow-hidden text-white font-bold"
             style={{ backgroundImage: `url(${profile.nameplateImage})` }}
         >
             <div className="flex h-full w-full">
