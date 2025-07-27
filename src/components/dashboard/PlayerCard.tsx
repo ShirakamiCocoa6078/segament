@@ -2,9 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
 
-// TODO: 이 타입 정의는 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
+// TODO: 이 타입 정의는 향후 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
 interface Honor {
   text: string;
   color: 'NORMAL' | 'SILVER' | 'GOLD' | 'PLATINA' | 'RAINBOW' | 'ONGEKI';
@@ -74,11 +73,14 @@ export function PlayerCard({ profile }: { profile: ProfileDetail }) {
             className="relative w-full max-w-4xl mx-auto aspect-[1024/200] bg-cover bg-center rounded-lg overflow-hidden text-white font-bold"
             style={{ backgroundImage: `url(${profile.nameplateImage})` }}
         >
-            <div className="flex h-full">
-                {/* 1. 왼쪽 1/4 여백 */}
-                <div className="w-1/4 h-full" />
+            <div className="flex h-full w-full">
+                {/* 1. 좌측 캐릭터 영역 */}
+                <div className="relative w-1/4 h-full flex-shrink-0">
+                    {profile.characterBackground && <img src={profile.characterBackground} alt="Character BG" className="absolute inset-0 w-full h-full object-cover"/>}
+                    {profile.characterImage && <img src={profile.characterImage} alt="Character" className="absolute inset-0 w-full h-full object-contain"/>}
+                </div>
 
-                {/* 2. 오른쪽 3/4 콘텐츠 영역 */}
+                {/* 2. 우측 정보 영역 */}
                 <div className="w-3/4 h-full p-2 flex flex-col justify-between">
                     {/* 2a. 상단 (팀, 칭호) */}
                     <div className="flex flex-col items-end h-1/2 pt-1">
@@ -96,17 +98,20 @@ export function PlayerCard({ profile }: { profile: ProfileDetail }) {
 
                     {/* 2b. 하단 (메인 정보) */}
                     <div className="flex-shrink-0 flex items-end justify-between h-1/2 pb-1">
-                        <div className="flex items-end space-x-3">
-                            <div className="relative">
-                                {star !== null && (
-                                    <div className="absolute -top-5 -left-1 w-8 h-8 bg-contain bg-no-repeat flex items-center justify-center" style={{ backgroundImage: `url(https://chunithm-net-eng.com/mobile/images/icon_reborn_star.png)`}}>
-                                        <span className="text-xs text-white">{star}</span>
-                                    </div>
-                                )}
-                                <span className="text-sm">Lv.</span><span className="text-2xl ml-1">{String(lv).padStart(2, '0')}</span>
+                        {/* 레벨, 이름, 레이팅 */}
+                        <div className="flex-grow">
+                            <div className="flex items-end space-x-3">
+                                <div className="relative">
+                                    {star !== null && (
+                                        <div className="absolute -top-5 -left-1 w-8 h-8 bg-contain bg-no-repeat flex items-center justify-center" style={{ backgroundImage: `url(https://chunithm-net-eng.com/mobile/images/icon_reborn_star.png)`}}>
+                                            <span className="text-xs text-white">{star}</span>
+                                        </div>
+                                    )}
+                                    <span className="text-sm">Lv.</span><span className="text-2xl ml-1">{String(lv).padStart(2, '0')}</span>
+                                </div>
+                                <span className="text-3xl pb-1">{profile.playerName}</span>
                             </div>
-                            <span className="text-3xl pb-1">{profile.playerName}</span>
-                            <div className="flex items-end ml-4">
+                            <div className="flex items-end mt-1">
                                 <span className="text-xl mr-2">RATING</span>
                                 {ratingDigits.map((digit, index) => 
                                     digit === '.' 
@@ -116,7 +121,8 @@ export function PlayerCard({ profile }: { profile: ProfileDetail }) {
                             </div>
                         </div>
 
-                        <div className="flex items-end space-x-3">
+                        {/* 엠블럼, 배틀랭크 */}
+                        <div className="flex items-end space-x-3 flex-shrink-0">
                             {(profile.classEmblemBase || profile.classEmblemTop) && (
                                 <div className="relative w-14 h-14">
                                     {profile.classEmblemBase && <img src={profile.classEmblemBase} alt="Emblem Base" className="absolute inset-0 w-full h-full" />}
@@ -124,12 +130,6 @@ export function PlayerCard({ profile }: { profile: ProfileDetail }) {
                                 </div>
                             )}
                             {profile.battleRankImg && <img src={profile.battleRankImg} alt="Battle Rank" className="h-14"/>}
-                            {profile.characterImage && (
-                                <div className="relative w-20 h-20">
-                                    {profile.characterBackground && <img src={profile.characterBackground} alt="Character BG" className="absolute inset-0 w-full h-full"/>}
-                                    <img src={profile.characterImage} alt="Character" className="absolute inset-0 w-full h-full"/>
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>
