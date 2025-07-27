@@ -40,30 +40,42 @@ export async function GET(request: NextRequest) {
     if (!gameProfile || !gameProfile.gameData) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
+    
+    const bestSet = new Set(gameProfile.gameData.ratingLists.best.map(s => `${s.id}-${s.difficulty}`));
+    const newSet = new Set(gameProfile.gameData.ratingLists.new.map(s => `${s.id}-${s.difficulty}`));
 
-    const processList = (list: any[]) => {
+    const processList = (list: any[], isPlaylog = false) => {
       if (!list) return [];
       return list.map(item => {
         const songInfo = songMap.get(item.id.toString());
         const difficultyKey = item.difficulty.toLowerCase();
-        
         const songDifficultyInfo = songInfo?.data?.[difficultyKey];
+        
+        const enrichedItem: any = { ...item, level: 'N/A', const: 0, ratingValue: 0 };
 
-        // --- 수정: 데이터 유효성 검사 강화 ---
         if (songDifficultyInfo && typeof songDifficultyInfo.const === 'number') {
-          const constant = songDifficultyInfo.const;
-          const level = songDifficultyInfo.level || 'N/A';
-          const ratingValue = calculateRating(constant, item.score);
-          return { ...item, level, const: constant, ratingValue: ratingValue };
+          enrichedItem.const = songDifficultyInfo.const;
+          enrichedItem.level = songDifficultyInfo.level || 'N/A';
+          enrichedItem.ratingValue = calculateRating(enrichedItem.const, item.score);
+        }
+
+        if (isPlaylog) {
+          const key = `${item.id}-${item.difficulty}`;
+          if (bestSet.has(key)) {
+            enrichedItem.ratingListType = 'best';
+          } else if (newSet.has(key)) {
+            enrichedItem.ratingListType = 'new';
+          } else {
+            enrichedItem.ratingListType = null;
+          }
         }
         
-        // 유효한 보면 상수 정보를 찾지 못한 모든 경우에 대한 안전한 기본값 반환
-        return { ...item, level: 'N/A', const: 0, ratingValue: 0 };
+        return enrichedItem;
       });
     };
 
     const enrichedGameData = {
-        playlogs: processList(gameProfile.gameData.playlogs),
+        playlogs: processList(gameProfile.gameData.playlogs, true),
         ratingLists: {
             best: processList(gameProfile.gameData.ratingLists.best),
             new: processList(gameProfile.gameData.ratingLists.new)
