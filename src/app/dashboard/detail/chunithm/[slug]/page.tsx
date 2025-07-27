@@ -4,10 +4,16 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SongDataTable } from '@/components/dashboard/SongDataTable'; // 통합 테이블 컴포넌트 import
+import { SongDataTable } from '@/components/dashboard/SongDataTable';
+import { PlayerCard } from '@/components/dashboard/PlayerCard';
 
 // --- 타입 정의 ---
 // TODO: 향후 이 타입 정의들은 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
+interface Honor {
+  text: string;
+  color: 'NORMAL' | 'SILVER' | 'GOLD' | 'PLATINA' | 'RAINBOW' | 'ONGEKI';
+}
+
 interface SongData {
   id: string;
   title: string;
@@ -16,14 +22,21 @@ interface SongData {
   difficulty: string;
   const: number;
   ratingValue: number;
+  ratingListType?: 'best' | 'new' | null;
 }
 
 interface ProfileDetail {
   playerName: string;
   rating: number;
   level: number;
-  overPower: number;
-  playCount: number;
+  honors?: Honor[];
+  teamName?: string;
+  teamEmblemColor?: string;
+  classEmblemTop?: string;
+  classEmblemBase?: string;
+  characterImage?: string;
+  characterBackground?: string;
+  nameplateImage?: string;
   gameData?: {
     playlogs: SongData[];
     ratingLists: {
@@ -35,25 +48,24 @@ interface ProfileDetail {
 // --- 타입 정의 끝 ---
 
 export default function ChunithmDetailPage() {
-  const params = useParams();
-  const { slug } = params;
-
   const [profile, setProfile] = useState<ProfileDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const params = useParams();
+  const { slug } = params;
 
   useEffect(() => {
     if (typeof slug === 'string') {
-      const region = slug.toUpperCase();
-      fetch(`/api/dashboard/detail?gameType=CHUNITHM&region=${region}`)
-        .then(res => {
-          if (!res.ok) throw new Error('프로필 정보를 불러오는데 실패했습니다.');
-          return res.json();
-        })
-        .then(data => setProfile(data.profile))
-        .catch(err => setError(err.message))
-        .finally(() => setIsLoading(false));
-    }
+        const region = slug.toUpperCase();
+        fetch(`/api/dashboard/detail?gameType=CHUNITHM&region=${region}`)
+          .then(res => {
+            if (!res.ok) throw new Error('프로필 정보를 불러오는데 실패했습니다.');
+            return res.json();
+          })
+          .then(data => setProfile(data.profile))
+          .catch(err => setError(err.message))
+          .finally(() => setIsLoading(false));
+      }
   }, [slug]);
 
   if (isLoading) return <div className="p-4 text-center">로딩 중...</div>;
@@ -62,31 +74,9 @@ export default function ChunithmDetailPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <header className="mb-6">
-        <h1 className="text-4xl font-bold">{profile.playerName}</h1>
-        <p className="text-xl text-muted-foreground">CHUNITHM - {slug.toString().toUpperCase()}</p>
-      </header>
-      
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="p-4 bg-gray-100 rounded-lg text-center">
-            <p className="text-sm text-gray-500">Rating</p>
-            <p className="text-2xl font-bold">{profile.rating.toFixed(2)}</p>
-        </div>
-        <div className="p-4 bg-gray-100 rounded-lg text-center">
-            <p className="text-sm text-gray-500">Level</p>
-            <p className="text-2xl font-bold">{profile.level}</p>
-        </div>
-        <div className="p-4 bg-gray-100 rounded-lg text-center">
-            <p className="text-sm text-gray-500">Over Power</p>
-            <p className="text-2xl font-bold">{profile.overPower.toFixed(2)}</p>
-        </div>
-        <div className="p-4 bg-gray-100 rounded-lg text-center">
-            <p className="text-sm text-gray-500">Play Count</p>
-            <p className="text-2xl font-bold">{profile.playCount}</p>
-        </div>
-      </div>
+      <PlayerCard profile={profile} />
 
-      <Tabs defaultValue="best" className="w-full">
+      <Tabs defaultValue="best" className="w-full mt-6">
         <TabsList>
           <TabsTrigger value="best">Best</TabsTrigger>
           <TabsTrigger value="new">New</TabsTrigger>
