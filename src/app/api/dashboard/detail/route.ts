@@ -8,7 +8,7 @@ import { NextRequest } from 'next/server';
 // A-1 단계에서 생성한 유틸리티 함수를 import 합니다.
 import { calculateRating } from '@/lib/ratingUtils';
 // 마스터 데이터를 import 합니다.
-import songData from '@/data/chunithmSongData.json';
+import songData from '@/../data/chunithmSongData.json';
 
 // songData를 idx 기반으로 빠르게 조회할 수 있도록 Map 형태로 변환합니다.
 const songMap = new Map(songData.map(song => [song.meta.id.toString(), song]));
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       return list.map(item => {
         const songInfo = songMap.get(item.id);
         const difficultyKey = item.difficulty.toLowerCase();
-        
+
         if (songInfo && songInfo.data[difficultyKey]) {
           const constant = songInfo.data[difficultyKey].const;
           const ratingValue = calculateRating(constant, item.score);
