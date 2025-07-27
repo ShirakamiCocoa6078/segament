@@ -3,7 +3,8 @@
 
 import { useState, useEffect } from 'react';
 
-// TODO: 이 타입 정의는 향후 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
+// --- 타입 정의 ---
+// TODO: 향후 이 타입 정의들은 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
 interface Honor {
   text: string;
   color: 'NORMAL' | 'SILVER' | 'GOLD' | 'PLATINA' | 'RAINBOW' | 'ONGEKI';
@@ -51,7 +52,7 @@ export function PlayerCard({ profile }: { profile: ProfileDetail }) {
         if (!profile.honors || profile.honors.length <= 1) return;
         const interval = setInterval(() => {
             setCurrentHonorIndex(prevIndex => (prevIndex + 1) % profile.honors.length);
-        }, 3000); // 3초마다 칭호 변경
+        }, 3000);
         return () => clearInterval(interval);
     }, [profile.honors]);
 
@@ -81,9 +82,9 @@ export function PlayerCard({ profile }: { profile: ProfileDetail }) {
                 </div>
 
                 {/* 2. 우측 정보 영역 */}
-                <div className="w-3/4 h-full p-2 flex flex-col justify-between">
+                <div className="w-3/4 h-full p-4 flex flex-col justify-between">
                     {/* 2a. 상단 (팀, 칭호) */}
-                    <div className="flex flex-col items-end h-1/2 pt-1">
+                    <div className="flex flex-col items-end">
                         {profile.teamName && profile.teamEmblemColor && (
                             <div className="w-[200px] h-[28px] bg-no-repeat bg-center bg-contain flex items-center justify-center" style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor}.png)`}}>
                                 <span className="text-base" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}>{profile.teamName}</span>
@@ -97,13 +98,13 @@ export function PlayerCard({ profile }: { profile: ProfileDetail }) {
                     </div>
 
                     {/* 2b. 하단 (메인 정보) */}
-                    <div className="flex-shrink-0 flex items-end justify-between h-1/2 pb-1">
+                    <div className="flex items-end justify-between">
                         {/* 레벨, 이름, 레이팅 */}
-                        <div className="flex-grow">
+                        <div className="flex-grow pt-6">
                             <div className="flex items-end space-x-3">
                                 <div className="relative">
                                     {star !== null && (
-                                        <div className="absolute -top-5 -left-1 w-8 h-8 bg-contain bg-no-repeat flex items-center justify-center" style={{ backgroundImage: `url(https://chunithm-net-eng.com/mobile/images/icon_reborn_star.png)`}}>
+                                        <div className="absolute -top-1 -left-1 w-8 h-8 bg-contain bg-no-repeat flex items-center justify-center" style={{ backgroundImage: `url(https://chunithm-net-eng.com/mobile/images/icon_reborn_star.png)`}}>
                                             <span className="text-xs text-white">{star}</span>
                                         </div>
                                     )}
