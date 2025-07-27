@@ -1,6 +1,7 @@
 // 파일 경로: src/components/dashboard/PlayerCard.tsx
 'use client';
 
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 // TODO: 이 타입 정의는 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
@@ -20,6 +21,7 @@ interface ProfileDetail {
   characterImage?: string;
   characterBackground?: string;
   nameplateImage?: string;
+  battleRankImg?: string;
 }
 
 // --- 헬퍼 함수들 ---
@@ -40,14 +42,23 @@ const splitLevel = (level: number): { star: number | null, lv: number } => {
     if (level < 100) return { star: null, lv: level };
     const star = Math.floor(level / 100);
     const lv = level % 100;
-    return { star, lv: lv > 0 ? lv : 1 }; // 100, 200레벨 등에서 lv가 0이 되는 것을 방지
+    return { star, lv: lv > 0 ? lv : 99 };
 };
 
 export function PlayerCard({ profile }: { profile: ProfileDetail }) {
+    const [currentHonorIndex, setCurrentHonorIndex] = useState(0);
+
+    useEffect(() => {
+        if (!profile.honors || profile.honors.length <= 1) return;
+        const interval = setInterval(() => {
+            setCurrentHonorIndex(prevIndex => (prevIndex + 1) % profile.honors.length);
+        }, 3000); // 3초마다 칭호 변경
+        return () => clearInterval(interval);
+    }, [profile.honors]);
+
     const { star, lv } = splitLevel(profile.level);
     const ratingColor = getRatingColor(profile.rating);
     const ratingDigits = profile.rating.toFixed(2).split('');
-
     const honorBgMap: Record<string, string> = {
         NORMAL: 'normal',
         SILVER: 'silver',
@@ -56,62 +67,73 @@ export function PlayerCard({ profile }: { profile: ProfileDetail }) {
         RAINBOW: 'rainbow',
         ONGEKI: 'ongeki',
     };
+    const currentHonor = profile.honors?.[currentHonorIndex];
 
     return (
-        <div className="relative w-[320px] h-[480px] mx-auto overflow-hidden text-white font-bold">
-            {/* 1. 네임플레이트 (가장 아래, z-index: 10) */}
-            {profile.nameplateImage && <img src={profile.nameplateImage} alt="Nameplate" className="absolute inset-0 w-full h-full z-10" />}
+        <div 
+            className="relative w-full max-w-4xl mx-auto aspect-[1024/200] bg-cover bg-center rounded-lg overflow-hidden text-white font-bold"
+            style={{ backgroundImage: `url(${profile.nameplateImage})` }}
+        >
+            <div className="flex h-full">
+                {/* 1. 왼쪽 1/4 여백 */}
+                <div className="w-1/4 h-full" />
 
-            {/* 2. 캐릭터 배경 (z-index: 20) */}
-            {profile.characterBackground && <img src={profile.characterBackground} alt="Character BG" className="absolute top-[132px] left-[10px] w-[300px] h-[300px] z-20" />}
-            
-            {/* 3. 캐릭터 이미지 (z-index: 30) */}
-            {profile.characterImage && <img src={profile.characterImage} alt="Character" className="absolute top-[132px] left-[10px] w-[300px] h-[300px] z-30" />}
+                {/* 2. 오른쪽 3/4 콘텐츠 영역 */}
+                <div className="w-3/4 h-full p-2 flex flex-col justify-between">
+                    {/* 2a. 상단 (팀, 칭호) */}
+                    <div className="flex flex-col items-end h-1/2 pt-1">
+                        {profile.teamName && profile.teamEmblemColor && (
+                            <div className="w-[200px] h-[28px] bg-no-repeat bg-center bg-contain flex items-center justify-center" style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor}.png)`}}>
+                                <span className="text-base" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}>{profile.teamName}</span>
+                            </div>
+                        )}
+                        {currentHonor && (
+                             <div className="w-[240px] h-[28px] bg-no-repeat bg-center bg-contain flex items-center justify-center mt-1" style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/honor_bg_${honorBgMap[currentHonor.color] || 'normal'}.png)`}}>
+                                <span className="text-black text-sm px-2 truncate" style={{ textShadow: 'none' }}>{currentHonor.text}</span>
+                            </div>
+                        )}
+                    </div>
 
-            {/* 4. 팀 정보 (z-index: 40) */}
-            {profile.teamName && profile.teamEmblemColor && (
-                <div className="absolute top-[12px] left-[10px] w-[300px] h-[34px] bg-no-repeat bg-center bg-contain z-40 flex items-center justify-center" style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor}.png)`}}>
-                    <span className="text-lg tracking-wider" style={{ textShadow: '1px 1px 2px black' }}>{profile.teamName}</span>
+                    {/* 2b. 하단 (메인 정보) */}
+                    <div className="flex-shrink-0 flex items-end justify-between h-1/2 pb-1">
+                        <div className="flex items-end space-x-3">
+                            <div className="relative">
+                                {star !== null && (
+                                    <div className="absolute -top-5 -left-1 w-8 h-8 bg-contain bg-no-repeat flex items-center justify-center" style={{ backgroundImage: `url(https://chunithm-net-eng.com/mobile/images/icon_reborn_star.png)`}}>
+                                        <span className="text-xs text-white">{star}</span>
+                                    </div>
+                                )}
+                                <span className="text-sm">Lv.</span><span className="text-2xl ml-1">{String(lv).padStart(2, '0')}</span>
+                            </div>
+                            <span className="text-3xl pb-1">{profile.playerName}</span>
+                            <div className="flex items-end ml-4">
+                                <span className="text-xl mr-2">RATING</span>
+                                {ratingDigits.map((digit, index) => 
+                                    digit === '.' 
+                                    ? <img key={index} src={`https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_comma.png`} alt="," className="h-[14px] mb-[4px]"/>
+                                    : <img key={index} src={`https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_0${digit}.png`} alt={digit} className="h-[24px]" />
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex items-end space-x-3">
+                            {(profile.classEmblemBase || profile.classEmblemTop) && (
+                                <div className="relative w-14 h-14">
+                                    {profile.classEmblemBase && <img src={profile.classEmblemBase} alt="Emblem Base" className="absolute inset-0 w-full h-full" />}
+                                    {profile.classEmblemTop && <img src={profile.classEmblemTop} alt="Emblem Top" className="absolute inset-0 w-full h-full" />}
+                                </div>
+                            )}
+                            {profile.battleRankImg && <img src={profile.battleRankImg} alt="Battle Rank" className="h-14"/>}
+                            {profile.characterImage && (
+                                <div className="relative w-20 h-20">
+                                    {profile.characterBackground && <img src={profile.characterBackground} alt="Character BG" className="absolute inset-0 w-full h-full"/>}
+                                    <img src={profile.characterImage} alt="Character" className="absolute inset-0 w-full h-full"/>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
-            )}
-            
-            {/* 5. 칭호 (z-index: 40) */}
-            <div className="absolute top-[55px] left-[10px] flex flex-col space-y-[2px] z-40">
-                {profile.honors?.slice(0, 3).map((honor, index) => (
-                    <div key={index} className="w-[300px] h-[32px] bg-no-repeat bg-center bg-contain flex items-center justify-center overflow-hidden" style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/honor_bg_${honorBgMap[honor.color] || 'normal'}.png)`}}>
-                        {/* TODO: 텍스트 오버플로우 시 스크롤 애니메이션 구현 */}
-                        <span className="text-black text-base px-4" style={{ textShadow: 'none' }}>{honor.text}</span>
-                    </div>
-                ))}
             </div>
-            
-            {/* 6. 레벨 (z-index: 40) */}
-            <div className="absolute bottom-[48px] left-[18px] z-40">
-                <span className="text-sm" style={{ textShadow: '1px 1px 2px black' }}>Lv.</span>
-                <span className="text-3xl ml-1">{String(lv).padStart(2, '0')}</span>
-                {star !== null && (
-                    <div className="absolute top-[-30px] left-[-5px] w-12 h-12 bg-contain bg-no-repeat flex items-center justify-center" style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_reborn.png)`}}>
-                         <span className="text-sm mt-1">{star}</span>
-                    </div>
-                )}
-            </div>
-            
-            {/* 7. 레이팅 (z-index: 40) */}
-            <div className="absolute bottom-[8px] right-[10px] flex items-end h-[30px] z-40">
-                <span className="text-lg mr-1" style={{ textShadow: '1px 1px 2px black' }}>RATING</span>
-                {ratingDigits.map((digit, index) => 
-                    digit === '.' 
-                    ? <img key={index} src={`https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_comma.png`} alt="comma" className="h-[12px] mb-[4px]"/>
-                    : <img key={index} src={`https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_0${digit}.png`} alt={digit} className="h-[26px]" />
-                )}
-            </div>
-            
-            {/* 8. 엠블럼 (z-index: 25) */}
-            {profile.classEmblemBase && <img src={profile.classEmblemBase} alt="Emblem Base" className="absolute top-[160px] right-[15px] z-20" />}
-            {profile.classEmblemTop && <img src={profile.classEmblemTop} alt="Emblem Top" className="absolute top-[160px] right-[15px] z-25" />}
-
-            {/* 9. 닉네임 (z-index: 40) */}
-            <p className="absolute bottom-[8px] left-[18px] text-2xl z-40" style={{ textShadow: '1px 1px 3px black' }}>{profile.playerName}</p>
         </div>
     );
 }
