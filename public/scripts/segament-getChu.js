@@ -78,18 +78,23 @@
             const doc = await utils.fetchPageDoc(url);
             const musicForms = doc.querySelectorAll('.w388.musiclist_box');
             const ratingList = [];
+            // 수정: 난이도 숫자 매핑을 위한 객체
+            const diffMap = { '0': 'BASIC', '1': 'ADVANCED', '2': 'EXPERT', '3': 'MASTER', '4': 'ULTIMA' };
+
             musicForms.forEach(form => {
                 const title = utils.normalize(form.querySelector('.music_title')?.innerText);
                 const scoreText = utils.normalize(form.querySelector('.play_musicdata_highscore .text_b')?.innerText);
-                if (!title || !scoreText) return;
+                const id = form.querySelector('input[name="idx"]')?.value;
+                // 수정: input[name="diff"]에서 난이도 값을 가져옵니다.
+                const diffValue = form.querySelector('input[name="diff"]')?.value;
+
+                if (!title || !scoreText || !id || !diffValue) return;
+                
                 const score = parseInt(scoreText.replace(/,/g, ''));
-                const difficultyImg = form.querySelector('img[src*="diff"]');
-                let difficulty = '';
-                if(difficultyImg) {
-                    const match = difficultyImg.src.match(/diff_(\w+)\.png/);
-                    if(match) difficulty = match[1].toUpperCase();
-                }
-                ratingList.push({ title, score, difficulty });
+                // 수정: diffMap을 사용하여 숫자 값을 문자열로 변환합니다.
+                const difficulty = diffMap[diffValue] || 'UNKNOWN';
+                
+                ratingList.push({ id, title, score, difficulty });
             });
             return ratingList;
         };
@@ -108,7 +113,9 @@
                  musicBlocks.forEach(block => {
                     const title = utils.normalize(block.querySelector('.music_title')?.innerText);
                     const scoreText = utils.normalize(block.querySelector('.play_musicdata_highscore span.text_b')?.innerText);
-                    if (!title || !scoreText) return;
+                    const id = block.querySelector('input[name="idx"]')?.value;
+
+                    if (!title || !scoreText || !id) return;
 
                     const score = parseInt(scoreText.replace(/,/g, ''));
                     const lamps = block.querySelectorAll('.play_musicdata_icon img');
@@ -123,7 +130,7 @@
                         if (match) rank = PlayRank[parseInt(match[1])] || 'D';
                     });
                     
-                    plays.push({ title, difficulty: difficulty.toUpperCase(), score, rank, clearType, comboType, fullChainType });
+                    plays.push({ id, title, difficulty: difficulty.toUpperCase(), score, rank, clearType, comboType, fullChainType });
                  });
             }
             return plays;
@@ -153,7 +160,7 @@
                 playlogs: playlogsData,
                 ratingLists: {
                     best: bestRatingList,
-                    recent: newRatingList
+                    new: newRatingList
                 }
             }
         };
