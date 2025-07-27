@@ -49,15 +49,15 @@ export async function GET(request: NextRequest) {
         
         if (songInfo && songInfo.data[difficultyKey]) {
           const constant = songInfo.data[difficultyKey].const;
-          const level = songInfo.data[difficultyKey].level; // 수정: 레벨 정보 추가
+          const level = songInfo.data[difficultyKey].level;
           const ratingValue = calculateRating(constant, item.score);
-          // 수정: 반환 객체에 level 포함
-          return { ...item, level, const: constant, ratingValue };
+          return { ...item, level, const: constant, ratingValue: ratingValue };
         }
         return { ...item, level: 'N/A', const: 0, ratingValue: 0 };
       });
     };
 
+    // 수정: playlogs 배열에도 processList 함수를 적용합니다.
     const enrichedGameData = {
         playlogs: processList(gameProfile.gameData.playlogs),
         ratingLists: {
