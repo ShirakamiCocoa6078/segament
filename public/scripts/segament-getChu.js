@@ -33,10 +33,11 @@
             normalize: (str) => str ? str.normalize('NFKC').trim() : '',
         };
 
-        const collectPlayerData = (doc) => {
+        const collectPlayerData = (playerDataDoc, customiseDoc) => {
             const playerInfo = {};
-            playerInfo.playerName = utils.normalize(doc.querySelector('.player_name_in')?.innerText);
-            const ratingImages = doc.querySelectorAll('.player_rating_num_block img');
+            // --- 기존 데이터 수집 ---
+            playerInfo.playerName = utils.normalize(playerDataDoc.querySelector('.player_name_in')?.innerText);
+            const ratingImages = playerDataDoc.querySelectorAll('.player_rating_num_block img');
             let ratingStr = '';
             ratingImages.forEach(img => {
                 if (img.src.includes('comma')) ratingStr += '.';
@@ -46,13 +47,13 @@
                 }
             });
             playerInfo.rating = parseFloat(ratingStr) || 0;
-            const opText = utils.normalize(doc.querySelector('.player_overpower_text')?.innerText);
+            const opText = utils.normalize(playerDataDoc.querySelector('.player_overpower_text')?.innerText);
             if (opText) playerInfo.overPower = parseFloat(opText.split(' ')[0]);
-            const rebornLv = parseInt(doc.querySelector('.player_reborn')?.innerText || '0');
-            const mainLv = parseInt(doc.querySelector('.player_lv')?.innerText || '0');
+            const rebornLv = parseInt(playerDataDoc.querySelector('.player_reborn')?.innerText || '0');
+            const mainLv = parseInt(playerDataDoc.querySelector('.player_lv')?.innerText || '0');
             playerInfo.level = (rebornLv * 100) + mainLv;
             const honors = [];
-            doc.querySelectorAll('.player_honor_short').forEach(honor => {
+            playerDataDoc.querySelectorAll('.player_honor_short').forEach(honor => {
                 const text = utils.normalize(honor.querySelector('.player_honor_text span')?.innerText);
                 const style = honor.getAttribute('style');
                 let color = 'NORMAL';
@@ -63,37 +64,49 @@
                 honors.push({ text, color });
             });
             playerInfo.honors = honors;
-            playerInfo.teamName = utils.normalize(doc.querySelector('.player_team_name')?.innerText);
-            playerInfo.lastPlayDate = utils.normalize(doc.querySelector('.player_lastplaydate_text')?.innerText);
-            const battleRankImg = doc.querySelector('.player_battlerank img')?.src;
-            if (battleRankImg) playerInfo.battleRankImg = battleRankImg;
-            playerInfo.friendCode = utils.normalize(doc.querySelector('.user_data_friend_tap span[style*="display:none"]')?.innerText);
-            const playCountElement = doc.querySelector('.user_data_play_count .user_data_text');
+            playerInfo.teamName = utils.normalize(playerDataDoc.querySelector('.player_team_name')?.innerText);
+            playerInfo.lastPlayDate = utils.normalize(playerDataDoc.querySelector('.player_lastplaydate_text')?.innerText);
+            playerInfo.friendCode = utils.normalize(playerDataDoc.querySelector('.user_data_friend_tap span[style*="display:none"]')?.innerText);
+            const playCountElement = playerDataDoc.querySelector('.user_data_play_count .user_data_text');
             const playCountText = playCountElement ? utils.normalize(playCountElement.innerText) : '0';
             playerInfo.playCount = parseInt(playCountText.replace(/,/g, '')) || 0;
+            playerInfo.battleRankImg = playerDataDoc.querySelector('.player_battlerank img')?.src;
+
+            // --- 신규 데이터 수집 ---
+            const teamEmblem = playerDataDoc.querySelector('.player_data_right > div[class*="player_team_emblem_"]');
+            if (teamEmblem) {
+                const classMatch = teamEmblem.className.match(/player_team_emblem_(\w+)/);
+                if (classMatch) playerInfo.teamEmblemColor = classMatch[1];
+            }
+            playerInfo.classEmblemTop = playerDataDoc.querySelector('.player_classemblem_top img')?.src;
+            playerInfo.classEmblemBase = playerDataDoc.querySelector('.player_classemblem_base img')?.src;
+            const charaContainer = playerDataDoc.querySelector('div.player_chara');
+            if (charaContainer) {
+                playerInfo.characterImage = charaContainer.querySelector('img')?.src;
+                const style = charaContainer.getAttribute('style');
+                if (style) {
+                    const bgMatch = style.match(/url\((.*?)\)/);
+                    if (bgMatch) playerInfo.characterBackground = bgMatch[1].replace(/"/g, ""); // 따옴표 제거
+                }
+            }
+            playerInfo.nameplateImage = customiseDoc.querySelector('div.nameplate_now img')?.src;
+            
             return playerInfo;
         };
-
+        
         const collectRatingList = async (url) => {
             const doc = await utils.fetchPageDoc(url);
             const musicForms = doc.querySelectorAll('.w388.musiclist_box');
             const ratingList = [];
-            // 수정: 난이도 숫자 매핑을 위한 객체
             const diffMap = { '0': 'BASIC', '1': 'ADVANCED', '2': 'EXPERT', '3': 'MASTER', '4': 'ULTIMA' };
-
             musicForms.forEach(form => {
                 const title = utils.normalize(form.querySelector('.music_title')?.innerText);
                 const scoreText = utils.normalize(form.querySelector('.play_musicdata_highscore .text_b')?.innerText);
                 const id = form.querySelector('input[name="idx"]')?.value;
-                // 수정: input[name="diff"]에서 난이도 값을 가져옵니다.
                 const diffValue = form.querySelector('input[name="diff"]')?.value;
-
-                if (!title || !scoreText || !id || !diffValue) return;
-                
+                if (!title || !scoreText || !id || diffValue === undefined) return;
                 const score = parseInt(scoreText.replace(/,/g, ''));
-                // 수정: diffMap을 사용하여 숫자 값을 문자열로 변환합니다.
                 const difficulty = diffMap[diffValue] || 'UNKNOWN';
-                
                 ratingList.push({ id, title, score, difficulty });
             });
             return ratingList;
@@ -114,13 +127,10 @@
                     const title = utils.normalize(block.querySelector('.music_title')?.innerText);
                     const scoreText = utils.normalize(block.querySelector('.play_musicdata_highscore span.text_b')?.innerText);
                     const id = block.querySelector('input[name="idx"]')?.value;
-
                     if (!title || !scoreText || !id) return;
-
                     const score = parseInt(scoreText.replace(/,/g, ''));
                     const lamps = block.querySelectorAll('.play_musicdata_icon img');
                     let rank = 'D', clearType = 0, comboType = 0, fullChainType = 0;
-
                     lamps.forEach(lamp => {
                         const src = lamp.src;
                         if(src.includes('icon_clear.png')) clearType = 1; else if(src.includes('icon_hard.png')) clearType = 2; else if(src.includes('icon_brave.png')) clearType = 3; else if(src.includes('icon_absolute.png')) clearType = 4; else if(src.includes('icon_rank_catastrophy')) clearType = 5;
@@ -129,7 +139,6 @@
                         const match = src.match(/icon_rank_(\d+)\.png/);
                         if (match) rank = PlayRank[parseInt(match[1])] || 'D';
                     });
-                    
                     plays.push({ id, title, difficulty: difficulty.toUpperCase(), score, rank, clearType, comboType, fullChainType });
                  });
             }
@@ -137,14 +146,16 @@
         };
 
         postMessageToImporter('SEGAMENT_PROGRESS', { message: '토큰 정보 확인 중...', value: 5 });
-        const musicRecordDoc = await utils.fetchPageDoc(baseUrl + 'record/musicGenre/');
-        const tokenInput = musicRecordDoc.querySelector('form input[name="token"]');
+        const tokenInput = (await utils.fetchPageDoc(baseUrl + 'record/musicGenre/')).querySelector('form input[name="token"]');
         if (!tokenInput || !tokenInput.value) throw new Error("토큰을 찾을 수 없습니다.");
         const token = tokenInput.value;
 
-        postMessageToImporter('SEGAMENT_PROGRESS', { message: '프로필 정보 수집 중...', value: 10 });
-        const playerDataDoc = await utils.fetchPageDoc(baseUrl + 'home/playerData/');
-        const profileData = collectPlayerData(playerDataDoc);
+        postMessageToImporter('SEGAMENT_PROGRESS', { message: '프로필 및 커스터마이즈 정보 수집 중...', value: 10 });
+        const [playerDataDoc, customiseDoc] = await Promise.all([
+            utils.fetchPageDoc(baseUrl + 'home/playerData/'),
+            utils.fetchPageDoc(baseUrl + 'collection/customise/')
+        ]);
+        const profileData = collectPlayerData(playerDataDoc, customiseDoc);
         
         const [playlogsData, bestRatingList, newRatingList] = await Promise.all([
             collectAllMusicPlays(token),

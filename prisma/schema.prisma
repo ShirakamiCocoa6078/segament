@@ -69,11 +69,18 @@ model GameProfile {
   lastPlayDate  String?
   battleRankImg String?
   friendCode    String?
+  
+  // --- 신규 추가 필드 ---
+  teamEmblemColor     String? // 팀 엠블럼 색상
+  classEmblemTop      String? // 코스 엠블럼 (Top)
+  classEmblemBase     String? // 코스 엠블럼 (Base)
+  characterImage      String? // 캐릭터 이미지 URL
+  characterBackground String? // 캐릭터 배경 URL
+  nameplateImage      String? // 네임플레이트 이미지 URL
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // GameData와의 1:1 관계 설정
   gameData      GameData?
 
   @@unique([userId, gameType, region])

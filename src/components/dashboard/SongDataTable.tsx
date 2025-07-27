@@ -40,7 +40,7 @@ const difficultyColorMap: { [key: string]: string } = {
     ADVANCED: 'text-yellow-600',
     EXPERT: 'text-red-600',
     MASTER: 'text-purple-600',
-    ULTIMA: 'text-indigo-600',
+    ULTIMA: 'text-indigo-900',
 };
 
 export function SongDataTable({ data }: SongDataTableProps) {
