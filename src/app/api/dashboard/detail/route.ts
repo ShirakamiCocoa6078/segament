@@ -47,17 +47,21 @@ export async function GET(request: NextRequest) {
         const songInfo = songMap.get(item.id.toString());
         const difficultyKey = item.difficulty.toLowerCase();
         
-        if (songInfo && songInfo.data[difficultyKey]) {
-          const constant = songInfo.data[difficultyKey].const;
-          const level = songInfo.data[difficultyKey].level;
+        const songDifficultyInfo = songInfo?.data?.[difficultyKey];
+
+        // --- 수정: 데이터 유효성 검사 강화 ---
+        if (songDifficultyInfo && typeof songDifficultyInfo.const === 'number') {
+          const constant = songDifficultyInfo.const;
+          const level = songDifficultyInfo.level || 'N/A';
           const ratingValue = calculateRating(constant, item.score);
           return { ...item, level, const: constant, ratingValue: ratingValue };
         }
+        
+        // 유효한 보면 상수 정보를 찾지 못한 모든 경우에 대한 안전한 기본값 반환
         return { ...item, level: 'N/A', const: 0, ratingValue: 0 };
       });
     };
 
-    // 수정: playlogs 배열에도 processList 함수를 적용합니다.
     const enrichedGameData = {
         playlogs: processList(gameProfile.gameData.playlogs),
         ratingLists: {
