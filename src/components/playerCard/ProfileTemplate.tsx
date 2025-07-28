@@ -1,4 +1,3 @@
-//src/app/components/playerCard/ProfileTemplate.tsx
 import React from 'react';
 
 // --- 타입 정의 ---
@@ -55,22 +54,27 @@ export const ProfileTemplate = ({ profile, honorToShow }: ProfileTemplateProps) 
       NORMAL: 'normal', SILVER: 'silver', GOLD: 'gold',
       PLATINA: 'platina', RAINBOW: 'rainbow', ONGEKI: 'ongeki',
   };
-  const msPGRFont = { fontFamily: '"MS PGothic", sans-serif' };
   
-  // 텍스트 스타일 정의
-  const blackTextStyle = { color: 'black', textShadow: '1px 1px 1px rgba(255,255,255,0.3)' };
+  // 수정: 웹 폰트 'Noto Sans JP'를 기본 폰트로 사용
+  const mainFont = { fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700 };
+  
+  const blackTextStyle = { color: 'black', textShadow: '1px 1px 1px rgba(255,255,255,0.4)' };
   const whiteTextStyle = { color: 'white', textShadow: '1px 1px 2px rgba(0,0,0,0.7)' };
+
+  // 수정: Google Fonts를 import하는 구문을 <style> 태그에 추가
+  const styles = `
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&display=swap');
+    body { margin: 0; }
+    div, span, img { position: absolute; box-sizing: border-box; }
+  `;
 
   return (
     <html>
       <head>
-        <style>{`
-          body { margin: 0; }
-          div, span, img { position: absolute; box-sizing: border-box; }
-        `}</style>
+        <style>{styles}</style>
       </head>
       <body>
-        <div style={{ width: '1823px', height: '722px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ width: '1823px', height: '722px', position: 'relative', overflow: 'hidden', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700 }}>
             {profile.nameplateImage && <img src={profile.nameplateImage} style={{ inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
             
             <div style={{ left: 0, top: 0, width: '549px', height: '100%' }}>
@@ -80,29 +84,29 @@ export const ProfileTemplate = ({ profile, honorToShow }: ProfileTemplateProps) 
 
             {profile.teamName && (
                 <div style={{ width: '1176px', height: '208px', left: '549px', top: '20px', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor}.png)`}}>
-                    <div style={{ width: '878px', height: '113px', left: '197px', top: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '96px', ...whiteTextStyle, ...msPGRFont }}>{profile.teamName}</div>
+                    <div style={{ width: '878px', height: '113px', left: '197px', top: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '96px', ...whiteTextStyle, ...mainFont }}>{profile.teamName}</div>
                 </div>
             )}
 
             {honorToShow && (
                 <div style={{ width: '1170px', height: '128px', left: '549px', top: '182px', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/honor_bg_${honorBgMap[honorToShow.color]}.png)`}}>
-                    <div style={{ width: '916px', height: '65px', left: '254px', top: '29px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', fontSize: '96px', ...msPGRFont }}>{honorToShow.text}</div>
+                    <div style={{ width: '916px', height: '65px', left: '254px', top: '29px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', fontSize: '80px', ...mainFont }}>{honorToShow.text}</div>
                 </div>
             )}
             
-            <div style={{ width: '731px', height: '96px', left: '748px', top: '363px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '96px', ...blackTextStyle, ...msPGRFont }}>{profile.playerName}</div>
+            <div style={{ width: '731px', height: '96px', left: '748px', top: '363px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '96px', ...blackTextStyle, ...mainFont }}>{profile.playerName}</div>
 
-            <div style={{ width: '160px', height: '128px', left: '549px', top: '378px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px', ...blackTextStyle, ...msPGRFont }}>Lv.</div>
-            <div style={{ width: '160px', height: '144px', left: '634px', top: '361px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '96px', ...blackTextStyle, ...msPGRFont }}>{String(lv).padStart(2, '0')}</div>
+            <div style={{ width: '160px', height: '128px', left: '549px', top: '378px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px', ...blackTextStyle, ...mainFont }}>Lv.</div>
+            <div style={{ width: '160px', height: '144px', left: '634px', top: '361px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '96px', ...blackTextStyle, ...mainFont }}>{String(lv).padStart(2, '0')}</div>
             {star !== null && (
               <div style={{ left: '532px', top: '307px' }}>
                 <img style={{ width: '125px', height: '125px' }} src="https://chunithm-net-eng.com/mobile/images/icon_reborn_star.png" />
-                <div style={{ width: '112px', height: '96px', left: '7px', top: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '96px', ...blackTextStyle, ...msPGRFont }}>{star}</div>
+                <div style={{ width: '112px', height: '96px', left: '7px', top: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '96px', ...blackTextStyle, ...mainFont }}>{star}</div>
               </div>
             )}
 
             <div style={{ left: '700px', top: '490px', display: 'flex', alignItems: 'flex-end', height: '85px' }}>
-                <span style={{ fontSize: '48px', marginRight: '16px', ...blackTextStyle }}>RATING</span>
+                <span style={{ fontSize: '48px', marginRight: '16px', ...blackTextStyle, ...mainFont }}>RATING</span>
                 {ratingDigits.map((digit, index) => 
                     digit === '.' 
                     ? <img key={index} src={`https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_comma.png`} style={{ width: '27px', height: '27px', marginBottom: '16px' }}/>
