@@ -1,10 +1,10 @@
+// 파일 경로: src/components/dashboard/profile-display.tsx
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-// --- 타입 정의 ---
-// TODO: 향후 이 타입 정의들은 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
+// --- 타입 정의 (이전과 동일) ---
 interface Honor {
   text: string;
   color: 'NORMAL' | 'SILVER' | 'GOLD' | 'PLATINA' | 'RAINBOW' | 'ONGEKI';
@@ -20,7 +20,7 @@ interface ProfileDetail {
   playCount: number;
 }
 
-// --- 헬퍼 함수 ---
+// --- 헬퍼 함수 (이전과 동일) ---
 const getRatingColor = (rating: number): string => {
   if (rating >= 17.00) return 'kiwami';
   if (rating >= 16.00) return 'rainbow';
@@ -47,10 +47,18 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
     const ratingColor = getRatingColor(profile.rating);
     const ratingDigits = profile.rating.toFixed(2).split('');
 
+    // --- 신규: 레이팅 숫자별 스타일 정의 ---
+    const ratingDigitStyles = [
+        { width: '10.39px', height: '20px' }, // 첫 번째 숫자
+        { width: '14.39px', height: '20px' }, // 두 번째 숫자
+        { width: '5px', height: '6px' },      // 콤마
+        { width: '14.61px', height: '20px' }, // 세 번째 숫자
+        { width: '15.19px', height: '20px' }, // 네 번째 숫자
+    ];
+
     return (
         <Card className="w-full max-w-4xl mx-auto">
             <CardHeader>
-                {/* 수정: flex-wrap을 추가하여 모바일에서 줄바꿈이 가능하도록 설정 */}
                 <div className="flex flex-wrap items-center gap-4">
                     <Avatar className="h-16 w-16 md:h-20 md:w-20">
                         <AvatarImage src={profile.characterImage} alt={profile.playerName} />
@@ -61,24 +69,48 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
                             <CardTitle className="text-2xl md:text-3xl">{profile.playerName}</CardTitle>
                             {profile.teamName && (
                                 <div 
-                                    className="px-4 py-1 rounded-md text-sm font-semibold text-white bg-no-repeat bg-center bg-contain flex items-center justify-center"
-                                    // 수정: min-width와 height를 rem 단위로 변경하고 약 35% 크기 증가
-                                    style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor || 'normal'}.png)`, minWidth: '9.5rem', height: '2.375rem' }} // 152px, 38px
+                                    className="text-sm font-semibold text-white bg-no-repeat bg-center bg-contain"
+                                    // --- 수정: 팀 엠블럼 스타일 적용 ---
+                                    style={{ 
+                                        backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor || 'normal'}.png)`,
+                                        display: 'flex',
+                                        width: '210px',
+                                        height: '50px',
+                                        padding: '16px 42px 17px 42px',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        flexShrink: 0,
+                                    }}
                                 >
                                     {profile.teamName}
                                 </div>
                             )}
                         </div>
-                        {/* 수정: flex-wrap을 추가하고, 모바일 폰트 크기 조정 */}
                         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm md:text-base text-muted-foreground mt-1">
                             <span>Lv. {profile.level}</span>
-                            <div className="flex items-center space-x-0.5">
-                                <span>Rating: </span>
-                                {ratingDigits.map((digit, index) => 
-                                    digit === '.' 
-                                    ? <img key={index} src={`https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_comma.png`} alt="," className="h-2.5 md:h-3 self-end mb-0.5" style={{width: 'auto'}}/>
-                                    : <img key={index} src={`https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_0${digit}.png`} alt={digit} className="h-4 md:h-5" />
-                                )}
+                            <div className="flex items-end space-x-0.5">
+                                <span className="mr-1">Rating: </span>
+                                {/* --- 수정: 레이팅 숫자별 개별 스타일 적용 --- */}
+                                {ratingDigits.map((digit, index) => {
+                                    const style = ratingDigitStyles[index] || {};
+                                    const isComma = digit === '.';
+                                    const imageUrl = isComma
+                                        ? `https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_comma.png`
+                                        : `https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_0${digit}.png`;
+
+                                    return (
+                                        <img 
+                                            key={index} 
+                                            src={imageUrl} 
+                                            alt={digit} 
+                                            style={{
+                                                ...style,
+                                                alignSelf: isComma ? 'center' : 'flex-end',
+                                                marginBottom: isComma ? '4px' : '0'
+                                            }}
+                                        />
+                                    );
+                                })}
                             </div>
                             <span>Play Count: {profile.playCount.toLocaleString()}</span>
                         </div>
