@@ -1,4 +1,3 @@
-// 파일 경로: src/components/dashboard/SongDataTable.tsx
 'use client';
 
 import { useState, useMemo, ReactNode } from 'react';
@@ -15,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// TODO: 이 타입 정의는 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
+// TODO: 이 타입 정의는 향후 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
 interface SongData {
   id: string;
   title: string;
@@ -34,13 +33,26 @@ interface SongDataTableProps {
 type SortKey = keyof SongData;
 type SortDirection = 'asc' | 'desc';
 
-const difficultyOrder: { [key: string]: number } = { BASIC: 1, ADVANCED: 2, EXPERT: 3, MASTER: 4, ULTIMA: 5 };
+const difficultyOrder: { [key: string]: number } = {
+  BASIC: 1,
+  ADVANCED: 2,
+  EXPERT: 3,
+  MASTER: 4,
+  ULTIMA: 5,
+};
+
 const difficultyColorMap: { [key: string]: string } = {
     BASIC: 'text-green-600',
     ADVANCED: 'text-yellow-600',
     EXPERT: 'text-red-600',
     MASTER: 'text-purple-600',
-    ULTIMA: 'text-indigo-900',
+    ULTIMA: 'text-indigo-600',
+};
+
+const levelToNumber = (level: string): number => {
+    const isPlus = level.includes('+');
+    const num = parseFloat(level.replace('+', ''));
+    return isPlus ? num + 0.5 : num;
 };
 
 export function SongDataTable({ data }: SongDataTableProps) {
@@ -55,7 +67,9 @@ export function SongDataTable({ data }: SongDataTableProps) {
       const bVal = b[sortKey];
 
       let compare = 0;
-      if (sortKey === 'difficulty') {
+      if (sortKey === 'level') {
+        compare = levelToNumber(aVal) - levelToNumber(bVal);
+      } else if (sortKey === 'difficulty') {
         compare = (difficultyOrder[aVal] || 0) - (difficultyOrder[bVal] || 0);
       } else if (typeof aVal === 'number' && typeof bVal === 'number') {
         compare = aVal - bVal;
