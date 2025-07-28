@@ -9,9 +9,9 @@ import { put } from '@vercel/blob';
 // API 실행 시점에 라이브러리를 동적으로 import하여 빌드 오류를 방지합니다.
 async function getDependencies() {
     const ReactDOMServer = (await import('react-dom/server')).default;
-    const core = (await import('puppeteer-core')).default;
-    const chrome = (await import('chrome-aws-lambda')).default;
-    return { ReactDOMServer, core, chrome };
+    const puppeteer = (await import('puppeteer-core')).default;
+    const chromium = (await import('@sparticuz/chromium')).default;
+    return { ReactDOMServer, puppeteer, chromium };
 }
 
 export async function GET() {
@@ -21,8 +21,9 @@ export async function GET() {
   }
 
   try {
-    const { ReactDOMServer, core, chrome } = await getDependencies();
+    const { ReactDOMServer, puppeteer, chromium } = await getDependencies();
     
+    // JP CHUNITHM 프로필만 조회합니다.
     const profile = await prisma.gameProfile.findFirst({
       where: { userId: session.user.id, gameType: 'CHUNITHM', region: 'JP' },
     });
@@ -31,17 +32,21 @@ export async function GET() {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 }); 
     }
     
+    // 칭호가 없을 경우를 대비한 기본값 설정
     const honors = profile.honors?.length ? profile.honors : [{ text: '称号なし', color: 'NORMAL' }];
     
-    const browser = await core.launch({
-        args: chrome.args,
-        executablePath: await chrome.executablePath,
-        headless: chrome.headless,
+    // Puppeteer 브라우저 실행
+    const browser = await puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 1823, height: 722 });
 
     const imageUrls: string[] = [];
+    
     // 각 칭호별로 이미지를 생성합니다.
     for (const honor of honors) {
         const html = `<!DOCTYPE html>${ReactDOMServer.renderToStaticMarkup(React.createElement(ProfileTemplate, { profile: profile as any, honorToShow: honor }))}`;
@@ -49,9 +54,9 @@ export async function GET() {
         const screenshotBuffer = await page.screenshot({ type: 'png' });
         
         // 생성된 이미지를 Vercel Blob에 업로드하고 공개 URL을 받습니다.
+        // 파일명을 고유하게 만들어 캐시 문제를 방지하고, 덮어쓰도록 설정합니다.
         const blob = await put(`profiles/${profile.id}-${honor.text}.png`, screenshotBuffer, { 
           access: 'public',
-          // 동일한 파일명으로 업로드 시 덮어쓰도록 설정 (캐시 방지)
           addRandomSuffix: false, 
         });
         imageUrls.push(blob.url);
