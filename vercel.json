@@ -1,7 +1,0 @@
-{
-    "functions": {
-        "src/app/api/generate-profile-images/route.ts": {
-            "maxDuration": 300
-        }
-    }
-}
