@@ -105,8 +105,8 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
                                             alt={digit} 
                                             style={{
                                                 ...style,
-                                                alignSelf: isComma ? 'center' : 'flex-end',
-                                                marginBottom: isComma ? '4px' : '0'
+                                                alignSelf: 'flex-end',
+                                                marginBottom: isComma ? '2px' : '0'
                                             }}
                                         />
                                     );
