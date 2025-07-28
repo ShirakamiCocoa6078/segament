@@ -1,19 +1,19 @@
-// 파일 경로: src/app/dashboard/detail/chunithm/[slug]/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SongDataTable } from '@/components/dashboard/SongDataTable';
-import { PlayerCard } from '@/components/dashboard/PlayerCard';
+import { ProfileDisplay } from '@/components/dashboard/profile-display';
 
 // --- 타입 정의 ---
-// TODO: 향후 이 타입 정의들은 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
 interface Honor {
   text: string;
   color: 'NORMAL' | 'SILVER' | 'GOLD' | 'PLATINA' | 'RAINBOW' | 'ONGEKI';
 }
-
 interface SongData {
   id: string;
   title: string;
@@ -24,7 +24,6 @@ interface SongData {
   ratingValue: number;
   ratingListType?: 'best' | 'new' | null;
 }
-
 interface ProfileDetail {
   playerName: string;
   rating: number;
@@ -32,11 +31,8 @@ interface ProfileDetail {
   honors?: Honor[];
   teamName?: string;
   teamEmblemColor?: string;
-  classEmblemTop?: string;
-  classEmblemBase?: string;
   characterImage?: string;
-  characterBackground?: string;
-  nameplateImage?: string;
+  playCount: number;
   gameData?: {
     playlogs: SongData[];
     ratingLists: {
@@ -45,7 +41,6 @@ interface ProfileDetail {
     };
   }
 }
-// --- 타입 정의 끝 ---
 
 export default function ChunithmDetailPage() {
   const [profile, setProfile] = useState<ProfileDetail | null>(null);
@@ -74,24 +69,33 @@ export default function ChunithmDetailPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <PlayerCard profile={profile} />
+        <div className="mb-6">
+            <Link href="/dashboard">
+                <Button variant="outline">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to Dashboard
+                </Button>
+            </Link>
+        </div>
+        
+        <ProfileDisplay profile={profile} />
 
-      <Tabs defaultValue="best" className="w-full mt-6">
-        <TabsList>
-          <TabsTrigger value="best">Best</TabsTrigger>
-          <TabsTrigger value="new">New</TabsTrigger>
-          <TabsTrigger value="all">All Records</TabsTrigger>
-        </TabsList>
-        <TabsContent value="best">
-            <SongDataTable data={profile.gameData?.ratingLists.best || []} />
-        </TabsContent>
-        <TabsContent value="new">
-            <SongDataTable data={profile.gameData?.ratingLists.new || []} />
-        </TabsContent>
-        <TabsContent value="all">
-            <SongDataTable data={profile.gameData?.playlogs || []} />
-        </TabsContent>
-      </Tabs>
+        <Tabs defaultValue="best" className="w-full mt-6">
+            <TabsList>
+                <TabsTrigger value="best">Best</TabsTrigger>
+                <TabsTrigger value="new">New</TabsTrigger>
+                <TabsTrigger value="all">All Records</TabsTrigger>
+            </TabsList>
+            <TabsContent value="best">
+                <SongDataTable data={profile.gameData?.ratingLists.best || []} />
+            </TabsContent>
+            <TabsContent value="new">
+                <SongDataTable data={profile.gameData?.ratingLists.new || []} />
+            </TabsContent>
+            <TabsContent value="all">
+                <SongDataTable data={profile.gameData?.playlogs || []} />
+            </TabsContent>
+        </Tabs>
     </div>
   );
 }

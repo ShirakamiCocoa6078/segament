@@ -1,204 +1,104 @@
-"use client";
+'use client';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { chunithmData, maimaiData } from "@/lib/mock-data";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const chunithmChartConfig = {
-  rating: {
-    label: "레이팅",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig;
+// --- 타입 정의 ---
+// TODO: 향후 이 타입 정의들은 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
+interface Honor {
+  text: string;
+  color: 'NORMAL' | 'SILVER' | 'GOLD' | 'PLATINA' | 'RAINBOW' | 'ONGEKI';
+}
+interface ProfileDetail {
+  playerName: string;
+  rating: number;
+  level: number;
+  honors?: Honor[];
+  teamName?: string;
+  teamEmblemColor?: string;
+  characterImage?: string;
+  playCount: number;
+}
 
-const maimaiChartConfig = {
-    rating: {
-      label: "레이팅",
-      color: "hsl(var(--chart-2))",
-    },
-  } satisfies ChartConfig;
+// --- 헬퍼 함수 ---
+const getRatingColor = (rating: number): string => {
+  if (rating >= 17.00) return 'kiwami';
+  if (rating >= 16.00) return 'rainbow';
+  if (rating >= 15.25) return 'platinum';
+  if (rating >= 14.50) return 'gold';
+  if (rating >= 13.25) return 'silver';
+  if (rating >= 12.00) return 'bronze';
+  if (rating >= 10.00) return 'purple';
+  if (rating >= 7.00) return 'red';
+  if (rating >= 4.00) return 'orange';
+  return 'green';
+};
 
-export function ProfileDisplay() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="font-headline">성과 개요</CardTitle>
-        <CardDescription>
-          츄니즘과 마이마이에 대한 상세 통계입니다.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="chunithm">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="chunithm">츄니즘</TabsTrigger>
-            <TabsTrigger value="maimai">마이마이</TabsTrigger>
-          </TabsList>
-          <TabsContent value="chunithm" className="space-y-6 pt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>레이팅 진행률</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer config={chunithmChartConfig} className="h-[200px] w-full">
-                  <AreaChart
-                    accessibilityLayer
-                    data={chunithmData.ratingHistory}
-                    margin={{ left: 12, right: 12 }}
-                  >
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="name"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
-                    />
-                    <YAxis
-                       domain={['dataMin - 0.2', 'dataMax + 0.2']}
-                       tickLine={false}
-                       axisLine={false}
-                       tickMargin={8}
-                    />
-                    <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                    <defs>
-                      <linearGradient id="fillRatingC" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="var(--color-rating)" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="var(--color-rating)" stopOpacity={0.1} />
-                      </linearGradient>
-                    </defs>
-                    <Area
-                      dataKey="rating"
-                      type="natural"
-                      fill="url(#fillRatingC)"
-                      stroke="var(--color-rating)"
-                      stackId="a"
-                    />
-                  </AreaChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>최근 플레이</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>곡</TableHead>
-                      <TableHead>점수</TableHead>
-                      <TableHead>랭크</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {chunithmData.recentPlays.map((play) => (
-                      <TableRow key={play.song}>
-                        <TableCell className="font-medium">{play.song}</TableCell>
-                        <TableCell>{play.score.toLocaleString()}</TableCell>
-                        <TableCell>
-                          <Badge variant={play.rank === 'SSS' ? 'default' : 'secondary'}>{play.rank}</Badge>
-                        </TableCell>
-                      </TableRow>
+const honorBgMap: Record<string, string> = {
+    NORMAL: 'normal',
+    SILVER: 'silver',
+    GOLD: 'gold',
+    PLATINA: 'platina',
+    RAINBOW: 'rainbow',
+    ONGEKI: 'ongeki',
+};
+
+export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
+    const ratingColor = getRatingColor(profile.rating);
+    const ratingDigits = profile.rating.toFixed(2).split('');
+
+    return (
+        <Card className="w-full max-w-4xl mx-auto">
+            <CardHeader>
+                <div className="flex items-center space-x-4">
+                    <Avatar className="h-20 w-20">
+                        <AvatarImage src={profile.characterImage} alt={profile.playerName} />
+                        <AvatarFallback>{profile.playerName.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-grow">
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-3xl">{profile.playerName}</CardTitle>
+                            {profile.teamName && (
+                                <div 
+                                    className="px-4 py-1 rounded-md text-sm font-semibold text-white bg-no-repeat bg-center bg-contain flex items-center justify-center"
+                                    style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor || 'normal'}.png)`, minWidth: '120px', height: '28px' }}
+                                >
+                                    {profile.teamName}
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex items-baseline space-x-4 text-muted-foreground mt-1">
+                            <span>Lv. {profile.level}</span>
+                            <div className="flex items-center space-x-0.5">
+                                <span>Rating: </span>
+                                {ratingDigits.map((digit, index) => 
+                                    digit === '.' 
+                                    ? <img key={index} src={`https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_comma.png`} alt="," className="h-3 self-end mb-0.5"/>
+                                    : <img key={index} src={`https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_0${digit}.png`} alt={digit} className="h-5" />
+                                )}
+                            </div>
+                            <span>Play Count: {profile.playCount.toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-wrap gap-2 items-center">
+                    {profile.honors?.slice(0, 3).map((honor, index) => (
+                        <div 
+                            key={index}
+                            className="w-[240px] h-[30px] bg-no-repeat bg-center bg-contain flex items-center justify-center overflow-hidden" 
+                            style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/honor_bg_${honorBgMap[honor.color] || 'normal'}.png)`}}
+                        >
+                            <div className="player_honor_text_view" style={{ width: '100%', textAlign: 'center' }}>
+                                <div className="player_honor_text text-black text-sm px-2 truncate" draggable="true">
+                                    <span>{honor.text}</span>
+                                </div>
+                            </div>
+                        </div>
                     ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="maimai" className="space-y-6 pt-4">
-          <Card>
-              <CardHeader>
-                <CardTitle>레이팅 진행률</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer config={maimaiChartConfig} className="h-[200px] w-full">
-                  <AreaChart
-                    accessibilityLayer
-                    data={maimaiData.ratingHistory}
-                    margin={{ left: 12, right: 12 }}
-                  >
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="name"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
-                    />
-                    <YAxis
-                       domain={['dataMin - 200', 'dataMax + 200']}
-                       tickLine={false}
-                       axisLine={false}
-                       tickMargin={8}
-                    />
-                    <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                     <defs>
-                      <linearGradient id="fillRatingM" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="var(--color-rating)" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="var(--color-rating)" stopOpacity={0.1} />
-                      </linearGradient>
-                    </defs>
-                    <Area
-                      dataKey="rating"
-                      type="natural"
-                      fill="url(#fillRatingM)"
-                      stroke="var(--color-rating)"
-                      stackId="a"
-                    />
-                  </AreaChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>최근 플레이</CardTitle>
-              </CardHeader>
-              <CardContent>
-              <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>곡</TableHead>
-                      <TableHead>점수</TableHead>
-                      <TableHead>랭크</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {maimaiData.recentPlays.map((play) => (
-                      <TableRow key={play.song}>
-                        <TableCell className="font-medium">{play.song}</TableCell>
-                        <TableCell>{play.score.toFixed(4)}%</TableCell>
-                        <TableCell>
-                          <Badge variant={play.rank === 'SSS+' ? 'default' : 'secondary'}>{play.rank}</Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
-  );
+                </div>
+            </CardContent>
+        </Card>
+    );
 }
