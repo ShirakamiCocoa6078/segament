@@ -1,3 +1,4 @@
+// 파일 경로: src/components/dashboard/SongDataTable.tsx
 'use client';
 
 import { useState, useMemo, useEffect, ReactNode } from 'react';
@@ -11,10 +12,10 @@ import {
 } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowUpDown, ChevronLeft, ChevronRight, ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// TODO: 이 타입 정의는 향후 @/types/index.ts 와 같은 공용 파일로 분리하여 관리합니다.
+// --- 타입 정의 (이전과 동일) ---
 interface SongData {
   id: string;
   title: string;
@@ -28,20 +29,14 @@ interface SongData {
 
 interface SongDataTableProps {
   data: SongData[];
-  showPagination?: boolean; // 신규: 페이지네이션 표시 여부 prop
+  showPagination?: boolean;
 }
 
 type SortKey = keyof SongData;
 type SortDirection = 'asc' | 'desc';
 
-const difficultyOrder: { [key: string]: number } = {
-  BASIC: 1,
-  ADVANCED: 2,
-  EXPERT: 3,
-  MASTER: 4,
-  ULTIMA: 5,
-};
-
+// --- 헬퍼 함수 (이전과 동일) ---
+const difficultyOrder: { [key: string]: number } = { BASIC: 1, ADVANCED: 2, EXPERT: 3, MASTER: 4, ULTIMA: 5 };
 const difficultyColorMap: { [key: string]: string } = {
     BASIC: 'text-green-600',
     ADVANCED: 'text-yellow-600',
@@ -49,7 +44,6 @@ const difficultyColorMap: { [key: string]: string } = {
     MASTER: 'text-purple-600',
     ULTIMA: 'text-indigo-600',
 };
-
 const levelToNumber = (level: string): number => {
     const isPlus = level.includes('+');
     const num = parseFloat(level.replace('+', ''));
@@ -80,7 +74,6 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
     return [...data].sort((a, b) => {
       const aVal = a[sortKey];
       const bVal = b[sortKey];
-
       let compare = 0;
       if (sortKey === 'level') {
         compare = levelToNumber(aVal) - levelToNumber(bVal);
@@ -91,7 +84,6 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
       } else {
         compare = String(aVal).localeCompare(String(bVal));
       }
-
       return sortDirection === 'asc' ? compare : -compare;
     });
   }, [data, sortKey, sortDirection]);
@@ -114,9 +106,7 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
   };
   
   const renderSortArrow = (key: SortKey) => {
-    if (sortKey === key) {
-      return <ArrowUpDown className="ml-2 h-4 w-4" />;
-    }
+    if (sortKey === key) return <ArrowUpDown className="ml-2 h-4 w-4" />;
     return <ArrowUpDown className="ml-2 h-4 w-4 opacity-20" />;
   };
 
@@ -130,6 +120,33 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
 
   return (
     <div>
+      {/* 수정: 페이지네이션 컨트롤 상단으로 이동 */}
+      {showPagination && (
+        <div className="flex items-center justify-end mb-4">
+            <div className="flex items-center space-x-2">
+                <p className="text-sm text-muted-foreground">페이지에 표시하는 곡 수:</p>
+                <Select
+                    value={rowsPerPage.toString()}
+                    onValueChange={(value) => {
+                        setRowsPerPage(value === '0' ? 0 : Number(value));
+                        setCurrentPage(1);
+                    }}
+                >
+                    <SelectTrigger className="w-[80px]">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="15">15</SelectItem>
+                        <SelectItem value="30">30</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                        <SelectItem value="0">All</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+        </div>
+      )}
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -163,29 +180,9 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
         </TableBody>
       </Table>
       
+      {/* 수정: 페이지 이동 컨트롤만 하단에 남김 */}
       {showPagination && (
-        <div className="flex items-center justify-between mt-4 px-2">
-            <div className="flex items-center space-x-2">
-                <p className="text-sm text-muted-foreground">페이지에 표시하는 곡 수:</p>
-                <Select
-                    value={rowsPerPage.toString()}
-                    onValueChange={(value) => {
-                        setRowsPerPage(value === '0' ? 0 : Number(value));
-                        setCurrentPage(1);
-                    }}
-                >
-                    <SelectTrigger className="w-[80px]">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="15">15</SelectItem>
-                        <SelectItem value="30">30</SelectItem>
-                        <SelectItem value="50">50</SelectItem>
-                        <SelectItem value="100">100</SelectItem>
-                        <SelectItem value="0">All</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
+        <div className="flex items-center justify-end mt-4">
             <div className="flex items-center space-x-4">
                 <span className="text-sm text-muted-foreground">
                     Page {currentPage} of {totalPages}
@@ -201,6 +198,16 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
             </div>
         </div>
       )}
+
+      {/* 신규: 페이지 스크롤 버튼 */}
+      <div className="fixed bottom-8 right-8 flex flex-col space-y-2">
+          <Button variant="outline" size="icon" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <ArrowUp className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}>
+              <ArrowDown className="h-4 w-4" />
+          </Button>
+      </div>
     </div>
   );
 }
