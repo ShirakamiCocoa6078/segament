@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, ReactNode } from 'react';
+import { useState, useMemo, useEffect, ReactNode } from 'react';
 import {
   Table,
   TableBody,
@@ -28,6 +28,7 @@ interface SongData {
 
 interface SongDataTableProps {
   data: SongData[];
+  showPagination?: boolean; // 신규: 페이지네이션 표시 여부 prop
 }
 
 type SortKey = keyof SongData;
@@ -55,11 +56,25 @@ const levelToNumber = (level: string): number => {
     return isPlus ? num + 0.5 : num;
 };
 
-export function SongDataTable({ data }: SongDataTableProps) {
+export function SongDataTable({ data, showPagination = false }: SongDataTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>('ratingValue');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [rowsPerPage, setRowsPerPage] = useState(15);
+  
+  const [rowsPerPage, setRowsPerPage] = useState(() => {
+    if (typeof window !== 'undefined') {
+        const savedValue = localStorage.getItem('segament-rowsPerPage');
+        return savedValue ? Number(savedValue) : 15;
+    }
+    return 15;
+  });
+  
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('segament-rowsPerPage', String(rowsPerPage));
+    }
+  }, [rowsPerPage]);
 
   const sortedData = useMemo(() => {
     return [...data].sort((a, b) => {
@@ -81,13 +96,13 @@ export function SongDataTable({ data }: SongDataTableProps) {
     });
   }, [data, sortKey, sortDirection]);
 
-  const totalPages = rowsPerPage > 0 ? Math.ceil(sortedData.length / rowsPerPage) : 1;
+  const totalPages = showPagination && rowsPerPage > 0 ? Math.ceil(sortedData.length / rowsPerPage) : 1;
   const paginatedData = useMemo(() => {
-    if (rowsPerPage === 0) return sortedData;
+    if (!showPagination || rowsPerPage === 0) return sortedData;
     const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     return sortedData.slice(start, end);
-  }, [sortedData, currentPage, rowsPerPage]);
+  }, [sortedData, currentPage, rowsPerPage, showPagination]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -147,42 +162,45 @@ export function SongDataTable({ data }: SongDataTableProps) {
           ))}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-between mt-4 px-2">
-        <div className="flex items-center space-x-2">
-            <p className="text-sm text-muted-foreground">Rows per page:</p>
-            <Select
-                value={rowsPerPage.toString()}
-                onValueChange={(value) => {
-                    setRowsPerPage(value === '0' ? 0 : Number(value));
-                    setCurrentPage(1);
-                }}
-            >
-                <SelectTrigger className="w-[80px]">
-                    <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="15">15</SelectItem>
-                    <SelectItem value="30">30</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
-                    <SelectItem value="0">All</SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
-        <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">
-                Page {currentPage} of {totalPages}
-            </span>
+      
+      {showPagination && (
+        <div className="flex items-center justify-between mt-4 px-2">
             <div className="flex items-center space-x-2">
-                <Button variant="outline" size="icon" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
-                    <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
-                    <ChevronRight className="h-4 w-4" />
-                </Button>
+                <p className="text-sm text-muted-foreground">페이지에 표시하는 곡 수:</p>
+                <Select
+                    value={rowsPerPage.toString()}
+                    onValueChange={(value) => {
+                        setRowsPerPage(value === '0' ? 0 : Number(value));
+                        setCurrentPage(1);
+                    }}
+                >
+                    <SelectTrigger className="w-[80px]">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="15">15</SelectItem>
+                        <SelectItem value="30">30</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                        <SelectItem value="0">All</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="flex items-center space-x-4">
+                <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <div className="flex items-center space-x-2">
+                    <Button variant="outline" size="icon" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="icon" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
             </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

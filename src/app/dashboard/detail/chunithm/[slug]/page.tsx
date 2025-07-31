@@ -93,7 +93,7 @@ export default function ChunithmDetailPage() {
                 <SongDataTable data={profile.gameData?.ratingLists.new || []} />
             </TabsContent>
             <TabsContent value="all">
-                <SongDataTable data={profile.gameData?.playlogs || []} />
+                <SongDataTable data={profile.gameData?.playlogs || []} showPagination={true} />
             </TabsContent>
         </Tabs>
     </div>
