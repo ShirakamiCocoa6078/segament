@@ -501,7 +501,7 @@
       },
       "ultima": {
         "level": "14",
-        "const": 14.3
+        "const": 14.2
       }
     }
   },
@@ -3415,7 +3415,7 @@
       },
       "ultima": {
         "level": "15",
-        "const": 15.2
+        "const": 15.1
       }
     }
   },
@@ -3662,6 +3662,110 @@
       "ultima": {
         "level": "15",
         "const": 15
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2839",
+      "title": "ブタサンダー",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 2.0,
+        "level": "2"
+      },
+      "advanced": {
+        "const": 5.0,
+        "level": "5"
+      },
+      "expert": {
+        "const": 8.5,
+        "level": "8+"
+      },
+      "master": {
+        "level": "13",
+        "const": 13.3
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2840",
+      "title": "私の歯医者さん",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3.0,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6.0,
+        "level": "6"
+      },
+      "expert": {
+        "const": 8.0,
+        "level": "8"
+      },
+      "master": {
+        "level": "13",
+        "const": 13.2
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2841",
+      "title": "少女A",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 2.0,
+        "level": "2"
+      },
+      "advanced": {
+        "const": 6.0,
+        "level": "6"
+      },
+      "expert": {
+        "level": "10",
+        "const": 10.3
+      },
+      "master": {
+        "level": "14",
+        "const": 14.2
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2842",
+      "title": "え？あぁ、そう。- 10th Anniversary Edition -",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3.0,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6.0,
+        "level": "6"
+      },
+      "expert": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "master": {
+        "level": "14",
+        "const": 14
       }
     }
   },
@@ -3998,7 +4102,7 @@
         "level": "6"
       },
       "expert": {
-        "const": 10.4,
+        "const": 10.0,
         "level": "10"
       },
       "master": {
@@ -6771,7 +6875,7 @@
       },
       "ultima": {
         "level": "14+",
-        "const": 14.9
+        "const": 14.8
       }
     }
   },
@@ -15445,7 +15549,7 @@
       },
       "master": {
         "level": "15",
-        "const": 15.3
+        "const": 15.2
       }
     }
   },
@@ -16857,7 +16961,7 @@
       },
       "master": {
         "level": "15",
-        "const": 15.0
+        "const": 15
       }
     }
   },
@@ -17229,7 +17333,7 @@
       },
       "master": {
         "level": "15",
-        "const": 15.0
+        "const": 15
       }
     }
   },
@@ -19090,8 +19194,7 @@
         "const": 12.5
       },
       "ultima": {
-        "level": "13+",
-        "const": 13.7
+        "level": "13+"
       }
     }
   },
@@ -20835,7 +20938,7 @@
       },
       "master": {
         "level": "15",
-        "const": 15.2
+        "const": 15.1
       }
     }
   },
@@ -26775,6 +26878,32 @@
   },
   {
     "meta": {
+      "id": "2827",
+      "title": "Individual on parade!",
+      "genre": "ゲキマイ",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3.0,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6.0,
+        "level": "6"
+      },
+      "expert": {
+        "const": 9.0,
+        "level": "9"
+      },
+      "master": {
+        "level": "12+",
+        "const": 12.6
+      }
+    }
+  },
+  {
+    "meta": {
       "id": "2235",
       "title": "ポケットからぬりつぶせ！",
       "genre": "ゲキマイ",
@@ -28823,7 +28952,7 @@
       },
       "master": {
         "level": "15",
-        "const": 15.2
+        "const": 15
       }
     }
   },
@@ -29053,7 +29182,7 @@
       },
       "expert": {
         "level": "14",
-        "const": 14.3
+        "const": 14.4
       },
       "master": {
         "level": "15+",
@@ -34658,7 +34787,7 @@
   {
     "meta": {
       "id": "1061",
-      "title": "おいでよ! 高須らいむランド",
+      "title": "おいでよ！ 高須らいむランド",
       "genre": "ORIGINAL",
       "version": "CHUNITHM PARADISE LOST"
     },
@@ -34680,8 +34809,7 @@
         "const": 12.5
       },
       "ultima": {
-        "level": "14+",
-        "const": 14.5
+        "level": "14+"
       }
     }
   },
@@ -37073,7 +37201,7 @@
       },
       "master": {
         "level": "14+",
-        "const": 14.8
+        "const": 14.9
       }
     }
   },
@@ -38611,7 +38739,7 @@
       },
       "master": {
         "level": "15",
-        "const": 15.3
+        "const": 15.2
       }
     }
   },
@@ -38637,7 +38765,7 @@
       },
       "master": {
         "level": "14",
-        "const": 14.2
+        "const": 14.1
       }
     }
   },
@@ -38663,7 +38791,7 @@
       },
       "master": {
         "level": "14",
-        "const": 14.4
+        "const": 14.3
       }
     }
   },
@@ -38767,7 +38895,7 @@
       },
       "master": {
         "level": "14+",
-        "const": 14.8
+        "const": 14.6
       }
     }
   },
@@ -38871,7 +38999,7 @@
       },
       "master": {
         "level": "14",
-        "const": 14.4
+        "const": 14.3
       }
     }
   },

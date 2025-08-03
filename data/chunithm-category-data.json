@@ -420,6 +420,18 @@
       }
     },
     "niconico": {
+      "music_idx_2839": {
+        "music_name": "ブタサンダー"
+      },
+      "music_idx_2840": {
+        "music_name": "私の歯医者さん"
+      },
+      "music_idx_2841": {
+        "music_name": "少女A"
+      },
+      "music_idx_2842": {
+        "music_name": "え？あぁ、そう。- 10th Anniversary Edition -"
+      },
       "music_idx_2822": {
         "music_name": "ラヴィ"
       },
@@ -3067,6 +3079,9 @@
       },
       "music_idx_2634": {
         "music_name": "Dramatic…?"
+      },
+      "music_idx_2827": {
+        "music_name": "Individual on parade!"
       },
       "music_idx_2235": {
         "music_name": "ポケットからぬりつぶせ！"
@@ -8956,6 +8971,18 @@
       "music_idx_2821": {
         "music_name": "はいよろこんで"
       },
+      "music_idx_2839": {
+        "music_name": "ブタサンダー"
+      },
+      "music_idx_2840": {
+        "music_name": "私の歯医者さん"
+      },
+      "music_idx_2841": {
+        "music_name": "少女A"
+      },
+      "music_idx_2842": {
+        "music_name": "え？あぁ、そう。- 10th Anniversary Edition -"
+      },
       "music_idx_2822": {
         "music_name": "ラヴィ"
       },
@@ -8985,6 +9012,9 @@
       },
       "music_idx_2828": {
         "music_name": "Energizing Flame"
+      },
+      "music_idx_2827": {
+        "music_name": "Individual on parade!"
       },
       "music_idx_2829": {
         "music_name": "Daydreama"
@@ -9257,6 +9287,14 @@
       },
       "music_idx_159": {
         "music_name": "ジングルベル",
+        "diff": "BASIC"
+      },
+      "music_idx_2839": {
+        "music_name": "ブタサンダー",
+        "diff": "BASIC"
+      },
+      "music_idx_2841": {
+        "music_name": "少女A",
         "diff": "BASIC"
       },
       "music_idx_2824": {
@@ -10599,6 +10637,14 @@
       },
       "music_idx_244": {
         "music_name": "回レ！雪月花",
+        "diff": "BASIC"
+      },
+      "music_idx_2840": {
+        "music_name": "私の歯医者さん",
+        "diff": "BASIC"
+      },
+      "music_idx_2842": {
+        "music_name": "え？あぁ、そう。- 10th Anniversary Edition -",
         "diff": "BASIC"
       },
       "music_idx_2822": {
@@ -12711,6 +12757,10 @@
       },
       "music_idx_2634": {
         "music_name": "Dramatic…?",
+        "diff": "BASIC"
+      },
+      "music_idx_2827": {
+        "music_name": "Individual on parade!",
         "diff": "BASIC"
       },
       "music_idx_2236": {
@@ -15289,6 +15339,10 @@
         "music_name": "ジングルベル",
         "diff": "ADVANCED"
       },
+      "music_idx_2839": {
+        "music_name": "ブタサンダー",
+        "diff": "ADVANCED"
+      },
       "music_idx_2823": {
         "music_name": "テトリス",
         "diff": "ADVANCED"
@@ -17075,6 +17129,18 @@
         "music_name": "若い力 -SEGA HARD GIRLS MIX-",
         "diff": "ADVANCED"
       },
+      "music_idx_2840": {
+        "music_name": "私の歯医者さん",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2841": {
+        "music_name": "少女A",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2842": {
+        "music_name": "え？あぁ、そう。- 10th Anniversary Edition -",
+        "diff": "ADVANCED"
+      },
       "music_idx_2822": {
         "music_name": "ラヴィ",
         "diff": "ADVANCED"
@@ -18409,6 +18475,10 @@
       },
       "music_idx_2634": {
         "music_name": "Dramatic…?",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2827": {
+        "music_name": "Individual on parade!",
         "diff": "ADVANCED"
       },
       "music_idx_2236": {
@@ -20561,6 +20631,10 @@
         "music_name": "鳥の詩",
         "diff": "EXPERT"
       },
+      "music_idx_2840": {
+        "music_name": "私の歯医者さん",
+        "diff": "EXPERT"
+      },
       "music_idx_2436": {
         "music_name": "悪魔の踊り方",
         "diff": "EXPERT"
@@ -21153,6 +21227,10 @@
       },
       "music_idx_159": {
         "music_name": "ジングルベル",
+        "diff": "EXPERT"
+      },
+      "music_idx_2839": {
+        "music_name": "ブタサンダー",
         "diff": "EXPERT"
       },
       "music_idx_2632": {
@@ -22333,6 +22411,10 @@
         "music_name": "ぽかぽか温泉音頭",
         "diff": "EXPERT"
       },
+      "music_idx_2827": {
+        "music_name": "Individual on parade!",
+        "diff": "EXPERT"
+      },
       "music_idx_2369": {
         "music_name": "絆はずっとGrowing Up!!!",
         "diff": "EXPERT"
@@ -22801,6 +22883,10 @@
       },
       "music_idx_244": {
         "music_name": "回レ！雪月花",
+        "diff": "EXPERT"
+      },
+      "music_idx_2842": {
+        "music_name": "え？あぁ、そう。- 10th Anniversary Edition -",
         "diff": "EXPERT"
       },
       "music_idx_2822": {
@@ -23855,6 +23941,10 @@
       },
       "music_idx_2224": {
         "music_name": "ハッピーエンドをはじめから",
+        "diff": "EXPERT"
+      },
+      "music_idx_2841": {
+        "music_name": "少女A",
         "diff": "EXPERT"
       },
       "music_idx_2823": {
@@ -28151,6 +28241,10 @@
         "music_name": "スン(マイル)フラワー～Sun(Mile)Flower",
         "diff": "MASTER"
       },
+      "music_idx_2827": {
+        "music_name": "Individual on parade!",
+        "diff": "MASTER"
+      },
       "music_idx_2236": {
         "music_name": "Y.Y.Y.計画!!!!",
         "diff": "MASTER"
@@ -28655,6 +28749,14 @@
       },
       "music_idx_525": {
         "music_name": "Paradisus-Paradoxum",
+        "diff": "MASTER"
+      },
+      "music_idx_2839": {
+        "music_name": "ブタサンダー",
+        "diff": "MASTER"
+      },
+      "music_idx_2840": {
+        "music_name": "私の歯医者さん",
         "diff": "MASTER"
       },
       "music_idx_2822": {
@@ -30779,6 +30881,14 @@
       },
       "music_idx_2252": {
         "music_name": "BlackFlagBreaker!!",
+        "diff": "MASTER"
+      },
+      "music_idx_2841": {
+        "music_name": "少女A",
+        "diff": "MASTER"
+      },
+      "music_idx_2842": {
+        "music_name": "え？あぁ、そう。- 10th Anniversary Edition -",
         "diff": "MASTER"
       },
       "music_idx_2823": {
