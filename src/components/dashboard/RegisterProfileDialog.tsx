@@ -13,19 +13,28 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { bookmarkletLoaderCode } from '@/lib/bookmarklet';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { MESSAGES } from '@/lib/constants';
 
 export default function RegisterProfileDialog() {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(bookmarkletLoaderCode);
-    toast({
-      title: '성공',
-      description: '북마크릿 코드가 클립보드에 복사되었습니다!',
-    });
-  };
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(bookmarkletLoaderCode);
+      toast({
+        title: '성공',
+        description: MESSAGES.SUCCESS.COPY,
+      });
+    } catch (error) {
+      toast({
+        title: '오류',
+        description: '클립보드 복사에 실패했습니다.',
+        variant: 'destructive',
+      });
+    }
+  }, [toast]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

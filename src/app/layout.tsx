@@ -3,12 +3,13 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/components/auth/auth-provider'; // 수정된 AuthProvider import
 import { Toaster } from '@/components/ui/toaster';
+import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Segament',
-  description: '당신의 리듬 게임 동반자.',
+  title: APP_NAME,
+  description: APP_DESCRIPTION,
 };
 export default function RootLayout({
   children,
