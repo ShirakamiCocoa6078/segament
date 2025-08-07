@@ -82,7 +82,7 @@ export default function FigmaTestPage() {
         <div className="space-y-4">
             <p className="text-5xl font-bold">{profile.playerName}</p>
             <p className="text-3xl">Team: {profile.teamName}</p>
-            {profile.honors?.map((h, i) => <p key={i} className="text-xl">Honor {i+1}: {h.text}</p>)}
+            {profile.honors?.map((h: { text: string }, i: number) => <p key={i} className="text-xl">Honor {i+1}: {h.text}</p>)}
         </div>
       </section>
 
