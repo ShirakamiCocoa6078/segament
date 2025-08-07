@@ -256,7 +256,7 @@ export default function ChunithmPlayPercentPage() {
                 <p className="text-sm text-muted-foreground">지역</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-purple-600">{selectedProfile.rating.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-purple-600">{selectedProfile.rating?.toFixed(2) || '0.00'}</p>
                 <p className="text-sm text-muted-foreground">레이팅</p>
               </div>
             </div>
@@ -284,15 +284,15 @@ export default function ChunithmPlayPercentPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-600">{playData.totalSongs}</p>
+                  <p className="text-2xl font-bold text-blue-600">{playData.totalSongs || 0}</p>
                   <p className="text-sm text-muted-foreground">총 곡 수</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-green-600">{playData.playedSongs}</p>
+                  <p className="text-2xl font-bold text-green-600">{playData.playedSongs || 0}</p>
                   <p className="text-sm text-muted-foreground">플레이한 곡 수</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-purple-600">{playData.playPercentage.toFixed(1)}%</p>
+                  <p className="text-2xl font-bold text-purple-600">{(playData.playPercentage || 0).toFixed(1)}%</p>
                   <p className="text-sm text-muted-foreground">플레이 퍼센트</p>
                 </div>
               </div>
@@ -305,22 +305,22 @@ export default function ChunithmPlayPercentPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {Object.entries(playData.difficultyBreakdown).map(([difficulty, data]) => (
+                {Object.entries(playData.difficultyBreakdown || {}).map(([difficulty, data]) => (
                   <div key={difficulty} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-4">
                       <span className="font-medium">{difficulty.toUpperCase()}</span>
                       <span className="text-sm text-muted-foreground">
-                        {data.played} / {data.total}
+                        {data?.played || 0} / {data?.total || 0}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-32 bg-gray-200 rounded-full h-2">
                         <div 
                           className="bg-blue-600 h-2 rounded-full" 
-                          style={{ width: `${data.percentage}%` }}
+                          style={{ width: `${data?.percentage || 0}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm font-medium">{data.percentage.toFixed(1)}%</span>
+                      <span className="text-sm font-medium">{(data?.percentage || 0).toFixed(1)}%</span>
                     </div>
                   </div>
                 ))}
