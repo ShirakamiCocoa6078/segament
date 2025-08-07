@@ -119,7 +119,7 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
             </CardHeader>
             <CardContent>
                 <div className="flex flex-wrap gap-2 items-center">
-                    {profile.honors?.slice(0, 3).map((honor, index) => (
+                    {profile.honors?.slice(0, 3).map((honor: { color: string; text: string }, index: number) => (
                         <div 
                             key={index}
                             className="w-[240px] h-[30px] bg-no-repeat bg-center bg-contain flex items-center justify-center overflow-hidden" 

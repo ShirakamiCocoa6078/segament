@@ -53,7 +53,7 @@ export function PlayerCard({ profile }: { profile: ProfileDetail }) {
             <CardContent>
                 <div className="flex flex-wrap gap-2">
                     <span className="text-sm font-semibold mr-2">Honors:</span>
-                    {profile.honors?.slice(0, 3).map((honor, index) => (
+                    {profile.honors?.slice(0, 3).map((honor: { color: string; text: string }, index: number) => (
                         <Badge key={index} variant={honorVariantMap[honor.color] || 'default'}>
                             {honor.text}
                         </Badge>

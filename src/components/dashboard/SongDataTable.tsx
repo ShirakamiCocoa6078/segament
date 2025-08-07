@@ -78,7 +78,7 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
       if (sortKey === 'level') {
         compare = levelToNumber(String(aVal || '0')) - levelToNumber(String(bVal || '0'));
       } else if (sortKey === 'difficulty') {
-        compare = (difficultyOrder[aVal] || 0) - (difficultyOrder[bVal] || 0);
+        compare = (difficultyOrder[String(aVal || '')] || 0) - (difficultyOrder[String(bVal || '')] || 0);
       } else if (typeof aVal === 'number' && typeof bVal === 'number') {
         compare = aVal - bVal;
       } else {
