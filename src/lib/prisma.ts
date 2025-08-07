@@ -1,7 +1,6 @@
 // 파일 경로: src/lib/prisma.ts
 
 import { PrismaClient } from '@prisma/client';
-import { env, isDev } from '@/lib/env';
 
 // TypeScript 환경에서 전역 객체(globalThis)에 'prisma' 속성을 확장합니다.
 declare global {
@@ -11,12 +10,7 @@ declare global {
 // PrismaClient 설정
 const createPrismaClient = () =>
   new PrismaClient({
-    log: isDev ? ['query', 'error', 'warn'] : ['error'],
-    datasources: {
-      db: {
-        url: env.DATABASE_URL,
-      },
-    },
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 
 // globalThis.prisma가 이미 존재하면 그대로 사용하고,
@@ -25,7 +19,7 @@ const createPrismaClient = () =>
 // Next.js의 빠른 새로고침(Fast Refresh) 시 불필요하게 많은 인스턴스가 생성되는 것을 방지합니다.
 const client = globalThis.prisma || createPrismaClient();
 
-if (isDev) {
+if (process.env.NODE_ENV === 'development') {
   globalThis.prisma = client;
 }
 

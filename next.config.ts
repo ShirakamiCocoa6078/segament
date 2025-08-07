@@ -9,10 +9,10 @@ const nextConfig: NextConfig = {
   experimental: {
     // Vercel 서버에서 puppeteer-core와 @sparticuz/chromium을 
     // 외부 패키지로 인식하도록 설정하여 번들링 문제를 방지합니다.
-    serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium'],
-    // 서버 컴포넌트 최적화
-    serverComponentsExternalPackages: ['@prisma/client'],
   },
+  
+  // 서버 외부 패키지 설정 (Next.js 15에서 experimental에서 분리됨)
+  serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium', '@prisma/client'],
   
   // 빌드 설정
   typescript: {
