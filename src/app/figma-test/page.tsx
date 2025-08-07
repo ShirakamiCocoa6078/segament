@@ -73,7 +73,7 @@ export default function FigmaTestPage() {
         <h2 className="text-lg font-semibold">4. Team & Honors</h2>
         <div className="flex flex-col items-start space-y-2">
             {profile.teamName && <div className="w-[300px] h-[34px] bg-no-repeat bg-center" style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor}.png)`}} />}
-            {profile.honors?.map((h, i) => <div key={i} className="w-[300px] h-[32px] bg-no-repeat bg-center" style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/honor_bg_${h.color.toLowerCase()}.png)`}} />)}
+            {profile.honors?.map((h: { color: string }, i: number) => <div key={i} className="w-[300px] h-[32px] bg-no-repeat bg-center" style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/honor_bg_${h.color.toLowerCase()}.png)`}} />)}
         </div>
       </section>
       
