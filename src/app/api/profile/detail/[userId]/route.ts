@@ -5,13 +5,13 @@ import { getServerSession } from 'next-auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const { searchParams } = new URL(request.url);
     const gameType = searchParams.get('gameType');
     const region = searchParams.get('region');
-    const { userId } = params;
+    const { userId } = await params;
 
     if (!gameType || !region) {
       return NextResponse.json(

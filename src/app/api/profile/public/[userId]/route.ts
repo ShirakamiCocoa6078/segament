@@ -5,10 +5,10 @@ import type { DashboardResponse } from '@/types';
 
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ): Promise<NextResponse<DashboardResponse | { error: string }>> {
   try {
-    const { userId } = params;
+    const { userId } = await params;
 
     // 사용자 존재 여부 및 프로필 공개 설정 확인
     const user = await prisma.user.findUnique({
