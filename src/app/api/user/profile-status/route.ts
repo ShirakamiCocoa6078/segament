@@ -16,14 +16,14 @@ export async function GET(req: Request) {
 
   try {
     // DB에서 해당 유저의 gameProfile이 존재하는지 확인합니다.
-    const profile = await prisma.gameProfile.findUnique({
+    const profiles = await prisma.gameProfile.findMany({
       where: {
         userId: session.user.id,
       },
     });
 
     // 프로필 존재 여부에 따라 다른 JSON 응답을 보냅니다.
-    if (profile) {
+    if (profiles && profiles.length > 0) {
       return NextResponse.json({ hasProfile: true }, { status: 200 });
     } else {
       return NextResponse.json({ hasProfile: false }, { status: 200 });
