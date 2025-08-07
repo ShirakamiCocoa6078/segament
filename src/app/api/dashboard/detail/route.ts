@@ -37,19 +37,21 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    if (!gameProfile || !gameProfile.gameData) {
+    if (!gameProfile || !gameProfile.gameData || !gameProfile.gameData.ratingLists) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
     
-    const bestSet = new Set(gameProfile.gameData.ratingLists.best.map(s => `${s.id}-${s.difficulty}`));
-    const newSet = new Set(gameProfile.gameData.ratingLists.new.map(s => `${s.id}-${s.difficulty}`));
+    const gameData = gameProfile.gameData as any;
+    const ratingLists = gameData.ratingLists;
+    const bestSet = new Set(ratingLists.best?.map((s: any) => `${s.id}-${s.difficulty}`) || []);
+    const newSet = new Set(ratingLists.new?.map((s: any) => `${s.id}-${s.difficulty}`) || []);
 
     const processList = (list: any[], isPlaylog = false) => {
       if (!list) return [];
       return list.map(item => {
         const songInfo = songMap.get(item.id.toString());
         const difficultyKey = item.difficulty.toLowerCase();
-        const songDifficultyInfo = songInfo?.data?.[difficultyKey];
+        const songDifficultyInfo = (songInfo as any)?.data?.[difficultyKey];
         
         const enrichedItem: any = { ...item, level: 'N/A', const: 0, ratingValue: 0 };
 
@@ -75,10 +77,10 @@ export async function GET(request: NextRequest) {
     };
 
     const enrichedGameData = {
-        playlogs: processList(gameProfile.gameData.playlogs, true),
+        playlogs: processList(gameData.playlogs, true),
         ratingLists: {
-            best: processList(gameProfile.gameData.ratingLists.best),
-            new: processList(gameProfile.gameData.ratingLists.new)
+            best: processList(ratingLists.best),
+            new: processList(ratingLists.new)
         }
     };
     

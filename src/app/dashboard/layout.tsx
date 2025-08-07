@@ -7,7 +7,7 @@ import {
   Sidebar,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export default async function DashboardLayout({
   children,

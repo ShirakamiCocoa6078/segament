@@ -26,7 +26,6 @@ export interface User {
   email: string;
   name?: string | null;
   image?: string | null;
-  username?: string | null;
   apiKey?: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -48,7 +47,6 @@ export interface DashboardResponse {
 export interface SignupFormData {
   email: string;
   name: string;
-  username: string;
   image?: string;
   providerAccountId: string;
   provider: string;
