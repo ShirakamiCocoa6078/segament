@@ -76,7 +76,7 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
       const bVal = b[sortKey];
       let compare = 0;
       if (sortKey === 'level') {
-        compare = levelToNumber(aVal) - levelToNumber(bVal);
+        compare = levelToNumber(String(aVal || '0')) - levelToNumber(String(bVal || '0'));
       } else if (sortKey === 'difficulty') {
         compare = (difficultyOrder[aVal] || 0) - (difficultyOrder[bVal] || 0);
       } else if (typeof aVal === 'number' && typeof bVal === 'number') {
