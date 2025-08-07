@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import {
   SidebarHeader,
   SidebarMenu,
@@ -24,24 +25,112 @@ interface GameProfile {
   playerName: string;
   gameType: string;
   region: string;
+  userId: string;
 }
+
+// 캐시 관리 유틸리티
+const CACHE_KEY = 'segament_profiles_cache';
+const CACHE_EXPIRY_KEY = 'segament_profiles_cache_expiry';
+const CACHE_DURATION = 5 * 60 * 1000; // 5분
+
+const getCachedProfiles = (): GameProfile[] | null => {
+  try {
+    const expiry = localStorage.getItem(CACHE_EXPIRY_KEY);
+    const now = Date.now();
+    
+    if (!expiry || now > parseInt(expiry)) {
+      // 캐시 만료
+      localStorage.removeItem(CACHE_KEY);
+      localStorage.removeItem(CACHE_EXPIRY_KEY);
+      return null;
+    }
+    
+    const cached = localStorage.getItem(CACHE_KEY);
+    return cached ? JSON.parse(cached) : null;
+  } catch {
+    return null;
+  }
+};
+
+const setCachedProfiles = (profiles: GameProfile[]) => {
+  try {
+    const expiry = Date.now() + CACHE_DURATION;
+    localStorage.setItem(CACHE_KEY, JSON.stringify(profiles));
+    localStorage.setItem(CACHE_EXPIRY_KEY, expiry.toString());
+  } catch {
+    // localStorage 실패 시 무시
+  }
+};
+
+const clearProfilesCache = () => {
+  try {
+    localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem(CACHE_EXPIRY_KEY);
+  } catch {
+    // localStorage 실패 시 무시
+  }
+};
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [profiles, setProfiles] = useState<GameProfile[]>([]);
   const [expandedGames, setExpandedGames] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(false);
 
-  // 사용자 프로필 데이터 가져오기
+  const fetchProfiles = useCallback(async (useCache = true) => {
+    if (!session?.user?.id) return;
+    
+    // 캐시 확인
+    if (useCache) {
+      const cachedProfiles = getCachedProfiles();
+      if (cachedProfiles) {
+        setProfiles(cachedProfiles);
+        return;
+      }
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/dashboard');
+      const data = await response.json();
+      
+      if (data.profiles) {
+        const profilesWithUserId = data.profiles.map((profile: any) => ({
+          ...profile,
+          userId: session.user.id
+        }));
+        
+        setProfiles(profilesWithUserId);
+        setCachedProfiles(profilesWithUserId);
+      }
+    } catch (error) {
+      console.error('Failed to fetch profiles:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [session?.user?.id]);
+
+  // 북마크릿 업데이트 감지를 위한 이벤트 리스너
   useEffect(() => {
-    fetch('/api/dashboard')
-      .then(res => res.json())
-      .then(data => {
-        if (data.profiles) {
-          setProfiles(data.profiles);
-        }
-      })
-      .catch(console.error);
-  }, []);
+    const handleProfileUpdate = () => {
+      clearProfilesCache();
+      fetchProfiles(false); // 캐시 사용하지 않고 새로 가져오기
+    };
+
+    // 커스텀 이벤트 리스너 추가 (북마크릿에서 dispatch 할 수 있도록)
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, [fetchProfiles]);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchProfiles();
+    }
+  }, [session?.user?.id, fetchProfiles]);
 
   // 게임별 프로필 그룹화
   const chunithmProfiles = profiles.filter(p => p.gameType === 'CHUNITHM');
@@ -72,9 +161,9 @@ export function SidebarNav() {
         <SidebarMenu>
           {/* 대시보드 메뉴 */}
           <SidebarMenuItem>
-            <Link href="/dashboard">
+            <Link href={session?.user?.id ? `/dashboard/${session.user.id}/dashboard` : "/dashboard"}>
               <SidebarMenuButton
-                isActive={pathname === '/dashboard'}
+                isActive={pathname.includes('/dashboard')}
                 tooltip={{ children: "대시보드" }}
               >
                 <LayoutDashboard className="h-5 w-5" />
@@ -102,7 +191,13 @@ export function SidebarNav() {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {chunithmProfiles.length > 0 ? (
+                  {isLoading ? (
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton className="opacity-50">
+                        <span className="text-muted-foreground">로딩 중...</span>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  ) : chunithmProfiles.length > 0 ? (
                     chunithmProfiles.map((profile) => (
                       <Collapsible key={profile.id}>
                         <SidebarMenuSubItem>
@@ -115,14 +210,14 @@ export function SidebarNav() {
                           <CollapsibleContent>
                             <SidebarMenuSub>
                               <SidebarMenuSubItem>
-                                <Link href={`/dashboard/detail/chunithm/${profile.id}`}>
+                                <Link href={`/dashboard/${profile.userId}/chunithm/${profile.region.toLowerCase()}`}>
                                   <SidebarMenuSubButton>
                                     <span>곡 프로필</span>
                                   </SidebarMenuSubButton>
                                 </Link>
                               </SidebarMenuSubItem>
                               <SidebarMenuSubItem>
-                                <Link href={`/dashboard/detail/chunithm/playPercent`}>
+                                <Link href={`/dashboard/${profile.userId}/chunithm/playPercent`}>
                                   <SidebarMenuSubButton>
                                     <span>순회 진행도</span>
                                   </SidebarMenuSubButton>
@@ -164,7 +259,13 @@ export function SidebarNav() {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {maimaiProfiles.length > 0 ? (
+                  {isLoading ? (
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton className="opacity-50">
+                        <span className="text-muted-foreground">로딩 중...</span>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  ) : maimaiProfiles.length > 0 ? (
                     maimaiProfiles.map((profile) => (
                       <Collapsible key={profile.id}>
                         <SidebarMenuSubItem>
@@ -177,14 +278,14 @@ export function SidebarNav() {
                           <CollapsibleContent>
                             <SidebarMenuSub>
                               <SidebarMenuSubItem>
-                                <Link href={`/dashboard/detail/maimai/${profile.id}`}>
+                                <Link href={`/dashboard/${profile.userId}/maimai/${profile.region.toLowerCase()}`}>
                                   <SidebarMenuSubButton>
                                     <span>곡 프로필</span>
                                   </SidebarMenuSubButton>
                                 </Link>
                               </SidebarMenuSubItem>
                               <SidebarMenuSubItem>
-                                <Link href={`/dashboard/detail/maimai/playPercent`}>
+                                <Link href={`/dashboard/${profile.userId}/maimai/playPercent`}>
                                   <SidebarMenuSubButton>
                                     <span>순회 진행도</span>
                                   </SidebarMenuSubButton>
