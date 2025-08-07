@@ -161,7 +161,7 @@ export function SidebarNav() {
         <SidebarMenu>
           {/* 대시보드 메뉴 */}
           <SidebarMenuItem>
-            <Link href={session?.user?.id ? `/dashboard/${session.user.id}/dashboard` : "/dashboard"}>
+            <Link href={session?.user?.id ? `/${session.user.id}/dashboard` : "/dashboard"}>
               <SidebarMenuButton
                 isActive={pathname.includes('/dashboard')}
                 tooltip={{ children: "대시보드" }}
@@ -210,14 +210,14 @@ export function SidebarNav() {
                           <CollapsibleContent>
                             <SidebarMenuSub>
                               <SidebarMenuSubItem>
-                                <Link href={`/dashboard/${profile.userId}/chunithm/${profile.region.toLowerCase()}`}>
+                                <Link href={`/${profile.userId}/dashboard/detail/chunithm/${profile.region.toLowerCase()}`}>
                                   <SidebarMenuSubButton>
                                     <span>곡 프로필</span>
                                   </SidebarMenuSubButton>
                                 </Link>
                               </SidebarMenuSubItem>
                               <SidebarMenuSubItem>
-                                <Link href={`/dashboard/${profile.userId}/chunithm/playPercent`}>
+                                <Link href={`/${profile.userId}/dashboard/detail/chunithm/playPercent`}>
                                   <SidebarMenuSubButton>
                                     <span>순회 진행도</span>
                                   </SidebarMenuSubButton>
@@ -278,14 +278,14 @@ export function SidebarNav() {
                           <CollapsibleContent>
                             <SidebarMenuSub>
                               <SidebarMenuSubItem>
-                                <Link href={`/dashboard/${profile.userId}/maimai/${profile.region.toLowerCase()}`}>
+                                <Link href={`/${profile.userId}/dashboard/detail/maimai/${profile.region.toLowerCase()}`}>
                                   <SidebarMenuSubButton>
                                     <span>곡 프로필</span>
                                   </SidebarMenuSubButton>
                                 </Link>
                               </SidebarMenuSubItem>
                               <SidebarMenuSubItem>
-                                <Link href={`/dashboard/${profile.userId}/maimai/playPercent`}>
+                                <Link href={`/${profile.userId}/dashboard/detail/maimai/playPercent`}>
                                   <SidebarMenuSubButton>
                                     <span>순회 진행도</span>
                                   </SidebarMenuSubButton>

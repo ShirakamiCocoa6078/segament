@@ -1,4 +1,4 @@
-// 파일 경로: src/app/dashboard/[userId]/layout.tsx
+// 파일 경로: src/app/[userId]/layout.tsx
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -13,11 +13,11 @@ import {
   SidebarInset,
 } from "@/components/ui/sidebar";
 
-interface UserDashboardLayoutProps {
+interface UserLayoutProps {
   children: ReactNode;
 }
 
-export default function UserDashboardLayout({ children }: UserDashboardLayoutProps) {
+export default function UserLayout({ children }: UserLayoutProps) {
   const params = useParams();
   const { userId } = params;
   const { data: session, status } = useSession();

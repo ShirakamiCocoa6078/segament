@@ -1,0 +1,140 @@
+// 파일 경로: src/app/[userId]/dashboard/page.tsx
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { ProfileCard } from '@/components/dashboard/ProfileCard';
+import RegisterProfileDialog from '@/components/dashboard/RegisterProfileDialog';
+import { LoadingState } from '@/components/ui/loading-spinner';
+import { Card, CardContent } from '@/components/ui/card';
+import type { ProfileSummary } from '@/types';
+
+interface AccessMode {
+  mode: 'owner' | 'visitor' | 'private';
+  canEdit: boolean;
+  showPrivateData: boolean;
+}
+
+export default function UserDashboardPage() {
+  const params = useParams();
+  const { userId } = params;
+  const { data: session, status } = useSession();
+  const [profiles, setProfiles] = useState<ProfileSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [accessMode, setAccessMode] = useState<AccessMode>({ 
+    mode: 'visitor', 
+    canEdit: false, 
+    showPrivateData: false 
+  });
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      if (typeof userId !== 'string') return;
+      
+      try {
+        const isOwner = session?.user?.id === userId;
+        setAccessMode({
+          mode: isOwner ? 'owner' : 'visitor',
+          canEdit: isOwner,
+          showPrivateData: isOwner
+        });
+
+        const endpoint = isOwner 
+          ? '/api/dashboard'
+          : `/api/profile/public/${userId}`;
+          
+        const response = await fetch(endpoint);
+        
+        if (!response.ok) {
+          if (response.status === 403) {
+            setAccessMode(prev => ({ ...prev, mode: 'private' }));
+            throw new Error('프로필이 비공개로 설정되어 있습니다.');
+          } else if (response.status === 404) {
+            throw new Error('사용자를 찾을 수 없습니다.');
+          } else {
+            throw new Error('프로필 정보를 불러오는데 실패했습니다.');
+          }
+        }
+        
+        const data = await response.json();
+        setProfiles(data.profiles || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (status !== 'loading') {
+      fetchProfiles();
+    }
+  }, [userId, session?.user?.id, status]);
+
+  if (status === 'loading' || isLoading) {
+    return <LoadingState />;
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-red-500 mb-4">{error}</p>
+              {accessMode.mode === 'private' && (
+                <p className="text-muted-foreground mb-4">
+                  이 사용자는 프로필을 비공개로 설정했습니다.
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const isOwner = accessMode.mode === 'owner';
+
+  return (
+    <div className="container mx-auto p-4">
+      {profiles.length > 0 ? (
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold">
+              {isOwner ? '내 대시보드' : `${userId}님의 프로필`}
+            </h1>
+            {isOwner && <RegisterProfileDialog />}
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {profiles.map(profile => (
+              <ProfileCard 
+                key={profile.id} 
+                profile={profile} 
+                userId={userId as string}
+                accessMode={accessMode}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <div className="max-w-md mx-auto">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              {isOwner ? '프로필이 없습니다' : '공개된 프로필이 없습니다'}
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {isOwner 
+                ? '게임 프로필을 등록하여 점수를 추적해보세요.' 
+                : '이 사용자는 아직 공개된 게임 프로필이 없습니다.'
+              }
+            </p>
+            {isOwner && <RegisterProfileDialog />}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

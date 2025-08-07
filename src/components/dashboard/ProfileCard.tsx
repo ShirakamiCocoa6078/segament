@@ -19,7 +19,7 @@ interface ProfileCardProps {
 export const ProfileCard = React.memo<ProfileCardProps>(({ profile, userId, accessMode }) => {
   const gameTypeSlug = createSlug(profile.gameType);
   const regionSlug = createSlug(profile.region);
-  const detailUrl = `/dashboard/${userId}/${gameTypeSlug}/${regionSlug}`;
+  const detailUrl = `/${userId}/dashboard/detail/${gameTypeSlug}/${regionSlug}`;
 
   return (
     <Link 

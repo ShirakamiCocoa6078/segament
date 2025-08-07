@@ -14,7 +14,7 @@ export default function DashboardPage() {
 
     if (session?.user?.id) {
       // 사용자가 로그인되어 있으면 새로운 URL 구조로 리다이렉트
-      router.replace(`/dashboard/${session.user.id}/dashboard`);
+      router.replace(`/${session.user.id}/dashboard`);
     } else {
       // 로그인되어 있지 않으면 로그인 페이지로 리다이렉트
       router.replace('/auth/signin');
