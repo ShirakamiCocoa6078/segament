@@ -155,9 +155,9 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
             <Image
               src={ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType]}
               alt={`Clear Type ${clearType}`}
-              width={16}
+              width={32}
               height={18}
-              className="w-4 h-[18px]"
+              className="w-8 h-[18px]"
             />
           )}
           
@@ -166,9 +166,9 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
             <Image
               src={ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType]}
               alt={`Combo Type ${comboType}`}
-              width={16}
+              width={32}
               height={18}
-              className="w-4 h-[18px]"
+              className="w-8 h-[18px]"
             />
           )}
           
@@ -177,9 +177,9 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
             <Image
               src={ICON_MAPPING.fullChainType[fullChainType as keyof typeof ICON_MAPPING.fullChainType]}
               alt={`Full Chain Type ${fullChainType}`}
-              width={16}
+              width={32}
               height={18}
-              className="w-4 h-[18px]"
+              className="w-8 h-[18px]"
             />
           )}
         </div>
