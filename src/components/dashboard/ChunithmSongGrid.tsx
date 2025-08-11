@@ -54,9 +54,9 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
       };
     } else {
       return {
-        columns: 4,
+        columns: 3,
         maxSongs: 20,
-        className: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+        className: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
         gap: 'gap-3'
       };
     }
@@ -85,11 +85,26 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
       </div>
       
       <div className={`grid ${config.className} ${config.gap} justify-items-center`}>
-        {displaySongs.map((song, index) => (
-          <div key={`${song.id}-${song.difficulty}-${index}`} className={`w-full ${type === 'new' ? 'max-w-[637px]' : 'max-w-[490px]'}`}>
-            <ChunithmSongCard song={song} />
-          </div>
-        ))}
+        {displaySongs.map((song, index) => {
+          // New 20에서 마지막 2개 요소(19, 20번째)의 위치 조정
+          let gridColumnClass = '';
+          if (type === 'new' && displaySongs.length === 20) {
+            if (index === 18) { // 19번째 요소 (0-based index 18)
+              gridColumnClass = 'lg:col-start-1 lg:col-end-2 lg:ml-[50%]'; // 1-2 열 사이
+            } else if (index === 19) { // 20번째 요소 (0-based index 19)
+              gridColumnClass = 'lg:col-start-2 lg:col-end-3 lg:ml-[50%]'; // 2-3 열 사이
+            }
+          }
+          
+          return (
+            <div 
+              key={`${song.id}-${song.difficulty}-${index}`} 
+              className={`w-full ${type === 'new' ? 'max-w-[637px]' : 'max-w-[490px]'} ${gridColumnClass}`}
+            >
+              <ChunithmSongCard song={song} />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
