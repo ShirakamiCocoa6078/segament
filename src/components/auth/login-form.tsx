@@ -46,8 +46,23 @@ export function LoginForm() {
         description: result.error,
       });
     } else {
-      // 로그인 성공 시 홈으로 이동하여 자동 리다이렉트되도록 함
-      router.push("/");
+      // 로그인 성공 시 사용자 정보를 확인하여 올바른 대시보드로 이동
+      try {
+        const userResponse = await fetch('/api/user/profile-status');
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          if (userData.user?.id) {
+            router.push(`/${userData.user.id}/dashboard`);
+          } else {
+            router.push("/");
+          }
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error('Failed to get user data:', error);
+        router.push("/");
+      }
     }
     setIsLoading(false);
   };

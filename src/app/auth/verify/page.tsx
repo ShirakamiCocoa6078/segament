@@ -21,8 +21,19 @@ export default function VerifyPage() {
           const registrationStatus = await response.json();
 
           if (registrationStatus.registered) {
-            // 이미 가입된 유저라면 대시보드로 이동합니다.
-            router.replace("/dashboard");
+            // 이미 가입된 유저라면 해당 유저의 대시보드로 이동합니다.
+            const userResponse = await fetch('/api/user/profile-status');
+            if (userResponse.ok) {
+              const userData = await userResponse.json();
+              if (userData.user?.id) {
+                router.replace(`/${userData.user.id}/dashboard`);
+              } else {
+                // id가 없다면 메인 페이지로
+                router.replace("/");
+              }
+            } else {
+              router.replace("/");
+            }
           } else {
             // 신규 유저라면 구글 정보를 포함하여 회원가입 페이지로 이동합니다.
             const params = new URLSearchParams({

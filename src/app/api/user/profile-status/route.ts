@@ -15,18 +15,37 @@ export async function GET(req: Request) {
   }
 
   try {
-    // DB에서 해당 유저의 gameProfile이 존재하는지 확인합니다.
-    const profiles = await prisma.gameProfile.findMany({
+    // DB에서 해당 유저 정보와 gameProfile이 존재하는지 확인합니다.
+    const user = await prisma.user.findUnique({
       where: {
-        userId: session.user.id,
+        id: session.user.id,
+      },
+      include: {
+        gameProfiles: true,
       },
     });
 
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     // 프로필 존재 여부에 따라 다른 JSON 응답을 보냅니다.
-    if (profiles && profiles.length > 0) {
-      return NextResponse.json({ hasProfile: true }, { status: 200 });
+    if (user.gameProfiles && user.gameProfiles.length > 0) {
+      return NextResponse.json({ 
+        hasProfile: true, 
+        user: { 
+          id: user.id,
+          email: user.email 
+        } 
+      }, { status: 200 });
     } else {
-      return NextResponse.json({ hasProfile: false }, { status: 200 });
+      return NextResponse.json({ 
+        hasProfile: false, 
+        user: { 
+          id: user.id,
+          email: user.email 
+        } 
+      }, { status: 200 });
     }
   } catch (error) {
     console.error('[PROFILE_STATUS_API_ERROR]', error);
