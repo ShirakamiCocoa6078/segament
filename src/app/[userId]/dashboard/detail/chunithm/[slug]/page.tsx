@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from '@/components/ui/card';
 import { SongDataTable } from '@/components/dashboard/SongDataTable';
 import { ProfileDisplay } from '@/components/dashboard/profile-display';
+import { ChunithmSongGrid } from '@/components/dashboard/ChunithmSongGrid';
 
 interface ProfileDetail {
   playerName: string;
@@ -150,24 +151,42 @@ export default function UserChunithmDetailPage() {
 
       <Tabs defaultValue="best" className="w-full mt-6">
         <TabsList>
-          <TabsTrigger value="best">Best</TabsTrigger>
-          <TabsTrigger value="new">New</TabsTrigger>
+          <TabsTrigger value="best">Best 30</TabsTrigger>
+          <TabsTrigger value="new">New 20</TabsTrigger>
           {accessMode.showPrivateData && (
             <TabsTrigger value="all">All Records</TabsTrigger>
           )}
         </TabsList>
         
-        <TabsContent value="best">
-          <SongDataTable data={profile.gameData?.ratingLists.best || []} />
+        <TabsContent value="best" className="mt-6">
+          <Card>
+            <CardContent className="pt-6">
+              <ChunithmSongGrid 
+                songs={profile.gameData?.ratingLists.best || []} 
+                type="best"
+              />
+            </CardContent>
+          </Card>
         </TabsContent>
         
-        <TabsContent value="new">
-          <SongDataTable data={profile.gameData?.ratingLists.new || []} />
+        <TabsContent value="new" className="mt-6">
+          <Card>
+            <CardContent className="pt-6">
+              <ChunithmSongGrid 
+                songs={profile.gameData?.ratingLists.new || []} 
+                type="new"
+              />
+            </CardContent>
+          </Card>
         </TabsContent>
         
         {accessMode.showPrivateData && (
-          <TabsContent value="all">
-            <SongDataTable data={profile.gameData?.playlogs || []} showPagination={true} />
+          <TabsContent value="all" className="mt-6">
+            <Card>
+              <CardContent className="pt-6">
+                <SongDataTable data={profile.gameData?.playlogs || []} showPagination={true} />
+              </CardContent>
+            </Card>
           </TabsContent>
         )}
       </Tabs>

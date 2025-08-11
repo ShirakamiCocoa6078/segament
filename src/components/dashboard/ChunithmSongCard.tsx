@@ -108,7 +108,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
   };
 
   return (
-    <div className="relative flex items-center w-[490px] h-[100px] bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="relative flex items-center w-full max-w-[490px] h-[100px] bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
       {/* 자켓 이미지 */}
       <div className="w-[100px] h-[100px] flex-shrink-0">
         {jacketUrl ? (
@@ -128,7 +128,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
       </div>
 
       {/* 곡 정보 */}
-      <div className="flex-1 px-4 py-2 flex flex-col justify-between h-full">
+      <div className="flex-1 px-3 py-2 flex flex-col justify-between h-full min-w-0">
         <div className="flex flex-col space-y-1">
           <h3 className="text-sm font-semibold text-gray-900 truncate" title={song.title}>
             {song.title}
@@ -143,23 +143,23 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
       </div>
 
       {/* 스코어 */}
-      <div className="px-4 py-2 text-right">
+      <div className="px-3 py-2 text-right flex-shrink-0">
         <p className="text-lg font-bold text-blue-600">
           {formatScore(song.score)}
         </p>
       </div>
 
       {/* 클리어/콤보/풀체인 아이콘들 */}
-      <div className="px-2 py-2 flex flex-col items-end space-y-1">
-        <div className="flex space-x-1">
+      <div className="px-2 py-2 flex flex-col justify-end h-full flex-shrink-0">
+        <div className="flex space-x-1 items-center">
           {/* clearType */}
           {clearType > 0 && ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType] !== "none" && (
             <Image
               src={ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType]}
               alt={`Clear Type ${clearType}`}
-              width={18}
-              height={18}
-              className="w-[18px] h-[18px]"
+              width={16}
+              height={16}
+              className="w-4 h-4"
             />
           )}
           
@@ -168,9 +168,9 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
             <Image
               src={ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType]}
               alt={`Combo Type ${comboType}`}
-              width={18}
-              height={18}
-              className="w-[18px] h-[18px]"
+              width={16}
+              height={16}
+              className="w-4 h-4"
             />
           )}
           
@@ -179,9 +179,9 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
             <Image
               src={ICON_MAPPING.fullChainType[fullChainType as keyof typeof ICON_MAPPING.fullChainType]}
               alt={`Full Chain Type ${fullChainType}`}
-              width={18}
-              height={18}
-              className="w-[18px] h-[18px]"
+              width={16}
+              height={16}
+              className="w-4 h-4"
             />
           )}
         </div>
@@ -189,7 +189,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
 
       {/* 난이도 색상 표시 */}
       <div 
-        className="w-[9px] h-[100px] rounded-r-lg"
+        className="w-[9px] h-[100px] rounded-r-lg flex-shrink-0"
         style={{
           background: getDifficultyColor(),
           backgroundSize: song.difficulty?.toUpperCase() === 'ULTIMA' ? '8px 8px' : 'auto'
