@@ -82,6 +82,15 @@ export async function GET(request: NextRequest) {
     const bestSet = new Set(safeBest.map((s: RatingItem) => `${s.id}-${s.difficulty}`));
     const newSet = new Set(safeNew.map((s: RatingItem) => `${s.id}-${s.difficulty}`));
 
+    // 플레이로그에서 상세 정보를 빠르게 조회하기 위한 맵 생성
+    const playlogMap = new Map();
+    if (Array.isArray(gameData.playlogs)) {
+      gameData.playlogs.forEach((log: any) => {
+        const key = `${log.id}-${log.difficulty}`;
+        playlogMap.set(key, log);
+      });
+    }
+
     const processList = (list: RatingItem[] | undefined, isPlaylog = false) => {
       if (!list || !Array.isArray(list)) return [];
       return list.map(item => {
@@ -91,10 +100,26 @@ export async function GET(request: NextRequest) {
         
         const enrichedItem: any = { ...item, level: 'N/A', const: 0, ratingValue: 0 };
 
+        // 곡 정보 추가
         if (songDifficultyInfo && typeof songDifficultyInfo.const === 'number') {
           enrichedItem.const = songDifficultyInfo.const;
           enrichedItem.level = songDifficultyInfo.level || 'N/A';
           enrichedItem.ratingValue = calculateRating(enrichedItem.const, item.score || 0);
+        }
+
+        // ratingList 항목의 경우 플레이로그에서 상세 정보 가져오기
+        if (!isPlaylog) {
+          const key = `${item.id}-${item.difficulty}`;
+          const playlogEntry = playlogMap.get(key);
+          if (playlogEntry) {
+            // 플레이로그에서 clearType, comboType, fullChainType 정보 복사
+            enrichedItem.clearType = playlogEntry.clearType;
+            enrichedItem.comboType = playlogEntry.comboType; 
+            enrichedItem.fullChainType = playlogEntry.fullChainType;
+            enrichedItem.isFullCombo = playlogEntry.isFullCombo;
+            enrichedItem.isAllJustice = playlogEntry.isAllJustice;
+            enrichedItem.isAllJusticeCritical = playlogEntry.isAllJusticeCritical;
+          }
         }
 
         if (isPlaylog) {
