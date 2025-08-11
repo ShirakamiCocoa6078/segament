@@ -27,22 +27,22 @@ interface ChunithmSongCardProps {
 const ICON_MAPPING = {
   clearType: {
     "FAILED": "none",
-    "CLEAR": "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_clear.png",
-    "HARD": "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_hard.png",
-    "BRAVE": "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_brave.png",
-    "ABSOLUTE": "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_absolute.png",
-    "CATASTROPHY": "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_catastrophy.png"
+    "CLEAR": "/playLogs/image/icon_clear.png",
+    "HARD": "/playLogs/image/icon_hard.png",
+    "BRAVE": "/playLogs/image/icon_brave.png",
+    "ABSOLUTE": "/playLogs/image/icon_absolute.png",
+    "CATASTROPHY": "/playLogs/image/icon_catastrophy.png"
   },
   comboType: {
     0: "none",
-    1: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_fullcombo.png",
-    2: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_alljustice.png",
-    3: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_alljusticecritical.png"
+    1: "/playLogs/image/icon_fullcombo.png",
+    2: "/playLogs/image/icon_alljustice.png",
+    3: "/playLogs/image/icon_alljusticecritical.png"
   },
   fullChainType: {
     0: "none",
-    1: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_fullchain.png",
-    2: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_fullchain2.png"
+    1: "/playLogs/image/icon_fullchain.png",
+    2: "/playLogs/image/icon_fullchain2.png"
   }
 };;
 
