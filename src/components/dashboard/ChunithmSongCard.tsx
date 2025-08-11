@@ -140,16 +140,17 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
         </div>
       </div>
 
-      {/* 스코어 */}
-      <div className="px-3 py-2 text-right flex-shrink-0">
-        <p className="text-lg font-bold text-blue-600">
-          {formatScore(song.score)}
-        </p>
-      </div>
+      {/* 스코어와 아이콘을 겹쳐서 배치하는 컨테이너 */}
+      <div className="relative px-3 py-2 flex-shrink-0 min-w-0">
+        {/* 스코어 */}
+        <div className="text-right mb-2">
+          <p className="text-lg font-bold text-blue-600">
+            {formatScore(song.score)}
+          </p>
+        </div>
 
-      {/* 클리어/콤보/풀체인 아이콘들 */}
-      <div className="px-2 py-2 flex flex-col justify-end h-full flex-shrink-0">
-        <div className="flex space-x-1 items-center">
+        {/* 클리어/콤보/풀체인 아이콘들 */}
+        <div className="flex space-x-1 items-center justify-end">
           {/* clearType */}
           {clearType > 0 && ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType] !== "none" && (
             <Image
@@ -157,7 +158,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
               alt={`Clear Type ${clearType}`}
               width={64}
               height={18}
-              className="w-16 h-[18px]"
+              className="max-w-[64px] w-8 sm:w-12 md:w-16 h-[18px] object-contain"
             />
           )}
           
@@ -168,7 +169,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
               alt={`Combo Type ${comboType}`}
               width={64}
               height={18}
-              className="w-16 h-[18px]"
+              className="max-w-[64px] w-8 sm:w-12 md:w-16 h-[18px] object-contain"
             />
           )}
           
@@ -179,7 +180,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
               alt={`Full Chain Type ${fullChainType}`}
               width={64}
               height={18}
-              className="w-16 h-[18px]"
+              className="max-w-[64px] w-8 sm:w-12 md:w-16 h-[18px] object-contain"
             />
           )}
         </div>
