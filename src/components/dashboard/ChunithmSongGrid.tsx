@@ -10,7 +10,7 @@ interface SongData {
   score: number;
   level?: string;
   const?: number;
-  clearType?: string;
+  clearType?: number; // 숫자로 변경
   comboType?: number;
   fullChainType?: number;
   isFullCombo?: boolean;

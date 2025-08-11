@@ -11,7 +11,7 @@ interface SongData {
   score: number;
   level?: string;
   const?: number;
-  clearType?: string; // 문자열로 변경
+  clearType?: number; // 숫자로 변경
   comboType?: number;
   fullChainType?: number;
   isFullCombo?: boolean;
@@ -26,12 +26,12 @@ interface ChunithmSongCardProps {
 // 아이콘 매핑
 const ICON_MAPPING = {
   clearType: {
-    "FAILED": "none",
-    "CLEAR": "/playLogs/image/icon_clear.png",
-    "HARD": "/playLogs/image/icon_hard.png",
-    "BRAVE": "/playLogs/image/icon_brave.png",
-    "ABSOLUTE": "/playLogs/image/icon_absolute.png",
-    "CATASTROPHY": "/playLogs/image/icon_catastrophy.png"
+    0: "none",
+    1: "/playLogs/image/icon_clear.png",
+    2: "/playLogs/image/icon_hard.png",
+    3: "/playLogs/image/icon_brave.png",
+    4: "/playLogs/image/icon_absolute.png",
+    5: "/playLogs/image/icon_catastrophy.png"
   },
   comboType: {
     0: "none",
@@ -78,26 +78,19 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
     setJacketUrl(jacketPath);
   }, [song.id]);
 
-  // 콤보 타입 결정
-  const getComboType = () => {
-    if (song.isAllJusticeCritical) return 3;
-    if (song.isAllJustice) return 2;
-    if (song.isFullCombo) return 1;
-    return 0;
-  };
+  // 데이터베이스 값을 그대로 사용 (계산 로직 제거)
+  const clearType = Number(song.clearType) || 0;
+  const comboType = Number(song.comboType) || 0;
+  const fullChainType = Number(song.fullChainType) || 0;
 
-  const comboType = getComboType();
-  const clearType = song.clearType || "FAILED";
-  const fullChainType = song.fullChainType || 0;
-
-  // 디버깅: 계산된 값들 확인
+  // 디버깅: 아이콘 매핑 결과 확인
   console.log(`[ChunithmSongCard] ${song.title} 아이콘 정보:`, {
     원본_clearType: song.clearType,
-    계산된_clearType: clearType,
+    사용될_clearType: clearType,
     원본_comboType: song.comboType,
-    계산된_comboType: comboType,
+    사용될_comboType: comboType,
     원본_fullChainType: song.fullChainType,
-    계산된_fullChainType: fullChainType,
+    사용될_fullChainType: fullChainType,
     clearType_아이콘_URL: ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType],
     comboType_아이콘_URL: ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType],
     fullChainType_아이콘_URL: ICON_MAPPING.fullChainType[fullChainType as keyof typeof ICON_MAPPING.fullChainType]
@@ -158,7 +151,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
       <div className="px-2 py-2 flex flex-col justify-end h-full flex-shrink-0">
         <div className="flex space-x-1 items-center">
           {/* clearType */}
-          {clearType !== "FAILED" && ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType] !== "none" && (
+          {clearType > 0 && ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType] !== "none" && (
             <Image
               src={ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType]}
               alt={`Clear Type ${clearType}`}
