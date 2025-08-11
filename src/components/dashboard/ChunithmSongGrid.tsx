@@ -49,14 +49,14 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
       return {
         columns: 3,
         maxSongs: 30,
-        className: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3',
+        className: 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3',
         gap: 'gap-4'
       };
     } else {
       return {
         columns: 3,
         maxSongs: 20,
-        className: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+        className: 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3',
         gap: 'gap-3'
       };
     }
@@ -86,13 +86,13 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
       
       <div className={`grid ${config.className} ${config.gap} justify-items-center`}>
         {displaySongs.map((song, index) => {
-          // New 20에서 마지막 2개 요소(19, 20번째)의 위치 조정
+          // New 20에서 마지막 2개 요소(19, 20번째)의 위치 조정 (XL 화면에서만)
           let gridColumnClass = '';
           if (type === 'new' && displaySongs.length === 20) {
             if (index === 18) { // 19번째 요소 (0-based index 18)
-              gridColumnClass = 'lg:col-start-1 lg:col-end-2 lg:ml-[50%]'; // 1-2 열 사이
+              gridColumnClass = 'xl:col-start-1 xl:col-end-2 xl:ml-[50%]'; // 1-2 열 사이 (XL에서만)
             } else if (index === 19) { // 20번째 요소 (0-based index 19)
-              gridColumnClass = 'lg:col-start-2 lg:col-end-3 lg:ml-[50%]'; // 2-3 열 사이
+              gridColumnClass = 'xl:col-start-2 xl:col-end-3 xl:ml-[50%]'; // 2-3 열 사이 (XL에서만)
             }
           }
           
