@@ -86,7 +86,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
       
       <div className={`grid ${config.className} ${config.gap} justify-items-center`}>
         {displaySongs.map((song, index) => (
-          <div key={`${song.id}-${song.difficulty}-${index}`} className="w-full max-w-[490px]">
+          <div key={`${song.id}-${song.difficulty}-${index}`} className={`w-full ${type === 'new' ? 'max-w-[637px]' : 'max-w-[490px]'}`}>
             <ChunithmSongCard song={song} />
           </div>
         ))}
