@@ -46,7 +46,8 @@ export function LoginForm() {
         description: result.error,
       });
     } else {
-      router.push("/dashboard");
+      // 로그인 성공 시 홈으로 이동하여 자동 리다이렉트되도록 함
+      router.push("/");
     }
     setIsLoading(false);
   };

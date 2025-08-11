@@ -150,7 +150,7 @@ export function SidebarNav() {
   return (
     <>
       <SidebarHeader>
-        <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href={session?.user?.id ? `/${session.user.id}/dashboard` : "/"} className="flex items-center gap-2">
           <SegamentLogo className="h-8 w-8 text-primary" />
           <span className="font-headline text-xl font-semibold text-primary group-data-[collapsible=icon]:hidden">
             Segament
@@ -161,7 +161,7 @@ export function SidebarNav() {
         <SidebarMenu>
           {/* 대시보드 메뉴 */}
           <SidebarMenuItem>
-            <Link href={session?.user?.id ? `/${session.user.id}/dashboard` : "/dashboard"}>
+            <Link href={session?.user?.id ? `/${session.user.id}/dashboard` : "/"}>
               <SidebarMenuButton
                 isActive={pathname.includes('/dashboard')}
                 tooltip={{ children: "대시보드" }}

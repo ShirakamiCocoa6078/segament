@@ -133,7 +133,7 @@
                     let rank = 'D', clearType = 0, comboType = 0, fullChainType = 0;
                     lamps.forEach(lamp => {
                         const src = lamp.src;
-                        if(src.includes('icon_clear.png')) clearType = 1; else if(src.includes('icon_hard.png')) clearType = 2; else if(src.includes('icon_brave.png')) clearType = 3; else if(src.includes('icon_absolute.png')) clearType = 4; else if(src.includes('icon_rank_catastrophy')) clearType = 5;
+                        if(src.includes('icon_clear.png')) clearType = 1; else if(src.includes('icon_hard.png')) clearType = 2; else if(src.includes('icon_brave.png')) clearType = 3; else if(src.includes('icon_absolute.png')) clearType = 4; else if(src.includes('icon_catastrophy.png')) clearType = 5;
                         if(src.includes('icon_fullcombo.png')) comboType = 1; else if(src.includes('icon_alljustice.png')) comboType = 2; else if(src.includes('icon_alljusticecritical.png')) comboType = 3;
                         if(src.includes('icon_fullchain2.png')) fullChainType = 2; else if(src.includes('icon_fullchain.png')) fullChainType = 1;
                         const match = src.match(/icon_rank_(\d+)\.png/);

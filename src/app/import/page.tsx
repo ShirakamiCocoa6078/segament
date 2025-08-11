@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
 export default function ImportPage() {
-  const { status: sessionStatus } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const [progressMessage, setProgressMessage] = useState('데이터 요청 대기 중...');
   const [progressValue, setProgressValue] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
@@ -52,7 +52,16 @@ export default function ImportPage() {
           
           setProgressMessage('모든 데이터 저장 완료! 대시보드로 이동합니다.');
           setProgressValue(100);
-          setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+          
+          // 세션 정보로부터 올바른 대시보드 URL로 이동
+          setTimeout(() => { 
+            if (session?.user?.id) {
+              window.location.href = `/${session.user.id}/dashboard`;
+            } else {
+              // 세션 정보가 없으면 홈으로 이동
+              window.location.href = '/';
+            }
+          }, 1500);
 
         } catch (error: any) {
           setErrorMessage(error.message);
