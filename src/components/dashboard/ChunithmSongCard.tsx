@@ -11,7 +11,7 @@ interface SongData {
   score: number;
   level?: string;
   const?: number;
-  clearType?: number;
+  clearType?: string; // 문자열로 변경
   comboType?: number;
   fullChainType?: number;
   isFullCombo?: boolean;
@@ -32,12 +32,12 @@ interface ChunithmSongCardProps {
 // 아이콘 매핑
 const ICON_MAPPING = {
   clearType: {
-    0: "none",
-    1: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_clear.png",
-    2: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_hard.png",
-    3: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_brave.png",
-    4: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_absolute.png",
-    5: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_catastrophy.png"
+    "FAILED": "none",
+    "CLEAR": "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_clear.png",
+    "HARD": "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_hard.png",
+    "BRAVE": "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_brave.png",
+    "ABSOLUTE": "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_absolute.png",
+    "CATASTROPHY": "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_catastrophy.png"
   },
   comboType: {
     0: "none",
@@ -50,7 +50,7 @@ const ICON_MAPPING = {
     1: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_fullchain.png",
     2: "https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_fullchain2.png"
   }
-};
+};;
 
 // 난이도별 색상
 const DIFFICULTY_COLORS = {
@@ -73,10 +73,13 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
         const data = await response.json();
         setJacketData(data);
         
-        // 해당 곡의 자켓 URL 찾기
-        const jacket = data.find((item: JacketData) => item.idx === song.id);
+        // 해당 곡의 자켓 URL 찾기 (song.id를 문자열로 변환하여 비교)
+        const jacket = data.find((item: JacketData) => item.idx === String(song.id));
         if (jacket) {
           setJacketUrl(jacket.jacketUrl);
+          console.log(`Found jacket for song ${song.id}:`, jacket.jacketUrl);
+        } else {
+          console.warn(`No jacket found for song ${song.id}`);
         }
       } catch (error) {
         console.error('Failed to load jacket data:', error);
@@ -95,7 +98,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
   };
 
   const comboType = getComboType();
-  const clearType = song.clearType || 0;
+  const clearType = song.clearType || "FAILED";
   const fullChainType = song.fullChainType || 0;
 
   const getDifficultyColor = () => {
@@ -153,13 +156,13 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
       <div className="px-2 py-2 flex flex-col justify-end h-full flex-shrink-0">
         <div className="flex space-x-1 items-center">
           {/* clearType */}
-          {clearType > 0 && ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType] !== "none" && (
+          {clearType !== "FAILED" && ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType] !== "none" && (
             <Image
               src={ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType]}
               alt={`Clear Type ${clearType}`}
               width={16}
-              height={16}
-              className="w-4 h-4"
+              height={18}
+              className="w-4 h-[18px]"
             />
           )}
           
@@ -169,8 +172,8 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
               src={ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType]}
               alt={`Combo Type ${comboType}`}
               width={16}
-              height={16}
-              className="w-4 h-4"
+              height={18}
+              className="w-4 h-[18px]"
             />
           )}
           
@@ -180,8 +183,8 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
               src={ICON_MAPPING.fullChainType[fullChainType as keyof typeof ICON_MAPPING.fullChainType]}
               alt={`Full Chain Type ${fullChainType}`}
               width={16}
-              height={16}
-              className="w-4 h-4"
+              height={18}
+              className="w-4 h-[18px]"
             />
           )}
         </div>

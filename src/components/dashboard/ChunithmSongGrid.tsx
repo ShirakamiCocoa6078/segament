@@ -10,7 +10,7 @@ interface SongData {
   score: number;
   level?: string;
   const?: number;
-  clearType?: number;
+  clearType?: string;
   comboType?: number;
   fullChainType?: number;
   isFullCombo?: boolean;
