@@ -85,9 +85,27 @@ export async function GET(request: NextRequest) {
     // 플레이로그에서 상세 정보를 빠르게 조회하기 위한 맵 생성
     const playlogMap = new Map();
     if (Array.isArray(gameData.playlogs)) {
-      gameData.playlogs.forEach((log: any) => {
+      console.log('[API] 플레이로그 데이터 수:', gameData.playlogs.length);
+      gameData.playlogs.forEach((log: any, index: number) => {
         const key = `${log.id}-${log.difficulty}`;
         playlogMap.set(key, log);
+        
+        // 처음 5개 플레이로그 상세 정보 출력
+        if (index < 5) {
+          console.log(`[API] 플레이로그 ${index + 1}:`, {
+            key,
+            id: log.id,
+            title: log.title,
+            difficulty: log.difficulty,
+            score: log.score,
+            clearType: log.clearType,
+            comboType: log.comboType,
+            fullChainType: log.fullChainType,
+            isFullCombo: log.isFullCombo,
+            isAllJustice: log.isAllJustice,
+            isAllJusticeCritical: log.isAllJusticeCritical
+          });
+        }
       });
     }
 
@@ -111,6 +129,21 @@ export async function GET(request: NextRequest) {
         if (!isPlaylog) {
           const key = `${item.id}-${item.difficulty}`;
           const playlogEntry = playlogMap.get(key);
+          
+          console.log(`[API] RatingList 항목 처리:`, {
+            key,
+            ratingItem: item,
+            playlogFound: !!playlogEntry,
+            playlogData: playlogEntry ? {
+              clearType: playlogEntry.clearType,
+              comboType: playlogEntry.comboType,
+              fullChainType: playlogEntry.fullChainType,
+              isFullCombo: playlogEntry.isFullCombo,
+              isAllJustice: playlogEntry.isAllJustice,
+              isAllJusticeCritical: playlogEntry.isAllJusticeCritical
+            } : null
+          });
+          
           if (playlogEntry) {
             // 플레이로그에서 clearType, comboType, fullChainType 정보 복사
             enrichedItem.clearType = playlogEntry.clearType;
@@ -146,6 +179,27 @@ export async function GET(request: NextRequest) {
     };
     
     const enrichedProfile = { ...gameProfile, gameData: enrichedGameData };
+
+    console.log(`[API] 최종 응답 데이터:`, {
+      bestCount: enrichedGameData.ratingLists.best.length,
+      newCount: enrichedGameData.ratingLists.new.length,
+      bestSample: enrichedGameData.ratingLists.best.slice(0, 3).map(song => ({
+        id: song.id,
+        title: song.title,
+        difficulty: song.difficulty,
+        clearType: song.clearType,
+        comboType: song.comboType,
+        fullChainType: song.fullChainType
+      })),
+      newSample: enrichedGameData.ratingLists.new.slice(0, 3).map(song => ({
+        id: song.id,
+        title: song.title,
+        difficulty: song.difficulty,
+        clearType: song.clearType,
+        comboType: song.comboType,
+        fullChainType: song.fullChainType
+      }))
+    });
 
     return NextResponse.json({ profile: enrichedProfile });
 

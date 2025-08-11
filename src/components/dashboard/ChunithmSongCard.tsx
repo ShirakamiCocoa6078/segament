@@ -58,6 +58,20 @@ const DIFFICULTY_COLORS = {
 export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
   const [jacketUrl, setJacketUrl] = useState<string>('');
 
+  // 디버깅: 받은 곡 데이터 확인
+  console.log(`[ChunithmSongCard] 곡 데이터:`, {
+    id: song.id,
+    title: song.title,
+    difficulty: song.difficulty,
+    score: song.score,
+    clearType: song.clearType,
+    comboType: song.comboType,
+    fullChainType: song.fullChainType,
+    isFullCombo: song.isFullCombo,
+    isAllJustice: song.isAllJustice,
+    isAllJusticeCritical: song.isAllJusticeCritical
+  });
+
   useEffect(() => {
     // /jacket/{idx}.jpg 경로로 직접 설정
     const jacketPath = `/jacket/${song.id}.jpg`;
@@ -75,6 +89,19 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
   const comboType = getComboType();
   const clearType = song.clearType || "FAILED";
   const fullChainType = song.fullChainType || 0;
+
+  // 디버깅: 계산된 값들 확인
+  console.log(`[ChunithmSongCard] ${song.title} 아이콘 정보:`, {
+    원본_clearType: song.clearType,
+    계산된_clearType: clearType,
+    원본_comboType: song.comboType,
+    계산된_comboType: comboType,
+    원본_fullChainType: song.fullChainType,
+    계산된_fullChainType: fullChainType,
+    clearType_아이콘_URL: ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType],
+    comboType_아이콘_URL: ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType],
+    fullChainType_아이콘_URL: ICON_MAPPING.fullChainType[fullChainType as keyof typeof ICON_MAPPING.fullChainType]
+  });
 
   const getDifficultyColor = () => {
     const difficulty = song.difficulty?.toUpperCase();

@@ -24,6 +24,26 @@ interface ChunithmSongGridProps {
 }
 
 export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
+  // 디버깅: 받은 데이터 확인
+  console.log(`[ChunithmSongGrid] ${type} 타입으로 받은 songs 데이터:`, songs);
+  console.log(`[ChunithmSongGrid] songs 배열 길이:`, songs.length);
+  
+  // 첫 번째 곡의 상세 정보 확인
+  if (songs.length > 0) {
+    console.log(`[ChunithmSongGrid] 첫 번째 곡 상세 정보:`, {
+      id: songs[0].id,
+      title: songs[0].title,
+      difficulty: songs[0].difficulty,
+      score: songs[0].score,
+      clearType: songs[0].clearType,
+      comboType: songs[0].comboType,
+      fullChainType: songs[0].fullChainType,
+      isFullCombo: songs[0].isFullCombo,
+      isAllJustice: songs[0].isAllJustice,
+      isAllJusticeCritical: songs[0].isAllJusticeCritical
+    });
+  }
+
   const getGridConfig = () => {
     if (type === 'best') {
       return {
