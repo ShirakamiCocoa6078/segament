@@ -19,12 +19,6 @@ interface SongData {
   isAllJusticeCritical?: boolean;
 }
 
-interface JacketData {
-  idx: string;
-  title: string;
-  jacketUrl: string;
-}
-
 interface ChunithmSongCardProps {
   song: SongData;
 }
@@ -62,31 +56,12 @@ const DIFFICULTY_COLORS = {
 };
 
 export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
-  const [jacketData, setJacketData] = useState<JacketData[]>([]);
   const [jacketUrl, setJacketUrl] = useState<string>('');
 
   useEffect(() => {
-    // jacket_data.json 로드
-    const loadJacketData = async () => {
-      try {
-        const response = await fetch('/data/jacket_data.json');
-        const data = await response.json();
-        setJacketData(data);
-        
-        // 해당 곡의 자켓 URL 찾기 (song.id를 문자열로 변환하여 비교)
-        const jacket = data.find((item: JacketData) => item.idx === String(song.id));
-        if (jacket) {
-          setJacketUrl(jacket.jacketUrl);
-          console.log(`Found jacket for song ${song.id}:`, jacket.jacketUrl);
-        } else {
-          console.warn(`No jacket found for song ${song.id}`);
-        }
-      } catch (error) {
-        console.error('Failed to load jacket data:', error);
-      }
-    };
-
-    loadJacketData();
+    // /jacket/{idx}.jpg 경로로 직접 설정
+    const jacketPath = `/jacket/${song.id}.jpg`;
+    setJacketUrl(jacketPath);
   }, [song.id]);
 
   // 콤보 타입 결정
