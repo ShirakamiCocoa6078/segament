@@ -115,7 +115,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
             상수: {song.const ? song.const.toFixed(1) : 'N/A'}
           </p>
           <p className="text-xs text-purple-600 font-medium">
-            레이팅: {songRating > 0 ? songRating.toFixed(2) : 'N/A'}
+            레이팅: {songRating > 0 ? songRating.toFixed(4) : 'N/A'}
           </p>
         </div>
       </div>

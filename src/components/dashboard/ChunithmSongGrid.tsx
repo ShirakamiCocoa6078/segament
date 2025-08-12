@@ -78,13 +78,13 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
           {ratingStats && (
             <div className="text-xs text-gray-600 flex flex-wrap gap-4 justify-center sm:justify-end">
               <span className="text-green-600 font-medium">
-                최대: {ratingStats.max.toFixed(2)}
+                최대: {ratingStats.max.toFixed(4)}
               </span>
               <span className="text-red-600 font-medium">
-                최소: {ratingStats.min.toFixed(2)}
+                최소: {ratingStats.min.toFixed(4)}
               </span>
               <span className="text-blue-600 font-medium">
-                평균: {ratingStats.average.toFixed(2)}
+                평균: {ratingStats.average.toFixed(4)}
               </span>
             </div>
           )}
