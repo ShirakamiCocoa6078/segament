@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { calculateRating } from '@/lib/ratingUtils';
 
 interface SongData {
   id: string;
@@ -58,20 +59,6 @@ const DIFFICULTY_COLORS = {
 export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
   const [jacketUrl, setJacketUrl] = useState<string>('');
 
-  // 디버깅: 받은 곡 데이터 확인
-  console.log(`[ChunithmSongCard] 곡 데이터:`, {
-    id: song.id,
-    title: song.title,
-    difficulty: song.difficulty,
-    score: song.score,
-    clearType: song.clearType,
-    comboType: song.comboType,
-    fullChainType: song.fullChainType,
-    isFullCombo: song.isFullCombo,
-    isAllJustice: song.isAllJustice,
-    isAllJusticeCritical: song.isAllJusticeCritical
-  });
-
   useEffect(() => {
     // /jacket/{idx}.jpg 경로로 직접 설정
     const jacketPath = `/jacket/${song.id}.jpg`;
@@ -83,19 +70,6 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
   const comboType = Number(song.comboType) || 0;
   const fullChainType = Number(song.fullChainType) || 0;
 
-  // 디버깅: 아이콘 매핑 결과 확인
-  console.log(`[ChunithmSongCard] ${song.title} 아이콘 정보:`, {
-    원본_clearType: song.clearType,
-    사용될_clearType: clearType,
-    원본_comboType: song.comboType,
-    사용될_comboType: comboType,
-    원본_fullChainType: song.fullChainType,
-    사용될_fullChainType: fullChainType,
-    clearType_아이콘_URL: ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType],
-    comboType_아이콘_URL: ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType],
-    fullChainType_아이콘_URL: ICON_MAPPING.fullChainType[fullChainType as keyof typeof ICON_MAPPING.fullChainType]
-  });
-
   const getDifficultyColor = () => {
     const difficulty = song.difficulty?.toUpperCase();
     return DIFFICULTY_COLORS[difficulty as keyof typeof DIFFICULTY_COLORS] || '#232323';
@@ -104,6 +78,9 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
   const formatScore = (score: number) => {
     return score.toLocaleString();
   };
+
+  // 레이팅 계산
+  const songRating = song.const && song.score ? calculateRating(song.const, song.score) : 0;
 
   return (
     <div className="relative flex items-center w-full max-w-[490px] h-[100px] bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
@@ -136,6 +113,9 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
           </p>
           <p className="text-xs text-gray-500">
             상수: {song.const ? song.const.toFixed(1) : 'N/A'}
+          </p>
+          <p className="text-xs text-purple-600 font-medium">
+            레이팅: {songRating > 0 ? songRating.toFixed(2) : 'N/A'}
           </p>
         </div>
       </div>

@@ -2,6 +2,7 @@
 'use client';
 
 import { ChunithmSongCard } from './ChunithmSongCard';
+import { calculateRating } from '@/lib/ratingUtils';
 
 interface SongData {
   id: string;
@@ -24,26 +25,6 @@ interface ChunithmSongGridProps {
 }
 
 export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
-  // 디버깅: 받은 데이터 확인
-  console.log(`[ChunithmSongGrid] ${type} 타입으로 받은 songs 데이터:`, songs);
-  console.log(`[ChunithmSongGrid] songs 배열 길이:`, songs.length);
-  
-  // 첫 번째 곡의 상세 정보 확인
-  if (songs.length > 0) {
-    console.log(`[ChunithmSongGrid] 첫 번째 곡 상세 정보:`, {
-      id: songs[0].id,
-      title: songs[0].title,
-      difficulty: songs[0].difficulty,
-      score: songs[0].score,
-      clearType: songs[0].clearType,
-      comboType: songs[0].comboType,
-      fullChainType: songs[0].fullChainType,
-      isFullCombo: songs[0].isFullCombo,
-      isAllJustice: songs[0].isAllJustice,
-      isAllJusticeCritical: songs[0].isAllJusticeCritical
-    });
-  }
-
   const getGridConfig = () => {
     if (type === 'best') {
       return {
@@ -65,6 +46,17 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
   const config = getGridConfig();
   const displaySongs = songs.slice(0, config.maxSongs);
 
+  // 레이팅 통계 계산
+  const ratings = displaySongs
+    .filter(song => song.const && song.score)
+    .map(song => calculateRating(song.const!, song.score));
+  
+  const ratingStats = ratings.length > 0 ? {
+    max: Math.max(...ratings),
+    min: Math.min(...ratings),
+    average: ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length
+  } : null;
+
   if (displaySongs.length === 0) {
     return (
       <div className="flex items-center justify-center h-32 text-gray-500">
@@ -79,9 +71,24 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
         <h3 className="text-lg font-semibold text-gray-800">
           {type === 'best' ? 'Best 30' : 'New 20'}
         </h3>
-        <p className="text-sm text-gray-500">
-          {displaySongs.length}곡 표시
-        </p>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+          <p className="text-sm text-gray-500">
+            {displaySongs.length}곡 표시
+          </p>
+          {ratingStats && (
+            <div className="text-xs text-gray-600 flex flex-wrap gap-4 justify-center sm:justify-end">
+              <span className="text-green-600 font-medium">
+                최대: {ratingStats.max.toFixed(2)}
+              </span>
+              <span className="text-red-600 font-medium">
+                최소: {ratingStats.min.toFixed(2)}
+              </span>
+              <span className="text-blue-600 font-medium">
+                평균: {ratingStats.average.toFixed(2)}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
       
       <div className={`grid ${config.className} ${config.gap} justify-items-center`}>
