@@ -3020,6 +3020,9 @@
       "music_idx_2828": {
         "music_name": "Energizing Flame"
       },
+      "music_idx_2848": {
+        "music_name": "アージェントシンメトリー"
+      },
       "music_idx_802": {
         "music_name": "STARTLINER"
       },
@@ -4506,6 +4509,18 @@
       },
       "music_idx_2838": {
         "music_name": "神鳴"
+      },
+      "music_idx_2843": {
+        "music_name": "ノーライ"
+      },
+      "music_idx_2844": {
+        "music_name": "あの日、あの部屋で、あったこと"
+      },
+      "music_idx_2845": {
+        "music_name": "Star Saveler"
+      },
+      "music_idx_2846": {
+        "music_name": "Tru'nembra"
       }
     }
   },
@@ -9013,6 +9028,9 @@
       "music_idx_2828": {
         "music_name": "Energizing Flame"
       },
+      "music_idx_2848": {
+        "music_name": "アージェントシンメトリー"
+      },
       "music_idx_2827": {
         "music_name": "Individual on parade!"
       },
@@ -9042,6 +9060,18 @@
       },
       "music_idx_2838": {
         "music_name": "神鳴"
+      },
+      "music_idx_2843": {
+        "music_name": "ノーライ"
+      },
+      "music_idx_2844": {
+        "music_name": "あの日、あの部屋で、あったこと"
+      },
+      "music_idx_2845": {
+        "music_name": "Star Saveler"
+      },
+      "music_idx_2846": {
+        "music_name": "Tru'nembra"
       }
     }
   },
@@ -12723,6 +12753,10 @@
         "music_name": "Swift Swing",
         "diff": "BASIC"
       },
+      "music_idx_2848": {
+        "music_name": "アージェントシンメトリー",
+        "diff": "BASIC"
+      },
       "music_idx_2561": {
         "music_name": "Jump!! Jump!! Jump!!",
         "diff": "BASIC"
@@ -13745,6 +13779,14 @@
       },
       "music_idx_2835": {
         "music_name": "Wing:No.6223",
+        "diff": "BASIC"
+      },
+      "music_idx_2843": {
+        "music_name": "ノーライ",
+        "diff": "BASIC"
+      },
+      "music_idx_2845": {
+        "music_name": "Star Saveler",
         "diff": "BASIC"
       }
     },
@@ -14805,6 +14847,10 @@
         "music_name": "HeinousЯeaper",
         "diff": "BASIC"
       },
+      "music_idx_2844": {
+        "music_name": "あの日、あの部屋で、あったこと",
+        "diff": "BASIC"
+      },
       "music_idx_2776": {
         "music_name": "Paradoxes",
         "diff": "ADVANCED"
@@ -15065,6 +15111,10 @@
       },
       "music_idx_2768": {
         "music_name": "MegiddØ",
+        "diff": "BASIC"
+      },
+      "music_idx_2846": {
+        "music_name": "Tru'nembra",
         "diff": "BASIC"
       },
       "music_idx_2893": {
@@ -18425,6 +18475,10 @@
         "music_name": "Swift Swing",
         "diff": "ADVANCED"
       },
+      "music_idx_2848": {
+        "music_name": "アージェントシンメトリー",
+        "diff": "ADVANCED"
+      },
       "music_idx_2561": {
         "music_name": "Jump!! Jump!! Jump!!",
         "diff": "ADVANCED"
@@ -19855,6 +19909,14 @@
         "music_name": "Wing:No.6223",
         "diff": "ADVANCED"
       },
+      "music_idx_2843": {
+        "music_name": "ノーライ",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2845": {
+        "music_name": "Star Saveler",
+        "diff": "ADVANCED"
+      },
       "music_idx_133": {
         "music_name": "シリョクケンサ",
         "diff": "EXPERT"
@@ -21167,6 +21229,10 @@
       },
       "music_idx_2768": {
         "music_name": "MegiddØ",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2844": {
+        "music_name": "あの日、あの部屋で、あったこと",
         "diff": "ADVANCED"
       },
       "music_idx_2776": {
@@ -23891,6 +23957,10 @@
         "music_name": "The Devil Incarnate",
         "diff": "ADVANCED"
       },
+      "music_idx_2846": {
+        "music_name": "Tru'nembra",
+        "diff": "ADVANCED"
+      },
       "music_idx_2803": {
         "music_name": "Running to the straight ver1.01",
         "diff": "EXPERT"
@@ -24433,6 +24503,10 @@
       },
       "music_idx_2784": {
         "music_name": "デスパレイト",
+        "diff": "EXPERT"
+      },
+      "music_idx_2848": {
+        "music_name": "アージェントシンメトリー",
         "diff": "EXPERT"
       },
       "music_idx_2309": {
@@ -25647,6 +25721,10 @@
         "music_name": "Wing:No.6223",
         "diff": "EXPERT"
       },
+      "music_idx_2845": {
+        "music_name": "Star Saveler",
+        "diff": "EXPERT"
+      },
       "music_idx_2359": {
         "music_name": "五等分のカタチ",
         "diff": "MASTER"
@@ -26047,6 +26125,10 @@
       },
       "music_idx_2705": {
         "music_name": "メッちゅう殴打",
+        "diff": "EXPERT"
+      },
+      "music_idx_2843": {
+        "music_name": "ノーライ",
         "diff": "EXPERT"
       },
       "music_idx_2684": {
@@ -28635,6 +28717,10 @@
         "music_name": "jaQup",
         "diff": "EXPERT"
       },
+      "music_idx_2844": {
+        "music_name": "あの日、あの部屋で、あったこと",
+        "diff": "EXPERT"
+      },
       "music_idx_2893": {
         "music_name": "ぎゅむ！",
         "diff": "MASTER"
@@ -30859,6 +30945,10 @@
         "music_name": "神鳴",
         "diff": "EXPERT"
       },
+      "music_idx_2846": {
+        "music_name": "Tru'nembra",
+        "diff": "EXPERT"
+      },
       "music_idx_2716": {
         "music_name": "アイデンティティ（104期NEW Ver.）",
         "diff": "MASTER"
@@ -31455,6 +31545,10 @@
         "music_name": "NAGAREBOSHI☆ROCKET",
         "diff": "MASTER"
       },
+      "music_idx_2848": {
+        "music_name": "アージェントシンメトリー",
+        "diff": "MASTER"
+      },
       "music_idx_2134": {
         "music_name": "Iudicium “Apocalypsis Mix”",
         "diff": "MASTER"
@@ -31869,6 +31963,10 @@
       },
       "music_idx_2835": {
         "music_name": "Wing:No.6223",
+        "diff": "MASTER"
+      },
+      "music_idx_2845": {
+        "music_name": "Star Saveler",
         "diff": "MASTER"
       },
       "music_idx_2683": {
@@ -32697,6 +32795,10 @@
         "music_name": "χρόνος",
         "diff": "MASTER"
       },
+      "music_idx_2843": {
+        "music_name": "ノーライ",
+        "diff": "MASTER"
+      },
       "music_idx_2820": {
         "music_name": "モエチャッカファイア",
         "diff": "ULTIMA"
@@ -33231,6 +33333,10 @@
         "music_name": "並行天涯",
         "diff": "MASTER"
       },
+      "music_idx_2844": {
+        "music_name": "あの日、あの部屋で、あったこと",
+        "diff": "MASTER"
+      },
       "music_idx_455": {
         "music_name": "Vampire",
         "diff": "ULTIMA"
@@ -33399,6 +33505,10 @@
       },
       "music_idx_2838": {
         "music_name": "神鳴",
+        "diff": "MASTER"
+      },
+      "music_idx_2846": {
+        "music_name": "Tru'nembra",
         "diff": "MASTER"
       }
     }
