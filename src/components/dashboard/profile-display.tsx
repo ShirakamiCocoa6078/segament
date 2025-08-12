@@ -49,11 +49,11 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
 
     // --- 신규: 레이팅 숫자별 스타일 정의 ---
     const ratingDigitStyles = [
-        { width: '10px', height: '20px' }, // 첫 번째 숫자
-        { width: '10px', height: '20px' }, // 두 번째 숫자
+        { width: '12px', height: '20px' }, // 첫 번째 숫자
+        { width: '12px', height: '20px' }, // 두 번째 숫자
         { width: '5px', height: '6px' },   // 콤마 (기존 크기 유지)
-        { width: '10px', height: '20px' }, // 세 번째 숫자
-        { width: '10px', height: '20px' }, // 네 번째 숫자
+        { width: '12px', height: '20px' }, // 세 번째 숫자
+        { width: '12px', height: '20px' }, // 네 번째 숫자
     ];
 
     return (
