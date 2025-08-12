@@ -77,6 +77,9 @@ model GameProfile {
   characterImage      String? // 캐릭터 이미지 URL
   characterBackground String? // 캐릭터 배경 URL
   nameplateImage      String? // 네임플레이트 이미지 URL
+  
+  // --- 레이팅 히스토리 ---
+  ratingHistory       Json?   // {"2025-08-12|11:04": 17.11, "2025-08-13|13:22": 17.12}
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

@@ -28,10 +28,45 @@ export async function POST(req: Request) {
     }
 
     const result = await prisma.$transaction(async (tx) => {
+      // 기존 프로필 조회
+      const existingProfile = await tx.gameProfile.findUnique({
+        where: { userId_gameType_region: { userId: session.user.id, gameType, region } }
+      });
+
+      // 레이팅 히스토리 처리
+      let updatedRatingHistory = {};
+      const currentRating = profile.rating;
+      const ratingTimestamp = profile.ratingTimestamp;
+
+      if (existingProfile?.ratingHistory) {
+        updatedRatingHistory = existingProfile.ratingHistory as any;
+      }
+
+      // 기존 데이터와 레이팅이 다르거나 히스토리가 비어있는 경우에만 추가
+      const historyEntries = Object.entries(updatedRatingHistory);
+      const shouldAddEntry = historyEntries.length === 0 || 
+        (historyEntries.length > 0 && Object.values(updatedRatingHistory)[historyEntries.length - 1] !== currentRating);
+
+      if (shouldAddEntry && ratingTimestamp) {
+        updatedRatingHistory[ratingTimestamp] = currentRating;
+      }
+
+      // ratingTimestamp는 데이터베이스에 저장하지 않음
+      const { ratingTimestamp: _, ...profileData } = profile;
+
       const gameProfile = await tx.gameProfile.upsert({
         where: { userId_gameType_region: { userId: session.user.id, gameType, region } },
-        update: profile,
-        create: { ...profile, userId: session.user.id, gameType, region },
+        update: {
+          ...profileData,
+          ratingHistory: updatedRatingHistory
+        },
+        create: { 
+          ...profileData, 
+          userId: session.user.id, 
+          gameType, 
+          region,
+          ratingHistory: updatedRatingHistory
+        },
       });
 
       await tx.gameData.upsert({

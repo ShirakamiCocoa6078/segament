@@ -18,6 +18,7 @@ interface ProfileDetail {
   teamEmblemColor?: string;
   characterImage?: string;
   playCount: number;
+  ratingHistory?: Record<string, number>; // 레이팅 히스토리 추가
 }
 
 // --- 헬퍼 함수 (이전과 동일) ---
@@ -44,8 +45,23 @@ const honorBgMap: Record<string, string> = {
 };
 
 export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
-    const ratingColor = getRatingColor(profile.rating);
-    const ratingDigits = profile.rating.toFixed(2).split('');
+    // 최신 레이팅 가져오기 (히스토리가 있으면 최신 값, 없으면 기본 rating)
+    const getLatestRating = () => {
+        if (!profile.ratingHistory || Object.keys(profile.ratingHistory).length === 0) {
+            return profile.rating;
+        }
+        
+        const sortedEntries = Object.entries(profile.ratingHistory).sort((a, b) => {
+            // 날짜-시간 문자열을 비교 (2025-08-12|11:04 형식)
+            return a[0].localeCompare(b[0]);
+        });
+        
+        return sortedEntries[sortedEntries.length - 1][1];
+    };
+
+    const currentRating = getLatestRating();
+    const ratingColor = getRatingColor(currentRating);
+    const ratingDigits = currentRating.toFixed(2).split('');
 
     // --- 신규: 레이팅 숫자별 스타일 정의 ---
     const ratingDigitStyles = [
