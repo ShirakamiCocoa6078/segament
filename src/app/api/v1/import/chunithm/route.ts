@@ -34,12 +34,12 @@ export async function POST(req: Request) {
       });
 
       // 레이팅 히스토리 처리
-      let updatedRatingHistory = {};
+      let updatedRatingHistory: Record<string, number> = {};
       const currentRating = profile.rating;
       const ratingTimestamp = profile.ratingTimestamp;
 
       if (existingProfile?.ratingHistory) {
-        updatedRatingHistory = existingProfile.ratingHistory as any;
+        updatedRatingHistory = existingProfile.ratingHistory as Record<string, number>;
       }
 
       // 기존 데이터와 레이팅이 다르거나 히스토리가 비어있는 경우에만 추가
