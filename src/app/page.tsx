@@ -11,6 +11,15 @@ export default function Home() {
     signIn('google', { callbackUrl: '/auth/verify' });
   }, []);
 
+  // 세션 확인 및 리다이렉트
+  const { data: session, status } = require('next-auth/react').useSession();
+  const router = require('next/navigation').useRouter();
+  require('react').useEffect(() => {
+    if (status === 'authenticated' && session?.user?.id) {
+      router.replace(`/${session.user.id}/dashboard`);
+    }
+  }, [status, session, router]);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-background relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 to-transparent_30%"></div>
