@@ -25,15 +25,16 @@ export default function ImportPage() {
       if (event.data?.type === 'SEGAMENT_ERROR') {
         setErrorMessage(event.data.payload.message);
       }
-      
+
       if (event.data?.type === 'SEGAMENT_DATA_PAYLOAD') {
         try {
           setProgressMessage('서버에 데이터 저장 중... (이 과정은 몇 분 정도 소요될 수 있습니다)');
-          // 서버 저장 진행률을 시뮬레이션
           let dbProgress = 0;
           const interval = setInterval(() => {
             dbProgress += 5;
-            if (dbProgress <= 95) setProgressValue(dbProgress);
+            if (dbProgress <= 95) {
+              setProgressValue(dbProgress);
+            }
           }, 500);
 
           const response = await fetch('/api/v1/import/chunithm', {
@@ -52,7 +53,6 @@ export default function ImportPage() {
           setProgressMessage('모든 데이터 저장 완료! 대시보드로 이동합니다.');
           setProgressValue(100);
 
-          // 세션 정보가 있을 때만 대시보드로 이동
           setTimeout(() => {
             if (session?.user?.id) {
               window.location.href = `/${session.user.id}/dashboard`;
@@ -69,7 +69,7 @@ export default function ImportPage() {
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [session]);
   
   if (sessionStatus === 'loading') return <div>세션 정보를 불러오는 중...</div>;
   if (sessionStatus === 'unauthenticated') return <div>Segament에 먼저 로그인해주세요.</div>;
