@@ -29,7 +29,6 @@ export default function ImportPage() {
       if (event.data?.type === 'SEGAMENT_DATA_PAYLOAD') {
         try {
           setProgressMessage('서버에 데이터 저장 중... (이 과정은 몇 분 정도 소요될 수 있습니다)');
-          
           // 서버 저장 진행률을 시뮬레이션
           let dbProgress = 0;
           const interval = setInterval(() => {
@@ -49,17 +48,16 @@ export default function ImportPage() {
             const errorData = await response.json();
             throw new Error(errorData.message || '서버 업로드에 실패했습니다.');
           }
-          
+
           setProgressMessage('모든 데이터 저장 완료! 대시보드로 이동합니다.');
           setProgressValue(100);
-          
-          // 세션 정보로부터 올바른 대시보드 URL로 이동
-          setTimeout(() => { 
+
+          // 세션 정보가 있을 때만 대시보드로 이동
+          setTimeout(() => {
             if (session?.user?.id) {
               window.location.href = `/${session.user.id}/dashboard`;
             } else {
-              // 세션 정보가 없으면 홈으로 이동
-              window.location.href = '/';
+              setErrorMessage('세션 정보를 찾을 수 없습니다. 로그인 후 다시 시도해주세요.');
             }
           }, 1500);
 
