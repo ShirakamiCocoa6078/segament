@@ -19,18 +19,11 @@ interface UserLayoutProps {
 
 export default function UserLayout({ children }: UserLayoutProps) {
   const params = useParams();
-  const { userId } = params;
+  const userId = params?.userId as string | undefined;
   const { data: session, status } = useSession();
   const router = useRouter();
   
-  useEffect(() => {
-    if (status === 'loading') return;
-    
-    if (!session) {
-      router.push('/');
-      return;
-    }
-  }, [session, status, router]);
+  // 자동 리다이렉트 제거: 비로그인 유저도 공개 프로필/대시보드 접근 허용
 
   if (status === 'loading') {
     return (
