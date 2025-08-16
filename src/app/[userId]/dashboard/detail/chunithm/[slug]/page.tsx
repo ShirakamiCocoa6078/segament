@@ -40,6 +40,8 @@ interface AccessMode {
 }
 
 export default function UserChunithmDetailPage() {
+  // SSR/CSR 여부 확인용 렌더링 로그
+  console.log('DEBUG: UserChunithmDetailPage 렌더링됨 (userId:', typeof window !== 'undefined' ? 'CSR' : 'SSR', ')');
 
   const [profile, setProfile] = useState<ProfileDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,6 +55,7 @@ export default function UserChunithmDetailPage() {
 
   // 디버깅: 주요 상태를 useEffect에서 출력
   useEffect(() => {
+  console.log('DEBUG: useEffect 실행됨');
     console.log('DEBUG session:', session);
     console.log('DEBUG userId:', userId, 'slug:', slug);
     console.log('DEBUG accessMode:', accessMode);
