@@ -45,6 +45,13 @@ interface AccessMode {
 }
 
 export default function UserChunithmDetailPage() {
+  // ...상태 선언 이후 디버깅 useEffect 추가...
+  useEffect(() => {
+    console.log('DEBUG session:', session);
+    console.log('DEBUG userId:', userId, 'slug:', slug);
+    console.log('DEBUG accessMode:', accessMode);
+    console.log('DEBUG isLoading:', isLoading, 'error:', error, 'profile:', profile);
+  }, [session, userId, slug, accessMode, isLoading, error, profile]);
   const [profile, setProfile] = useState<ProfileDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
