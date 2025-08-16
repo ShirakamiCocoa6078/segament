@@ -15,7 +15,9 @@ export default function ImportPage() {
     }
 
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes('chunithm-net')) return;
+      if (!event.origin.includes('chunithm-net')) {
+        return;
+      }
 
       if (event.data?.type === 'SEGAMENT_PROGRESS') {
         setProgressMessage(event.data.payload.message);
