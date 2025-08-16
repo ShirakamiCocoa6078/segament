@@ -1,3 +1,10 @@
+  // 디버깅: 주요 상태를 useEffect에서 출력
+  useEffect(() => {
+    console.log('DEBUG session:', session);
+    console.log('DEBUG userId:', userId, 'slug:', slug);
+    console.log('DEBUG accessMode:', accessMode);
+    console.log('DEBUG isLoading:', isLoading, 'error:', error, 'profile:', profile);
+  }, [session, userId, slug, accessMode, isLoading, error, profile]);
 // 파일 경로: src/app/[userId]/dashboard/detail/chunithm/[slug]/page.tsx
 'use client';
 
@@ -50,6 +57,7 @@ export default function UserChunithmDetailPage() {
 
   useEffect(() => {
     const fetchProfile = async () => {
+  console.log('DEBUG fetchProfile called:', { userId, slug, session });
       if (typeof slug !== 'string' || typeof userId !== 'string') {
         return;
       }
@@ -68,6 +76,7 @@ export default function UserChunithmDetailPage() {
           : `/api/profile/detail/${userId}?gameType=CHUNITHM&region=${region}`;
           
         const response = await fetch(endpoint);
+  console.log('DEBUG fetch endpoint:', endpoint, 'response.ok:', response.ok, 'status:', response.status);
         
         if (!response.ok) {
           if (response.status === 403) {
@@ -80,6 +89,7 @@ export default function UserChunithmDetailPage() {
         }
         
         const data = await response.json();
+  console.log('DEBUG fetch data:', data);
         setProfile(data.profile);
       } catch (err) {
         setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
