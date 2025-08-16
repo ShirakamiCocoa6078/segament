@@ -91,6 +91,7 @@ export async function GET(request: NextRequest) {
         
         // 처음 5개 플레이로그 상세 정보 출력
         if (index < 5) {
+          console.log({
             key,
             id: log.id,
             title: log.title,
@@ -127,19 +128,20 @@ export async function GET(request: NextRequest) {
         if (!isPlaylog) {
           const key = `${item.id}-${item.difficulty}`;
           const playlogEntry = playlogMap.get(key);
-          
-            key,
-            ratingItem: item,
-            playlogFound: !!playlogEntry,
-            playlogData: playlogEntry ? {
-              clearType: playlogEntry.clearType,
-              comboType: playlogEntry.comboType,
-              fullChainType: playlogEntry.fullChainType,
-              isFullCombo: playlogEntry.isFullCombo,
-              isAllJustice: playlogEntry.isAllJustice,
-              isAllJusticeCritical: playlogEntry.isAllJusticeCritical
-            } : null
-          });
+          // 디버깅용 콘솔로그로 감싸거나, 변수에 할당
+          // console.log({
+          //   key,
+          //   ratingItem: item,
+          //   playlogFound: !!playlogEntry,
+          //   playlogData: playlogEntry ? {
+          //     clearType: playlogEntry.clearType,
+          //     comboType: playlogEntry.comboType,
+          //     fullChainType: playlogEntry.fullChainType,
+          //     isFullCombo: playlogEntry.isFullCombo,
+          //     isAllJustice: playlogEntry.isAllJustice,
+          //     isAllJusticeCritical: playlogEntry.isAllJusticeCritical
+          //   } : null
+          // });
           
           if (playlogEntry) {
             // 플레이로그에서 clearType, comboType, fullChainType 정보 복사
@@ -177,25 +179,24 @@ export async function GET(request: NextRequest) {
     
     const enrichedProfile = { ...gameProfile, gameData: enrichedGameData };
 
-      bestCount: enrichedGameData.ratingLists.best.length,
-      newCount: enrichedGameData.ratingLists.new.length,
-      bestSample: enrichedGameData.ratingLists.best.slice(0, 3).map(song => ({
-        id: song.id,
-        title: song.title,
-        difficulty: song.difficulty,
-        clearType: song.clearType,
-        comboType: song.comboType,
-        fullChainType: song.fullChainType
-      })),
-      newSample: enrichedGameData.ratingLists.new.slice(0, 3).map(song => ({
-        id: song.id,
-        title: song.title,
-        difficulty: song.difficulty,
-        clearType: song.clearType,
-        comboType: song.comboType,
-        fullChainType: song.fullChainType
-      }))
-    });
+    const bestCount = enrichedGameData.ratingLists.best.length;
+    const newCount = enrichedGameData.ratingLists.new.length;
+    const bestSample = enrichedGameData.ratingLists.best.slice(0, 3).map(song => ({
+      id: song.id,
+      title: song.title,
+      difficulty: song.difficulty,
+      clearType: song.clearType,
+      comboType: song.comboType,
+      fullChainType: song.fullChainType
+    }));
+    const newSample = enrichedGameData.ratingLists.new.slice(0, 3).map(song => ({
+      id: song.id,
+      title: song.title,
+      difficulty: song.difficulty,
+      clearType: song.clearType,
+      comboType: song.comboType,
+      fullChainType: song.fullChainType
+    }));
 
     return NextResponse.json({ profile: enrichedProfile });
 

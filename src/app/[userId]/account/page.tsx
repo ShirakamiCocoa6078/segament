@@ -41,7 +41,7 @@ export default function AccountPage() {
       toast({ title: '성공', description: '프로필이 업데이트되었습니다.' });
     } else {
       const data = await res.json();
-      toast({ title: '오류', description: data.error || '프로필 업데이트에 실패했습니다.', variant: 'destructive' });
+      toast({ title: '오류', description: data.error || '프로필 업데이트에 실패했습니다.' });
     }
   };
 
@@ -65,7 +65,7 @@ export default function AccountPage() {
       toast({ title: '성공', description: '게임 프로필이 삭제되었습니다.' });
       // Refresh profiles
     } else {
-      toast({ title: '오류', description: '게임 프로필 삭제에 실패했습니다.', variant: 'destructive' });
+      toast({ title: '오류', description: '게임 프로필 삭제에 실패했습니다.' });
     }
   };
 
@@ -78,7 +78,7 @@ export default function AccountPage() {
       toast({ title: '성공', description: '계정이 삭제되었습니다.' });
       router.push('/'); // Redirect to home
     } else {
-      toast({ title: '오류', description: '계정 삭제에 실패했습니다.', variant: 'destructive' });
+      toast({ title: '오류', description: '계정 삭제에 실패했습니다.' });
     }
   };
 
