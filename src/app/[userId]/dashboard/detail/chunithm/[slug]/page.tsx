@@ -40,8 +40,6 @@ interface AccessMode {
 }
 
 export default function UserChunithmDetailPage() {
-  // SSR/CSR 여부 확인용 렌더링 로그
-  console.log('DEBUG: UserChunithmDetailPage 렌더링됨 (userId:', typeof window !== 'undefined' ? 'CSR' : 'SSR', ')');
 
   const [profile, setProfile] = useState<ProfileDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,16 +53,10 @@ export default function UserChunithmDetailPage() {
 
   // 디버깅: 주요 상태를 useEffect에서 출력
   useEffect(() => {
-  console.log('DEBUG: useEffect 실행됨');
-    console.log('DEBUG session:', session);
-    console.log('DEBUG userId:', userId, 'slug:', slug);
-    console.log('DEBUG accessMode:', accessMode);
-    console.log('DEBUG isLoading:', isLoading, 'error:', error, 'profile:', profile);
   }, [session, userId, slug, accessMode, isLoading, error, profile]);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-  console.log('DEBUG fetchProfile called:', { userId, slug, session });
+  const fetchProfile = async () => {
       if (typeof slug !== 'string' || typeof userId !== 'string') {
         return;
       }
@@ -83,7 +75,6 @@ export default function UserChunithmDetailPage() {
           : `/api/profile/detail/${userId}?gameType=CHUNITHM&region=${region}`;
           
         const response = await fetch(endpoint);
-  console.log('DEBUG fetch endpoint:', endpoint, 'response.ok:', response.ok, 'status:', response.status);
         
         if (!response.ok) {
           if (response.status === 403) {
@@ -96,7 +87,6 @@ export default function UserChunithmDetailPage() {
         }
         
         const data = await response.json();
-  console.log('DEBUG fetch data:', data);
         setProfile(data.profile);
       } catch (err) {
         setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
