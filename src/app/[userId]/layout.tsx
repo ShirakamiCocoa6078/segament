@@ -36,9 +36,6 @@ export default function UserLayout({ children }: UserLayoutProps) {
     );
   }
 
-  if (!session) {
-    return null;
-  }
 
   const isOwner = session?.user?.id === userId;
 
