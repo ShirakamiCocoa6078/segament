@@ -44,12 +44,15 @@ export default function UserChunithmDetailPage() {
   const [accessMode, setAccessMode] = useState<AccessMode>({ mode: 'visitor', canEdit: false, showPrivateData: false });
   
   const params = useParams();
-  const { userId, slug } = params;
+  const userId = params?.userId as string | undefined;
+  const slug = params?.slug as string | undefined;
   const { data: session } = useSession();
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (typeof slug !== 'string' || typeof userId !== 'string') return;
+      if (typeof slug !== 'string' || typeof userId !== 'string') {
+        return;
+      }
       
       try {
         const isOwner = session?.user?.id === userId;
