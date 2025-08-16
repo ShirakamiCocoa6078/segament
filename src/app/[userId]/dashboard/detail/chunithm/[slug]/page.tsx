@@ -132,21 +132,37 @@ export default function UserChunithmDetailPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="mb-6 flex items-center justify-between">
+      {/* 상단 우측 로그인/프로필 영역 */}
+      <div className="flex items-center justify-between mb-6">
         <Link href={`/${userId}/dashboard`}>
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             {accessMode.mode === 'owner' ? '내 대시보드' : '프로필로 돌아가기'}
           </Button>
         </Link>
-        
+        {/* 로그인 유저 프로필 대신 로그인 버튼 */}
+        {!session?.user ? (
+          <Button
+            variant="outline"
+            onClick={() => {
+              window.location.href = '/';
+            }}
+          >
+            로그인
+          </Button>
+        ) : (
+          <div className="flex items-center gap-2">
+            {/* 로그인 유저 프로필 표시 (원래대로) */}
+            {/* ...프로필 아바타 등 표시 가능... */}
+          </div>
+        )}
         {accessMode.mode === 'visitor' && (
           <div className="text-sm text-muted-foreground bg-gray-100 px-3 py-1 rounded">
             공개 프로필 보기
           </div>
         )}
       </div>
-      
+
       <ProfileDisplay profile={profile} />
 
       <Tabs defaultValue="best" className="w-full mt-6">
@@ -157,7 +173,7 @@ export default function UserChunithmDetailPage() {
             <TabsTrigger value="all">All Records</TabsTrigger>
           )}
         </TabsList>
-        
+
         <TabsContent value="best" className="mt-6">
           <Card>
             <CardContent className="pt-6">
@@ -168,7 +184,7 @@ export default function UserChunithmDetailPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="new" className="mt-6">
           <Card>
             <CardContent className="pt-6">
@@ -179,7 +195,7 @@ export default function UserChunithmDetailPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {accessMode.showPrivateData && (
           <TabsContent value="all" className="mt-6">
             <Card>
