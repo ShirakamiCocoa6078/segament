@@ -3,6 +3,7 @@
 
 import { ChunithmSongCard } from './ChunithmSongCard';
 import { calculateRating } from '@/lib/ratingUtils';
+import chunithmSongData from '@/../data/chunithmSongData.json';
 
 interface SongData {
   id: string;
@@ -25,6 +26,19 @@ interface ChunithmSongGridProps {
 }
 
 export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
+  // 곡 상세 데이터 매칭 함수
+  function getSongDetail(id: string, difficulty: string) {
+    const entry = (chunithmSongData as any[]).find(e => e.meta.id === id);
+    if (!entry) {
+      return { level: undefined, const: undefined };
+    }
+    const diffKey = difficulty.toLowerCase();
+    const diffData = entry.data[diffKey];
+    if (!diffData) {
+      return { level: undefined, const: undefined };
+    }
+    return { level: diffData.level, const: diffData.const };
+  }
   const getGridConfig = () => {
     if (type === 'best') {
       return {
@@ -45,6 +59,16 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
 
   const config = getGridConfig();
   const displaySongs = songs.slice(0, config.maxSongs);
+
+  // 곡 데이터에 level/const를 주입
+  const enrichedSongs = displaySongs.map(song => {
+    const detail = getSongDetail(song.id, song.difficulty);
+    return {
+      ...song,
+      level: detail.level ?? song.level,
+      const: detail.const ?? song.const,
+    };
+  });
 
   // 레이팅 통계 계산
   const ratings = displaySongs
@@ -73,7 +97,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
         </h3>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           <p className="text-sm text-gray-500">
-            {displaySongs.length}곡 표시
+            {enrichedSongs.length}곡 표시
           </p>
           {ratingStats && (
             <div className="text-xs text-gray-600 flex flex-wrap gap-4 justify-center sm:justify-end">
@@ -92,10 +116,10 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
       </div>
       
       <div className={`grid ${config.className} ${config.gap} justify-items-center`}>
-        {displaySongs.map((song, index) => {
+        {enrichedSongs.map((song, index) => {
           // New 20에서 마지막 2개 요소(19, 20번째)의 위치 조정 (XL 화면에서만)
           let gridColumnClass = '';
-          if (type === 'new' && displaySongs.length === 20) {
+          if (type === 'new' && enrichedSongs.length === 20) {
             if (index === 18) { // 19번째 요소 (0-based index 18)
               gridColumnClass = 'xl:col-start-1 xl:col-end-2 xl:ml-[50%]'; // 1-2 열 사이 (XL에서만)
             } else if (index === 19) { // 20번째 요소 (0-based index 19)
