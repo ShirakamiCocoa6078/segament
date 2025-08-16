@@ -77,17 +77,30 @@ export default function UserDashboardPage() {
   }
 
   if (error) {
+    // 비공개 프로필 안내만 표시, 자동 리다이렉트 없음
+    if (accessMode.mode === 'private') {
+      return (
+        <div className="container mx-auto p-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <p className="text-red-500 mb-4">{error}</p>
+                <p className="text-muted-foreground mb-4">
+                  이 사용자는 프로필을 비공개로 설정했습니다.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+    // 그 외 에러는 안내만 표시
     return (
       <div className="container mx-auto p-4">
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-red-500 mb-4">{error}</p>
-              {accessMode.mode === 'private' && (
-                <p className="text-muted-foreground mb-4">
-                  이 사용자는 프로필을 비공개로 설정했습니다.
-                </p>
-              )}
             </div>
           </CardContent>
         </Card>
