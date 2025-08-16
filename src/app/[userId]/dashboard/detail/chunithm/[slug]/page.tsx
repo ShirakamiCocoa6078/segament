@@ -1,12 +1,7 @@
-  // 디버깅: 주요 상태를 useEffect에서 출력
-  useEffect(() => {
-    console.log('DEBUG session:', session);
-    console.log('DEBUG userId:', userId, 'slug:', slug);
-    console.log('DEBUG accessMode:', accessMode);
-    console.log('DEBUG isLoading:', isLoading, 'error:', error, 'profile:', profile);
-  }, [session, userId, slug, accessMode, isLoading, error, profile]);
-// 파일 경로: src/app/[userId]/dashboard/detail/chunithm/[slug]/page.tsx
+
 'use client';
+// 디버깅: 주요 상태를 useEffect에서 출력
+// (아래에서 useEffect를 올바른 위치에 배치)
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
@@ -45,13 +40,7 @@ interface AccessMode {
 }
 
 export default function UserChunithmDetailPage() {
-  // ...상태 선언 이후 디버깅 useEffect 추가...
-  useEffect(() => {
-    console.log('DEBUG session:', session);
-    console.log('DEBUG userId:', userId, 'slug:', slug);
-    console.log('DEBUG accessMode:', accessMode);
-    console.log('DEBUG isLoading:', isLoading, 'error:', error, 'profile:', profile);
-  }, [session, userId, slug, accessMode, isLoading, error, profile]);
+
   const [profile, setProfile] = useState<ProfileDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +50,14 @@ export default function UserChunithmDetailPage() {
   const userId = params?.userId as string | undefined;
   const slug = params?.slug as string | undefined;
   const { data: session } = useSession();
+
+  // 디버깅: 주요 상태를 useEffect에서 출력
+  useEffect(() => {
+    console.log('DEBUG session:', session);
+    console.log('DEBUG userId:', userId, 'slug:', slug);
+    console.log('DEBUG accessMode:', accessMode);
+    console.log('DEBUG isLoading:', isLoading, 'error:', error, 'profile:', profile);
+  }, [session, userId, slug, accessMode, isLoading, error, profile]);
 
   useEffect(() => {
     const fetchProfile = async () => {
