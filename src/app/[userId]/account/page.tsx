@@ -68,7 +68,10 @@ export default function AccountPage() {
 
     if (res.ok) {
       toast({ title: '성공', description: '게임 프로필이 삭제되었습니다.' });
-      // Refresh profiles
+      // 즉시 사이드바 프로필 목록 갱신
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('profileUpdated'));
+      }
     } else {
       toast({ title: '오류', description: '게임 프로필 삭제에 실패했습니다.' });
     }
