@@ -24,7 +24,12 @@ export default function AccountPage() {
       setName(session.user.name || '');
       // @ts-ignore
       setUsername(session.user.username || '');
-      // Fetch game profiles or other necessary data
+      // 실제 게임 프로필 fetch
+      if (session.user.id) {
+        fetch('/api/dashboard')
+          .then(res => res.json())
+          .then(data => setGameProfiles(data.profiles || []));
+      }
     }
   }, [session]);
 
