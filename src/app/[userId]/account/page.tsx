@@ -123,8 +123,25 @@ export default function AccountPage() {
           <CardDescription>연동된 게임 프로필을 삭제합니다.</CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Map through game profiles and show a delete button for each */}
-          <p className="text-sm text-muted-foreground">게임 프로필 목록이 여기에 표시됩니다.</p>
+          {/* 게임별로 그룹화하여 프로필 표시 */}
+          {['CHUNITHM', 'MAIMAI'].map((gameType) => {
+            const profiles = gameProfiles.filter(p => p.gameType === gameType);
+            return (
+              <div key={gameType} className="mb-4">
+                <div className="font-semibold text-lg mb-2">{gameType}</div>
+                {profiles.length > 0 ? (
+                  profiles.map(profile => (
+                    <div key={profile.id} className="flex items-center justify-between py-1">
+                      <span>{profile.playerName} - {profile.region}</span>
+                      <Button variant="destructive" size="sm" onClick={() => handleDeleteGameProfile(profile.id)}>삭제</Button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm text-muted-foreground">프로필이 존재하지 않습니다</div>
+                )}
+              </div>
+            );
+          })}
         </CardContent>
       </Card>
 

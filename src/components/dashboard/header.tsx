@@ -37,9 +37,11 @@ export function Header() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/${session.user?.id}/account`}>
                 <User className="mr-2 h-4 w-4"/>
                 <span>프로필</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })}>
