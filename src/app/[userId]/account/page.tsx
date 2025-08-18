@@ -97,33 +97,6 @@ export default function AccountPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>프로필 정보</CardTitle>
-          <CardDescription>표시될 이름과 고유 아이디를 설정하세요.</CardDescription>
-        </CardHeader>
-        <form onSubmit={handleUpdateProfile}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="name">표시 닉네임</label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="username">아이디</label>
-              <div className="flex items-center space-x-2">
-                <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
-                <Button type="button" onClick={checkUsername}>중복 확인</Button>
-              </div>
-              {usernameAvailable === true && <p className="text-sm text-green-600">사용 가능한 아이디입니다.</p>}
-              {usernameAvailable === false && <p className="text-sm text-red-600">이미 사용 중인 아이디입니다.</p>}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" disabled={usernameAvailable === false}>저장</Button>
-          </CardFooter>
-        </form>
-      </Card>
-
-      <Card>
-        <CardHeader>
           <CardTitle>게임 프로필 관리</CardTitle>
           <CardDescription>연동된 게임 프로필을 삭제합니다.</CardDescription>
         </CardHeader>
