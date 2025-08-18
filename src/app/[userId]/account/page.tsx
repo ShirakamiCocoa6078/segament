@@ -81,7 +81,13 @@ export default function AccountPage() {
 
     if (res.ok) {
       toast({ title: '성공', description: '계정이 삭제되었습니다.' });
-      router.push('/'); // Redirect to home
+      // next-auth의 signOut을 호출하여 세션 완전 종료
+      if (typeof window !== 'undefined') {
+        const signOut = (await import('next-auth/react')).signOut;
+        signOut({ callbackUrl: '/' });
+      } else {
+        router.push('/');
+      }
     } else {
       toast({ title: '오류', description: '계정 삭제에 실패했습니다.' });
     }
