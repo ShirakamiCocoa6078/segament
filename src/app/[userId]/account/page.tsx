@@ -120,7 +120,25 @@ export default function AccountPage() {
                   profiles.map(profile => (
                     <div key={profile.id} className="flex items-center justify-between py-1">
                       <span>{profile.playerName} - {profile.region}</span>
-                      <Button variant="destructive" size="sm" onClick={() => handleDeleteGameProfile(profile.id)}>삭제</Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">삭제</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>정말로 이 프로필을 삭제하시겠습니까?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              이 작업은 되돌릴 수 없으며, 해당 게임의 모든 플레이 데이터가 영구적으로 삭제됩니다.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>취소</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteGameProfile(profile.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                              삭제
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   ))
                 ) : (
