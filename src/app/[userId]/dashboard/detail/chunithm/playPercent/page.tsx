@@ -1,3 +1,24 @@
+// 곡별 OP 계산 함수
+function opForSong({ score, rating, constant, comboType }) {
+  // comboType: 0=none, 1=FC, 2=AJ, 3=AJC
+  let bonus1 = 0;
+  if (comboType === 1) bonus1 = 0.5;
+  else if (comboType === 2) bonus1 = 1.0;
+  else if (comboType === 3) bonus1 = 1.25;
+
+  let op = 0;
+  if (score >= 1010000) {
+    op = (constant + 3) * 5;
+  } else if (score >= 1007501) {
+    const bonus2 = (score - 1007500) * 0.0015;
+    op = (constant + 2) * 5 + bonus1 + bonus2;
+  } else if (score >= 975000) {
+    op = (parseFloat(rating?.toFixed(2)) * 5) + bonus1;
+  } else {
+    op = 0;
+  }
+  return parseFloat(op.toFixed(4));
+}
 // 파일 경로: src/app/[userId]/dashboard/detail/chunithm/playPercent/page.tsx
 'use client';
 
