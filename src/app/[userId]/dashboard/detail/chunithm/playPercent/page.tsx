@@ -20,7 +20,6 @@ function opForSong({ score, rating, constant, comboType }) {
   return parseFloat(op.toFixed(4));
 }
 // 파일 경로: src/app/[userId]/dashboard/detail/chunithm/playPercent/page.tsx
-"use client";
 
 // 곡별 OP 계산 함수
 function opForSong({ score, rating, constant, comboType }) {
@@ -43,6 +42,7 @@ function opForSong({ score, rating, constant, comboType }) {
   }
   return parseFloat(op.toFixed(4));
 }
+"use client";
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
