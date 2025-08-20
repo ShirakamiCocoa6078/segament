@@ -72,6 +72,31 @@ interface AccessMode {
 }
 
 export default function ChunithmPlayPercentPage() {
+  // 기준 선택 상태
+  const [filterType, setFilterType] = useState<'genre'|'level'|'const'|'version'>('genre');
+  const [filterValue, setFilterValue] = useState<string>('ALL');
+  const [difficultyType, setDifficultyType] = useState<'poje'|'all'|'basic'|'advanced'|'expert'|'master'|'ultima'>('poje');
+
+  // 샘플 데이터: 실제 데이터 로딩/필터링 로직은 playData, songData, categoryData 등 활용 필요
+  const genreOptions = ['ALL','POPS&ANIME','niconico','東方Project','VARIETY','イロドリミドリ','ゲキマイ','ORIGINAL','ULTIMA'];
+  const levelOptions = ['1','2','3','4','5','6','7','8','9','10','10+','11','11+','12','12+','13','13+','14','14+','15','15+'];
+  const constOptions = ['5','14.5','14.6','14.7','14.8','14.9','15.0','15.1','15.2','15.3','15.4'];
+  const versionOptions = ['ver1','ver2','ver3']; // 실제 버전 목록 category-data.json에서 추출 필요
+
+  // breakdown 샘플 데이터
+  const breakdownList = [
+    { type: 'AJ', label: 'ALL JUSTICE', count: 20, total: 100, percent: 20.0 },
+    { type: 'FC', label: 'FULL COMBO', count: 50, total: 100, percent: 50.0 },
+    { type: 'OTHER', label: 'OTHER', count: 30, total: 100, percent: 30.0 },
+  ];
+
+  function getPercentColor(percent: number) {
+    if (percent >= 95) return 'linear-gradient(90deg, #ffb6f7, #b6eaff, #fff7b6)'; // 무지개
+    if (percent >= 90) return '#e5e4e2'; // 플래티넘
+    if (percent >= 80) return '#ffd700'; // 금색
+    if (percent >= 70) return '#c0c0c0'; // 은색
+    return '#fff'; // 흰색
+  }
   const [profiles, setProfiles] = useState<ChunithmProfile[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<ChunithmProfile | null>(null);
   const [playData, setPlayData] = useState<PlayPercentData | null>(null);
@@ -245,7 +270,6 @@ export default function ChunithmPlayPercentPage() {
             {accessMode.mode === 'owner' ? '내 대시보드' : '프로필로 돌아가기'}
           </Button>
         </Link>
-        
         {accessMode.mode === 'visitor' && (
           <div className="text-sm text-muted-foreground bg-gray-100 px-3 py-1 rounded">
             공개 프로필 보기
@@ -253,26 +277,44 @@ export default function ChunithmPlayPercentPage() {
         )}
       </div>
 
-      {/* 프로필 선택 섹션 */}
+      {/* 기준 선택 섹션 */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>프로필 선택</CardTitle>
+          <CardTitle>기준 선택</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4">
-            <label htmlFor="profile-select" className="text-sm font-medium">
-              CHUNITHM 프로필:
-            </label>
-            <Select value={selectedProfile?.id || ''} onValueChange={handleProfileChange}>
-              <SelectTrigger className="w-64">
-                <SelectValue placeholder="프로필을 선택하세요" />
-              </SelectTrigger>
+          <div className="flex flex-wrap gap-4 items-center">
+            <Select value={filterType} onValueChange={v => setFilterType(v as any)}>
+              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {profiles.map((profile) => (
-                  <SelectItem key={profile.id} value={profile.id}>
-                    {profile.playerName} ({profile.region})
-                  </SelectItem>
+                <SelectItem value="genre">장르</SelectItem>
+                <SelectItem value="level">레벨</SelectItem>
+                <SelectItem value="const">상수</SelectItem>
+                <SelectItem value="version">버전</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterValue} onValueChange={v => setFilterValue(v)}>
+              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {(filterType === 'genre' ? genreOptions :
+                  filterType === 'level' ? levelOptions :
+                  filterType === 'const' ? constOptions :
+                  versionOptions
+                ).map(opt => (
+                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+            <Select value={difficultyType} onValueChange={v => setDifficultyType(v as any)}>
+              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="poje">포제</SelectItem>
+                <SelectItem value="all">전난이도</SelectItem>
+                <SelectItem value="basic">베이직</SelectItem>
+                <SelectItem value="advanced">어드밴스드</SelectItem>
+                <SelectItem value="expert">엑스퍼트</SelectItem>
+                <SelectItem value="master">마스터</SelectItem>
+                <SelectItem value="ultima">울티마</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -306,81 +348,33 @@ export default function ChunithmPlayPercentPage() {
         </Card>
       )}
 
-      {/* 플레이 데이터 표시 */}
-      {isLoadingPlayData && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-muted-foreground">플레이 데이터를 불러오는 중...</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
-      {!isLoadingPlayData && playData && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>CHUNITHM 플레이 현황</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-600">{playData?.totalSongs ?? 0}</p>
-                  <p className="text-sm text-muted-foreground">총 곡 수</p>
+      {/* breakdown 표시 샘플 */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>상세 breakdown</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {breakdownList.map(item => (
+              <div key={item.type} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                <div className="flex flex-col items-start w-32">
+                  <span className="font-bold text-xs">{item.label}</span>
+                  <span className="text-xs">{item.count} / {item.total} ({item.percent.toFixed(1)}%)</span>
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-green-600">{playData?.playedSongs ?? 0}</p>
-                  <p className="text-sm text-muted-foreground">플레이한 곡 수</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-purple-600">
-                    {typeof playData?.playPercentage === 'number' ? playData.playPercentage.toFixed(1) : '0.0'}%
-                  </p>
-                  <p className="text-sm text-muted-foreground">플레이 퍼센트</p>
+                <div className="flex-1 mx-4">
+                  <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-4 rounded-full"
+                      style={{ width: `${item.percent}%`, background: getPercentColor(item.percent) }}
+                    />
+                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>난이도별 플레이 현황</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {Object.entries(playData?.difficultyBreakdown || {}).map(([difficulty, data]) => {
-                  const safeData = {
-                    played: typeof data?.played === 'number' ? data.played : 0,
-                    total: typeof data?.total === 'number' ? data.total : 0,
-                    percentage: typeof data?.percentage === 'number' ? data.percentage : 0,
-                  };
-                  
-                  return (
-                    <div key={difficulty} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center space-x-4">
-                        <span className="font-medium">{difficulty.toUpperCase()}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {safeData.played} / {safeData.total}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-32 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full" 
-                            style={{ width: `${safeData.percentage}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-sm font-medium">{safeData.percentage.toFixed(1)}%</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {!isLoadingPlayData && !playData && selectedProfile && (
         <Card>
