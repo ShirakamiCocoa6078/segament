@@ -88,7 +88,7 @@ export default function ChunithmPlayPercentPage() {
   useEffect(() => {
     const fetchProfiles = async () => {
       if (typeof userId !== 'string') return;
-      
+      if (session === undefined) return;
       try {
         const isOwner = session?.user?.id === userId;
         setAccessMode({
@@ -100,9 +100,7 @@ export default function ChunithmPlayPercentPage() {
         const endpoint = isOwner 
           ? '/api/dashboard'
           : `/api/profile/public/${userId}`;
-          
         const response = await fetch(endpoint);
-        
         if (!response.ok) {
           if (response.status === 403) {
             throw new Error('프로필이 비공개로 설정되어 있습니다.');
@@ -112,7 +110,6 @@ export default function ChunithmPlayPercentPage() {
             throw new Error('프로필 정보를 불러오는데 실패했습니다.');
           }
         }
-        
         const data = await response.json();
         const chunithmProfiles = (data?.profiles || [])
           .filter((profile: any) => profile?.gameType === 'CHUNITHM')
@@ -123,10 +120,7 @@ export default function ChunithmPlayPercentPage() {
             rating: typeof profile?.rating === 'number' ? profile.rating : undefined,
             level: typeof profile?.level === 'number' ? profile.level : undefined,
           }));
-        
         setProfiles(chunithmProfiles);
-        
-        // 첫 번째 프로필을 기본 선택
         if (chunithmProfiles.length > 0) {
           setSelectedProfile(chunithmProfiles[0]);
         }
@@ -136,26 +130,20 @@ export default function ChunithmPlayPercentPage() {
         setIsLoadingProfiles(false);
       }
     };
-
-    if (session !== undefined) {
-      fetchProfiles();
-    }
-  }, [userId, session]);
+    fetchProfiles();
+  }, [userId]);
 
   // 선택된 프로필에 따른 플레이 데이터 가져오기
   useEffect(() => {
     const fetchPlayData = async () => {
       if (!selectedProfile) return;
-      
       setIsLoadingPlayData(true);
       try {
         const isOwner = session?.user?.id === userId;
         const endpoint = isOwner 
           ? `/api/dashboard/play-percent?gameType=CHUNITHM&region=${selectedProfile.region}`
           : `/api/profile/play-percent/${userId}?gameType=CHUNITHM&region=${selectedProfile.region}`;
-          
         const response = await fetch(endpoint);
-        
         if (!response.ok) {
           if (response.status === 403) {
             throw new Error('프로필이 비공개로 설정되어 있습니다.');
@@ -165,7 +153,6 @@ export default function ChunithmPlayPercentPage() {
             throw new Error('플레이 데이터를 불러오는데 실패했습니다.');
           }
         }
-        
         const data = await response.json();
         const safePlayData: PlayPercentData = {
           totalSongs: typeof data?.playData?.totalSongs === 'number' ? data.playData.totalSongs : 0,
@@ -173,8 +160,6 @@ export default function ChunithmPlayPercentPage() {
           playPercentage: typeof data?.playData?.playPercentage === 'number' ? data.playData.playPercentage : 0,
           difficultyBreakdown: {},
         };
-        
-        // 난이도별 데이터 안전하게 처리
         if (data?.playData?.difficultyBreakdown && typeof data.playData.difficultyBreakdown === 'object') {
           Object.entries(data.playData.difficultyBreakdown).forEach(([difficulty, diffData]: [string, any]) => {
             if (diffData && typeof diffData === 'object') {
@@ -189,7 +174,6 @@ export default function ChunithmPlayPercentPage() {
             }
           });
         }
-        
         setPlayData(safePlayData);
       } catch (err) {
         console.error('플레이 데이터 로딩 에러:', err);
@@ -198,11 +182,8 @@ export default function ChunithmPlayPercentPage() {
         setIsLoadingPlayData(false);
       }
     };
-
-    if (selectedProfile) {
-      fetchPlayData();
-    }
-  }, [selectedProfile, userId, session]);
+    fetchPlayData();
+  }, [selectedProfile]);
 
   const handleProfileChange = (profileId: string) => {
     const profile = profiles.find(p => p.id === profileId);
