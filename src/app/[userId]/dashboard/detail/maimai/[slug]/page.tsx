@@ -130,8 +130,8 @@ export default function UserMaimaiDetailPage() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="container mx-auto p-2 sm:p-4">
+      <div className="mb-2 sm:mb-4 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
         <Link href={`/${userId}/dashboard`}>
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -140,33 +140,29 @@ export default function UserMaimaiDetailPage() {
         </Link>
         
         {accessMode.mode === 'visitor' && (
-          <div className="text-sm text-muted-foreground bg-gray-100 px-3 py-1 rounded">
+          <div className="text-sm sm:text-base text-muted-foreground bg-gray-100 px-3 py-1 rounded w-full sm:w-auto text-center">
             공개 프로필 보기
           </div>
         )}
       </div>
       
       <ProfileDisplay profile={profile} />
-
-      <Tabs defaultValue="best" className="w-full mt-6">
-        <TabsList>
-          <TabsTrigger value="best">Best</TabsTrigger>
-          <TabsTrigger value="new">New</TabsTrigger>
+      <Tabs defaultValue="best" className="w-full mt-4 sm:mt-6">
+        <TabsList className="flex flex-wrap gap-2 sm:gap-4 justify-center sm:justify-start">
+          <TabsTrigger value="best" className="text-base sm:text-lg px-2 sm:px-4 py-2">Best</TabsTrigger>
+          <TabsTrigger value="new" className="text-base sm:text-lg px-2 sm:px-4 py-2">New</TabsTrigger>
           {accessMode.showPrivateData && (
-            <TabsTrigger value="all">All Records</TabsTrigger>
+            <TabsTrigger value="all" className="text-base sm:text-lg px-2 sm:px-4 py-2">All Records</TabsTrigger>
           )}
         </TabsList>
-        
-        <TabsContent value="best">
+        <TabsContent value="best" className="mt-4 sm:mt-6">
           <SongDataTable data={profile.gameData?.ratingLists.best || []} />
         </TabsContent>
-        
-        <TabsContent value="new">
+        <TabsContent value="new" className="mt-4 sm:mt-6">
           <SongDataTable data={profile.gameData?.ratingLists.new || []} />
         </TabsContent>
-        
         {accessMode.showPrivateData && (
-          <TabsContent value="all">
+          <TabsContent value="all" className="mt-4 sm:mt-6">
             <SongDataTable data={profile.gameData?.playlogs || []} showPagination={true} />
           </TabsContent>
         )}

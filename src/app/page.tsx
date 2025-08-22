@@ -31,7 +31,7 @@ export default function Home() {
             </h1>
           </div>
           <p className="max-w-xs sm:max-w-md mb-6 sm:mb-8 text-base sm:text-lg text-foreground/80 font-body">
-            쿠니즘 및 마이마이 프로필화
+            츄니즘 및 마이마이 프로필
           </p>
           <Button className="w-full sm:w-auto py-3 sm:py-2 text-base sm:text-lg" onClick={handleSignIn}>
             Google 계정으로 계속하기

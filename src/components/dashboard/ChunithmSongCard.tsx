@@ -129,7 +129,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
           </p>
         </div>
 
-        {/* 클리어/콤보/풀체인 아이콘들 */}
+        {/* 클리어/콤보 아이콘들 */}
         <div className="flex space-x-1 items-center justify-end">
           {/* clearType */}
           {clearType > 0 && ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType] !== "none" && (
@@ -138,10 +138,9 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
               alt={`Clear Type ${clearType}`}
               width={64}
               height={18}
-              className="max-w-[64px] w-8 sm:w-12 md:w-16 h-[18px] object-contain"
+              className="max-w-[64px] w-12 h-24 sm:w-8 sm:h-[18px] md:w-8 md:h-[18px] object-contain"
             />
           )}
-          
           {/* comboType */}
           {comboType > 0 && ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType] !== "none" && (
             <Image
@@ -149,18 +148,7 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
               alt={`Combo Type ${comboType}`}
               width={64}
               height={18}
-              className="max-w-[64px] w-8 sm:w-12 md:w-16 h-[18px] object-contain"
-            />
-          )}
-          
-          {/* fullChainType */}
-          {fullChainType > 0 && ICON_MAPPING.fullChainType[fullChainType as keyof typeof ICON_MAPPING.fullChainType] !== "none" && (
-            <Image
-              src={ICON_MAPPING.fullChainType[fullChainType as keyof typeof ICON_MAPPING.fullChainType]}
-              alt={`Full Chain Type ${fullChainType}`}
-              width={64}
-              height={18}
-              className="max-w-[64px] w-8 sm:w-12 md:w-16 h-[18px] object-contain"
+              className="max-w-[64px] w-12 h-24 sm:w-8 sm:h-[18px] md:w-8 md:h-[18px] object-contain"
             />
           )}
         </div>
