@@ -111,17 +111,16 @@ export default function UserDashboardPage() {
   const isOwner = accessMode.mode === 'owner';
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-2 sm:p-4">
       {profiles.length > 0 ? (
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left w-full sm:w-auto">
               {isOwner ? '내 대시보드' : `${userId}님의 프로필`}
             </h1>
             {isOwner && <RegisterProfileDialog />}
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {profiles.map(profile => (
               <ProfileCard 
                 key={profile.id} 
@@ -133,12 +132,12 @@ export default function UserDashboardPage() {
           </div>
         </div>
       ) : (
-        <div className="text-center py-12">
-          <div className="max-w-md mx-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <div className="text-center py-8 sm:py-12">
+          <div className="max-w-xs sm:max-w-md mx-auto">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-4">
               {isOwner ? '프로필이 없습니다' : '공개된 프로필이 없습니다'}
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-4 sm:mb-6 text-base sm:text-lg">
               {isOwner 
                 ? '게임 프로필을 등록하여 점수를 추적해보세요.' 
                 : '이 사용자는 아직 공개된 게임 프로필이 없습니다.'

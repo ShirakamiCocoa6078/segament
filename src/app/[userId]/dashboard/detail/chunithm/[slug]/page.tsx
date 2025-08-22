@@ -1,4 +1,3 @@
-
 'use client';
 // 디버깅: 주요 상태를 useEffect에서 출력
 // (아래에서 useEffect를 올바른 위치에 배치)
@@ -141,7 +140,7 @@ export default function UserChunithmDetailPage() {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-2 sm:p-4">
       {/* 상단 우측 로그인/프로필 영역 */}
       <div className="flex items-center justify-between mb-6">
         <Link href={`/${userId}/dashboard`}>
@@ -175,18 +174,17 @@ export default function UserChunithmDetailPage() {
 
       <ProfileDisplay profile={profile} />
 
-      <Tabs defaultValue="best" className="w-full mt-6">
-        <TabsList>
-          <TabsTrigger value="best">Best 30</TabsTrigger>
-          <TabsTrigger value="new">New 20</TabsTrigger>
+      <Tabs defaultValue="best" className="w-full mt-4">
+        <TabsList className="flex flex-wrap gap-2 sm:gap-4 justify-center sm:justify-start">
+          <TabsTrigger value="best" className="text-base sm:text-lg px-2 sm:px-4 py-2">Best 30</TabsTrigger>
+          <TabsTrigger value="new" className="text-base sm:text-lg px-2 sm:px-4 py-2">New 20</TabsTrigger>
           {accessMode.showPrivateData && (
-            <TabsTrigger value="all">All Records</TabsTrigger>
+            <TabsTrigger value="all" className="text-base sm:text-lg px-2 sm:px-4 py-2">All Records</TabsTrigger>
           )}
         </TabsList>
-
-        <TabsContent value="best" className="mt-6">
+        <TabsContent value="best" className="mt-4 sm:mt-6">
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="pt-4 sm:pt-6">
               <ChunithmSongGrid 
                 songs={profile.gameData?.ratingLists.best || []} 
                 type="best"
@@ -194,10 +192,9 @@ export default function UserChunithmDetailPage() {
             </CardContent>
           </Card>
         </TabsContent>
-
-        <TabsContent value="new" className="mt-6">
+        <TabsContent value="new" className="mt-4 sm:mt-6">
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="pt-4 sm:pt-6">
               <ChunithmSongGrid 
                 songs={profile.gameData?.ratingLists.new || []} 
                 type="new"
@@ -205,11 +202,10 @@ export default function UserChunithmDetailPage() {
             </CardContent>
           </Card>
         </TabsContent>
-
         {accessMode.showPrivateData && (
-          <TabsContent value="all" className="mt-6">
+          <TabsContent value="all" className="mt-4 sm:mt-6">
             <Card>
-              <CardContent className="pt-6">
+              <CardContent className="pt-4 sm:pt-6">
                 <SongDataTable data={profile.gameData?.playlogs || []} showPagination={true} />
               </CardContent>
             </Card>
