@@ -79,44 +79,13 @@ export default function ChunithmPlayPercentPage() {
   const songData: any[] = [];
   const categoryData: any[] = [];
   const playlogs: any[] = [];
-
-  // 1. 곡 목록 필터링 (집계 대상: 난이도)
-  function filterSongsByTarget(songs: any[], target: string) {
-    if (target === 'poje') {
-      return songs.filter(song => ['master','ultima'].includes(song.difficulty));
-    }
-    if (target === 'all') {
-      return songs;
-    }
-    // 특정 난이도만
-    return songs.filter(song => song.difficulty === target);
+  if (error) {
+    return (
+      <div className="p-4 text-center text-red-500">
+        {error}
+      </div>
+    );
   }
-
-  // 2. 그룹화 (분류 기준)
-  function groupSongs(songs: any[], type: string) {
-    const groups: Record<string, any[]> = {};
-    songs.forEach(song => {
-      let key = 'ALL';
-      if (type === 'genre') key = song.genre;
-      else if (type === 'level') key = song.level;
-      else if (type === 'const') key = song.const;
-      else if (type === 'version') key = song.version;
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(song);
-    });
-    return groups;
-  }
-
-  // 3. OP 계산 (최대/달성)
-  function calcOpForSong(song: any, log: any): number {
-    // 실제 OP 계산 공식 적용 필요
-    // log가 없으면 0, 있으면 score/const/rating/comboType 등 활용
-    return log ? opForSong({
-      score: log.score,
-      rating: log.rating,
-      constant: song.const,
-      comboType: log.comboType
-    }) : 0;
   }
   function calcMaxOpForSong(song: any): number {
     // 최고점수 기준 OP (AJC)
@@ -546,6 +515,7 @@ export default function ChunithmPlayPercentPage() {
                     </Card>
                   </div>
                   {/* ...기존 코드... */}
+                </div>
             </div>
           </CardContent>
         </Card>
