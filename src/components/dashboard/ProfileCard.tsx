@@ -36,7 +36,7 @@ export const ProfileCard = React.memo<ProfileCardProps>(({ profile, userId, acce
       </div>
       <p className="text-sm text-gray-500 mb-2">{profile.region}</p>
       <p className="text-lg">{profile.playerName}</p>
-      <p className="text-gray-600">Rating: {formatRating(profile.rating)}</p>
+    <p className="text-gray-600">Rating: {typeof profile.rating === 'number' ? profile.rating.toFixed(2) : 'N/A'}</p>
     </Link>
   );
 });
