@@ -1,6 +1,21 @@
 {
   "genre": {
     "POPS & ANIME": {
+      "music_idx_2849": {
+        "music_name": "1番輝く星"
+      },
+      "music_idx_2864": {
+        "music_name": "きゅびずむ"
+      },
+      "music_idx_2865": {
+        "music_name": "きゅびびびびずむ"
+      },
+      "music_idx_2850": {
+        "music_name": "うい麦畑でつかまえて"
+      },
+      "music_idx_2851": {
+        "music_name": "幽霊船戦"
+      },
       "music_idx_2893": {
         "music_name": "ぎゅむ！"
       },
@@ -8974,6 +8989,21 @@
       }
     },
     "CHUNITHM X-VERSE": {
+      "music_idx_2849": {
+        "music_name": "1番輝く星"
+      },
+      "music_idx_2864": {
+        "music_name": "きゅびずむ"
+      },
+      "music_idx_2865": {
+        "music_name": "きゅびびびびずむ"
+      },
+      "music_idx_2850": {
+        "music_name": "うい麦畑でつかまえて"
+      },
+      "music_idx_2851": {
+        "music_name": "幽霊船戦"
+      },
       "music_idx_2893": {
         "music_name": "ぎゅむ！"
       },
@@ -10289,6 +10319,18 @@
       }
     },
     "LEVEL 3": {
+      "music_idx_2849": {
+        "music_name": "1番輝く星",
+        "diff": "BASIC"
+      },
+      "music_idx_2850": {
+        "music_name": "うい麦畑でつかまえて",
+        "diff": "BASIC"
+      },
+      "music_idx_2851": {
+        "music_name": "幽霊船戦",
+        "diff": "BASIC"
+      },
       "music_idx_2893": {
         "music_name": "ぎゅむ！",
         "diff": "BASIC"
@@ -13791,6 +13833,10 @@
       }
     },
     "LEVEL 4": {
+      "music_idx_2864": {
+        "music_name": "きゅびずむ",
+        "diff": "BASIC"
+      },
       "music_idx_2718": {
         "music_name": "I Wanna",
         "diff": "BASIC"
@@ -14909,6 +14955,10 @@
       }
     },
     "LEVEL 5": {
+      "music_idx_2865": {
+        "music_name": "きゅびびびびずむ",
+        "diff": "BASIC"
+      },
       "music_idx_2344": {
         "music_name": "フューチャー・イヴ",
         "diff": "BASIC"
@@ -15116,6 +15166,10 @@
       "music_idx_2846": {
         "music_name": "Tru'nembra",
         "diff": "BASIC"
+      },
+      "music_idx_2850": {
+        "music_name": "うい麦畑でつかまえて",
+        "diff": "ADVANCED"
       },
       "music_idx_2893": {
         "music_name": "ぎゅむ！",
@@ -16934,6 +16988,18 @@
       "music_idx_2838": {
         "music_name": "神鳴",
         "diff": "BASIC"
+      },
+      "music_idx_2849": {
+        "music_name": "1番輝く星",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2864": {
+        "music_name": "きゅびずむ",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2851": {
+        "music_name": "幽霊船戦",
+        "diff": "ADVANCED"
       },
       "music_idx_2820": {
         "music_name": "モエチャッカファイア",
@@ -21589,6 +21655,10 @@
       }
     },
     "LEVEL 9": {
+      "music_idx_2865": {
+        "music_name": "きゅびびびびずむ",
+        "diff": "ADVANCED"
+      },
       "music_idx_2589": {
         "music_name": "ÅMARA (大未来電脳)",
         "diff": "ADVANCED"
@@ -21728,6 +21798,10 @@
       "music_idx_2442": {
         "music_name": "βlαnoir",
         "diff": "ADVANCED"
+      },
+      "music_idx_2849": {
+        "music_name": "1番輝く星",
+        "diff": "EXPERT"
       },
       "music_idx_2819": {
         "music_name": "TAIDADA",
@@ -22778,6 +22852,14 @@
       "music_idx_2802": {
         "music_name": "Crossmythos Rhapsodia",
         "diff": "ADVANCED"
+      },
+      "music_idx_2864": {
+        "music_name": "きゅびずむ",
+        "diff": "EXPERT"
+      },
+      "music_idx_2850": {
+        "music_name": "うい麦畑でつかまえて",
+        "diff": "EXPERT"
       },
       "music_idx_2893": {
         "music_name": "ぎゅむ！",
@@ -23960,6 +24042,10 @@
       "music_idx_2846": {
         "music_name": "Tru'nembra",
         "diff": "ADVANCED"
+      },
+      "music_idx_2851": {
+        "music_name": "幽霊船戦",
+        "diff": "EXPERT"
       },
       "music_idx_2803": {
         "music_name": "Running to the straight ver1.01",
@@ -27411,6 +27497,10 @@
         "music_name": "ENDYMION",
         "diff": "ADVANCED"
       },
+      "music_idx_2865": {
+        "music_name": "きゅびびびびずむ",
+        "diff": "EXPERT"
+      },
       "music_idx_2825": {
         "music_name": "最終鬼畜妹フランドール・S (Chroma Remix)",
         "diff": "EXPERT"
@@ -27658,6 +27748,14 @@
       "music_idx_2833": {
         "music_name": "並行天涯",
         "diff": "EXPERT"
+      },
+      "music_idx_2849": {
+        "music_name": "1番輝く星",
+        "diff": "MASTER"
+      },
+      "music_idx_2864": {
+        "music_name": "きゅびずむ",
+        "diff": "MASTER"
       },
       "music_idx_2820": {
         "music_name": "モエチャッカファイア",
@@ -29790,6 +29888,10 @@
       "music_idx_2729": {
         "music_name": "〚献身〛 ～Paradox of Choice",
         "diff": "EXPERT"
+      },
+      "music_idx_2850": {
+        "music_name": "うい麦畑でつかまえて",
+        "diff": "MASTER"
       },
       "music_idx_2757": {
         "music_name": "殺屋中毒",
@@ -32118,6 +32220,14 @@
       "music_idx_2802": {
         "music_name": "Crossmythos Rhapsodia",
         "diff": "EXPERT"
+      },
+      "music_idx_2865": {
+        "music_name": "きゅびびびびずむ",
+        "diff": "MASTER"
+      },
+      "music_idx_2851": {
+        "music_name": "幽霊船戦",
+        "diff": "MASTER"
       },
       "music_idx_2391": {
         "music_name": "刃渡り2億センチ(TV edit)",

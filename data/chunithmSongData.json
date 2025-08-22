@@ -1,6 +1,136 @@
 [
   {
     "meta": {
+      "id": "2849",
+      "title": "1番輝く星",
+      "genre": "POPS & ANIME",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "const": 9,
+        "level": "9"
+      },
+      "master": {
+        "level": "12+",
+        "const": 12.7
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2864",
+      "title": "きゅびずむ",
+      "genre": "POPS & ANIME",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "master": {
+        "level": "12+",
+        "const": 12.8
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2865",
+      "title": "きゅびびびびずむ",
+      "genre": "POPS & ANIME",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 5,
+        "level": "5"
+      },
+      "advanced": {
+        "const": 9,
+        "level": "9"
+      },
+      "expert": {
+        "level": "12+",
+        "const": 12.9
+      },
+      "master": {
+        "level": "14+",
+        "const": 14.5
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2850",
+      "title": "うい麦畑でつかまえて",
+      "genre": "POPS & ANIME",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 5,
+        "level": "5"
+      },
+      "expert": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "master": {
+        "level": "13+",
+        "const": 13.7
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2851",
+      "title": "幽霊船戦",
+      "genre": "POPS & ANIME",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "level": "10",
+        "const": 10
+      },
+      "master": {
+        "level": "14+",
+        "const": 14.6
+      }
+    }
+  },
+  {
+    "meta": {
       "id": "2893",
       "title": "ぎゅむ！",
       "genre": "POPS & ANIME",
