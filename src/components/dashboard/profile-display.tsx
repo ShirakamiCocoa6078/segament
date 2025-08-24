@@ -106,27 +106,7 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
                             <span>Lv. {profile.level}</span>
                             <div className="flex items-end space-x-0.5">
                                 <span className="mr-1">Rating: </span>
-                                {/* --- 수정: 레이팅 숫자별 개별 스타일 적용 --- */}
-                                {ratingDigits.map((digit, index) => {
-                                    const style = ratingDigitStyles[index] || {};
-                                    const isComma = digit === '.';
-                                    const imageUrl = isComma
-                                        ? `https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_comma.png`
-                                        : `https://new.chunithm-net.com/chuni-mobile/html/mobile/images/rating/rating_${ratingColor}_0${digit}.png`;
-
-                                    return (
-                                        <img 
-                                            key={index} 
-                                            src={imageUrl} 
-                                            alt={digit} 
-                                            style={{
-                                                ...style,
-                                                alignSelf: 'flex-end',
-                                                marginBottom: isComma ? '2px' : '0'
-                                            }}
-                                        />
-                                    );
-                                })}
+                                <span className="font-bold text-lg md:text-xl text-blue-600 dark:text-blue-300">{currentRating.toFixed(2)}</span>
                             </div>
                             <span>Play Count: {profile.playCount.toLocaleString()}</span>
                         </div>

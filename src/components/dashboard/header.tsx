@@ -22,19 +22,15 @@ export function Header() {
 
   // 테마 로딩/저장
   useEffect(() => {
-    if (session) {
-      // TODO: 서버에서 theme 정보 fetch/set (API 필요)
-    } else {
-      const localTheme = localStorage.getItem('theme');
-      if (localTheme === 'dark' || localTheme === 'light') {
-        setTheme(localTheme);
-      }
+    const localTheme = localStorage.getItem('theme');
+    if (localTheme === 'dark' || localTheme === 'light') {
+      setTheme(localTheme);
     }
     const localMode = localStorage.getItem('uiMode');
     if (localMode === 'mobile' || localMode === 'pc') {
       setMode(localMode);
     }
-  }, [session]);
+  }, []);
 
   // 테마 변경 핸들러
   const handleThemeChange = () => {
@@ -72,14 +68,14 @@ export function Header() {
       <div className="flex w-full items-center justify-end gap-4">
         {/* 모바일/PC 모드 전환 버튼 */}
         <button
-          className="px-3 py-1 rounded border text-sm bg-gray-100 hover:bg-gray-200 transition"
+          className="px-3 py-1 rounded border text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-700 transition"
           onClick={handleModeChange}
         >
           {mode === 'pc' ? '모바일 모드로 변경' : 'PC 모드로 변경'}
         </button>
         {/* 테마 설정 버튼 */}
         <button
-          className="px-3 py-1 rounded border text-sm bg-gray-100 hover:bg-gray-200 transition"
+          className="px-3 py-1 rounded border text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-700 transition"
           onClick={handleThemeChange}
         >
           {theme === 'light' ? '다크모드' : '화이트모드'}

@@ -104,32 +104,6 @@ export default function AccountPage() {
     <div className="container mx-auto p-2 sm:p-4">
       <Card className="mb-4">
         <CardHeader>
-          <CardTitle className="text-xl sm:text-2xl">계정 정보</CardTitle>
-          <CardDescription className="text-base sm:text-lg">프로필 및 게임 계정 관리</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={handleUpdateProfile}>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center">
-              <Input
-                className="w-full sm:w-1/2 text-base sm:text-lg"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="이름"
-              />
-              <Input
-                className="w-full sm:w-1/2 text-base sm:text-lg"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                placeholder="사용자명"
-                onBlur={checkUsername}
-              />
-            </div>
-            <Button className="w-full sm:w-auto py-3 sm:py-2 text-base sm:text-lg" type="submit">프로필 저장</Button>
-          </form>
-        </CardContent>
-      </Card>
-      <Card className="mb-4">
-        <CardHeader>
           <CardTitle className="text-xl sm:text-2xl">게임 프로필</CardTitle>
         </CardHeader>
         <CardContent>

@@ -83,9 +83,9 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
   const songRating = song.const && song.score ? calculateRating(song.const, song.score) : 0;
 
   return (
-    <div className="relative flex items-center w-full max-w-[490px] h-[100px] bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+  <div className="relative flex items-center w-full max-w-[490px] h-[100px] bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
       {/* 자켓 이미지 */}
-      <div className="w-[100px] h-[100px] flex-shrink-0">
+  <div className="w-[100px] h-[100px] flex-shrink-0">
         {jacketUrl ? (
           <Image
             src={jacketUrl}
@@ -103,18 +103,18 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
       </div>
 
       {/* 곡 정보 */}
-      <div className="flex-1 px-3 py-2 flex flex-col justify-between h-full min-w-0">
+  <div className="flex-1 px-3 py-2 flex flex-col justify-between h-full min-w-0">
         <div className="flex flex-col space-y-1">
-          <h3 className="text-sm font-semibold text-gray-900 truncate" title={song.title}>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate" title={song.title}>
             {song.title}
           </h3>
-          <p className="text-xs text-gray-600">
+          <p className="text-xs text-gray-600 dark:text-gray-300">
             레벨: {song.level || 'N/A'}
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-300">
             상수: {song.const ? song.const.toFixed(1) : 'N/A'}
           </p>
-          <p className="text-xs text-purple-600 font-medium">
+          <p className="text-xs text-purple-600 dark:text-purple-300 font-medium">
             레이팅: {songRating > 0 ? songRating.toFixed(4) : 'N/A'}
           </p>
         </div>

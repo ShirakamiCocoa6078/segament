@@ -24,19 +24,19 @@ export const ProfileCard = React.memo<ProfileCardProps>(({ profile, userId, acce
   return (
     <Link 
       href={detailUrl} 
-      className="block p-6 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors"
+      className="block p-6 bg-white dark:bg-gray-900 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
     >
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xl font-semibold">{profile.gameType}</h2>
+        <h2 className="text-xl font-semibold dark:text-gray-100">{profile.gameType}</h2>
         {accessMode.mode === 'visitor' && (
-          <span className="text-xs text-muted-foreground bg-gray-100 px-2 py-1 rounded">
+          <span className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-800 dark:text-gray-100 px-2 py-1 rounded">
             공개
           </span>
         )}
       </div>
-      <p className="text-sm text-gray-500 mb-2">{profile.region}</p>
-      <p className="text-lg">{profile.playerName}</p>
-  <p className="text-gray-600">Rating: {typeof profile.rating === 'number' ? profile.rating.toFixed(2) : 'N/A'}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-300 mb-2">{profile.region}</p>
+      <p className="text-lg dark:text-gray-100">{profile.playerName}</p>
+      <p className="text-gray-600 dark:text-gray-200">Rating: {typeof profile.rating === 'number' ? profile.rating.toFixed(2) : 'N/A'}</p>
     </Link>
   );
 });
