@@ -129,50 +129,27 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
           </p>
         </div>
 
-        {/* 클리어/콤보 아이콘들 */}
-        <div className="flex space-x-1 items-center justify-end relative">
-          {/* PC: 50% 확대, 모바일: 기존 크기, 겹치지 않게 배치 */}
+        {/* 클리어/콤보 아이콘들 - PC/모바일 동일하게 기존 PC UI로 복원 */}
+        <div className="flex space-x-1 items-center justify-end">
           {/* clearType */}
           {clearType > 0 && ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType] !== "none" && (
-            <>
-              {/* PC (lg 이상) */}
-              <Image
-                src={ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType]}
-                alt={`Clear Type ${clearType}`}
-                width={96}
-                height={27}
-                className="hidden lg:block max-w-[96px] w-16 h-[27px] object-contain" // PC에서 50% 확대
-              />
-              {/* 모바일 (lg 미만) */}
-              <Image
-                src={ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType]}
-                alt={`Clear Type ${clearType}`}
-                width={64}
-                height={18}
-                className="block lg:hidden max-w-[64px] w-8 h-[18px] object-contain absolute right-0 bottom-0" // 모바일에서 기존 크기, 겹치지 않게 배치
-              />
-            </>
+            <Image
+              src={ICON_MAPPING.clearType[clearType as keyof typeof ICON_MAPPING.clearType]}
+              alt={`Clear Type ${clearType}`}
+              width={64}
+              height={18}
+              className="max-w-[64px] w-12 h-[18px] object-contain"
+            />
           )}
           {/* comboType */}
           {comboType > 0 && ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType] !== "none" && (
-            <>
-              {/* PC (lg 이상) */}
-              <Image
-                src={ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType]}
-                alt={`Combo Type ${comboType}`}
-                width={96}
-                height={27}
-                className="hidden lg:block max-w-[96px] w-16 h-[27px] object-contain" // PC에서 50% 확대
-              />
-              {/* 모바일 (lg 미만) */}
-              <Image
-                src={ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType]}
-                alt={`Combo Type ${comboType}`}
-                width={64}
-                height={18}
-                className="block lg:hidden max-w-[64px] w-8 h-[18px] object-contain absolute right-0 bottom-0" // 모바일에서 기존 크기, 겹치지 않게 배치
-              />
-            </>
+            <Image
+              src={ICON_MAPPING.comboType[comboType as keyof typeof ICON_MAPPING.comboType]}
+              alt={`Combo Type ${comboType}`}
+              width={64}
+              height={18}
+              className="max-w-[64px] w-12 h-[18px] object-contain"
+            />
           )}
         </div>
       </div>

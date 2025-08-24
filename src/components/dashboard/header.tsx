@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -16,8 +17,52 @@ import Link from "next/link";
 
 export function Header() {
   const { data: session } = useSession();
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [mode, setMode] = useState<'pc' | 'mobile'>('pc');
 
-  if (!session) return null;
+  // 테마 로딩/저장
+  useEffect(() => {
+    if (session) {
+      // TODO: 서버에서 theme 정보 fetch/set (API 필요)
+    } else {
+      const localTheme = localStorage.getItem('theme');
+      if (localTheme === 'dark' || localTheme === 'light') {
+        setTheme(localTheme);
+      }
+    }
+    const localMode = localStorage.getItem('uiMode');
+    if (localMode === 'mobile' || localMode === 'pc') {
+      setMode(localMode);
+    }
+  }, [session]);
+
+  // 테마 변경 핸들러
+  const handleThemeChange = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    if (session) {
+      // TODO: 서버에 theme 저장 API 호출
+    } else {
+      localStorage.setItem('theme', nextTheme);
+    }
+    // Tailwind dark class 적용 (간단 예시)
+    if (nextTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  // 모드 변경 핸들러
+  const handleModeChange = () => {
+    const nextMode = mode === 'pc' ? 'mobile' : 'pc';
+    setMode(nextMode);
+    localStorage.setItem('uiMode', nextMode);
+  };
+
+  if (!session) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
@@ -25,6 +70,20 @@ export function Header() {
         <SidebarTrigger />
       </div>
       <div className="flex w-full items-center justify-end gap-4">
+        {/* 모바일/PC 모드 전환 버튼 */}
+        <button
+          className="px-3 py-1 rounded border text-sm bg-gray-100 hover:bg-gray-200 transition"
+          onClick={handleModeChange}
+        >
+          {mode === 'pc' ? '모바일 모드로 변경' : 'PC 모드로 변경'}
+        </button>
+        {/* 테마 설정 버튼 */}
+        <button
+          className="px-3 py-1 rounded border text-sm bg-gray-100 hover:bg-gray-200 transition"
+          onClick={handleThemeChange}
+        >
+          {theme === 'light' ? '다크모드' : '화이트모드'}
+        </button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
