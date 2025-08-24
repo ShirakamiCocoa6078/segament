@@ -11,6 +11,31 @@ export default function Home() {
     signIn('google', { callbackUrl: '/auth/verify' });
   }, []);
 
+
+  // 테마 상태 관리
+  const [theme, setTheme] = require('react').useState('light');
+  require('react').useEffect(() => {
+    const localTheme = localStorage.getItem('theme');
+    if (localTheme === 'dark' || localTheme === 'light') {
+      setTheme(localTheme);
+      if (localTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, []);
+  const handleThemeChange = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    localStorage.setItem('theme', nextTheme);
+    if (nextTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
   // 세션 확인 및 리다이렉트
   const { data: session, status } = require('next-auth/react').useSession();
   const router = require('next/navigation').useRouter();
@@ -23,6 +48,15 @@ export default function Home() {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 bg-background relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 to-transparent_30%"></div>
+        {/* 테마 변경 버튼 */}
+        <div className="absolute top-4 right-4 z-20">
+          <button
+            className="px-3 py-1 rounded border text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-700 transition"
+            onClick={handleThemeChange}
+          >
+            {theme === 'light' ? '다크모드' : '화이트모드'}
+          </button>
+        </div>
         <div className="z-10 flex flex-col items-center text-center w-full">
           <div className="flex items-center gap-2 sm:gap-4 mb-4">
             <SegamentLogo className="h-12 w-12 sm:h-16 sm:w-16" />
