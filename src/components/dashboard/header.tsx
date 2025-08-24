@@ -2,6 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -73,13 +74,8 @@ export function Header() {
         >
           {mode === 'pc' ? '모바일 모드로 변경' : 'PC 모드로 변경'}
         </button>
-        {/* 테마 설정 버튼 */}
-        <button
-          className="px-3 py-1 rounded border text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-700 transition"
-          onClick={handleThemeChange}
-        >
-          {theme === 'light' ? '다크모드' : '화이트모드'}
-        </button>
+  {/* next-themes 기반 ThemeToggle 드롭다운 */}
+  <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
