@@ -19,42 +19,30 @@ import Link from "next/link";
 export function Header() {
   const { data: session } = useSession();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [mode, setMode] = useState<'pc' | 'mobile'>('pc');
+  const [mode, setMode] = useState<'pc' | 'mobile'>(() => {
+    if (typeof window !== 'undefined') {
+      const localMode = localStorage.getItem('uiMode');
+      if (localMode === 'mobile' || localMode === 'pc') {
+        return localMode;
+      }
+    }
+    return 'pc';
+  });
 
-  // 테마 로딩/저장
   useEffect(() => {
-    const localTheme = localStorage.getItem('theme');
-    if (localTheme === 'dark' || localTheme === 'light') {
-      setTheme(localTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('uiMode', mode);
     }
-    const localMode = localStorage.getItem('uiMode');
-    if (localMode === 'mobile' || localMode === 'pc') {
-      setMode(localMode);
-    }
-  }, []);
+  }, [mode]);
 
-  // 테마 변경 핸들러
-  const handleThemeChange = () => {
-    const nextTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(nextTheme);
-    if (session) {
-      // TODO: 서버에 theme 저장 API 호출
-    } else {
-      localStorage.setItem('theme', nextTheme);
-    }
-    // Tailwind dark class 적용 (간단 예시)
-    if (nextTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
-  // 모드 변경 핸들러
   const handleModeChange = () => {
-    const nextMode = mode === 'pc' ? 'mobile' : 'pc';
-    setMode(nextMode);
-    localStorage.setItem('uiMode', nextMode);
+    setMode(prev => {
+      const nextMode = prev === 'pc' ? 'mobile' : 'pc';
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('uiMode', nextMode);
+      }
+      return nextMode;
+    });
   };
 
   if (!session) {

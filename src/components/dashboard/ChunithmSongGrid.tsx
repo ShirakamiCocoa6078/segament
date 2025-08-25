@@ -92,7 +92,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
   return (
     <div className="w-full space-y-4">
       <div className="text-center mb-4">
-  <h3 className="text-lg font-semibold text-gray-800">
+  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
           {type === 'best' ? 'Best 30' : 'New 20'}
         </h3>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
