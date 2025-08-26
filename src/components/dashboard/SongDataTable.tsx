@@ -219,8 +219,8 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
                   'text-xs': isMobileMode,
                 })}
               >
-                <TableCell className={isMobileMode ? 'font-medium px-1 py-1 text-[10px]' : 'font-medium px-1 py-1'}>{item.title}</TableCell>
-                <TableCell className={isMobileMode ? 'px-1 py-1 text-[10px]' : 'px-1 py-1'}>{item.score.toLocaleString()}</TableCell>
+                <TableCell className={isMobileMode ? 'font-medium px-1 py-1 text-[10px]' : 'font-medium px-[0.25rem] py-1'}>{item.title}</TableCell>
+                <TableCell className={isMobileMode ? 'px-1 py-1 text-[10px]' : 'px-[0.25rem] py-1'}>{item.score.toLocaleString()}</TableCell>
                 <TableCell className={isMobileMode ? 'px-1 py-1' : 'px-1 py-1'}>{item.level}</TableCell>
                 <TableCell className={cn(isMobileMode ? 'font-semibold px-1 py-1' : 'font-semibold px-1 py-1', difficultyClass)}>
                   <span style={difficultyStyle}>{difficultyShortMap[item.difficulty] || item.difficulty}</span>
