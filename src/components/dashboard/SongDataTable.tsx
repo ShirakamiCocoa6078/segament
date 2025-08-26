@@ -122,7 +122,14 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
   const [isMobileMode, setIsMobileMode] = useState(false);
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setIsMobileMode(localStorage.getItem('uiMode') === 'mobile');
+      const updateMode = () => {
+        setIsMobileMode(localStorage.getItem('uiMode') === 'mobile');
+      };
+      updateMode();
+      window.addEventListener('storage', updateMode);
+      return () => {
+        window.removeEventListener('storage', updateMode);
+      };
     }
   }, []);
 

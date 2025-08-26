@@ -51,7 +51,14 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
     const [isMobileMode, setIsMobileMode] = React.useState(false);
     React.useEffect(() => {
         if (typeof window !== 'undefined') {
-            setIsMobileMode(localStorage.getItem('uiMode') === 'mobile');
+            const updateMode = () => {
+                setIsMobileMode(localStorage.getItem('uiMode') === 'mobile');
+            };
+            updateMode();
+            window.addEventListener('storage', updateMode);
+            return () => {
+                window.removeEventListener('storage', updateMode);
+            };
         }
     }, []);
 
@@ -66,20 +73,20 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
     const currentRating = getLatestRating();
 
     if (isMobileMode) {
-        // 모바일 레이아웃: 팀(최상단) → 프로필사진(상단) → 닉네임(중간) → 레벨/레이팅/플레이카운트(하단) → 칭호1~3(최하단)
+        // 모바일 레이아웃: 팀(최상단, 20% 확대) → 프로필사진(상단) → 닉네임(중간) → 레벨/레이팅/플레이카운트(하단) → 칭호1~3(최하단, 20% 확대)
         return (
             <Card className="w-full max-w-xs mx-auto p-2">
                 <CardHeader className="flex flex-col items-center gap-2 p-2">
-                    {/* 최상단: 팀 요소 */}
+                    {/* 최상단: 팀 요소 (20% 확대) */}
                     {profile.teamName && (
                         <div 
                             className="text-xs font-semibold text-white bg-no-repeat bg-center bg-contain mb-2"
                             style={{ 
                                 backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor || 'normal'}.png)`,
                                 display: 'flex',
-                                width: '140px',
-                                height: '32px',
-                                padding: '6px 18px',
+                                width: '168px', // 140px * 1.2
+                                height: '38px', // 32px * 1.2
+                                padding: '7px 22px', // 6px, 18px * 1.2
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 flexShrink: 0,
@@ -103,15 +110,15 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
                     </div>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-1 items-center p-2">
-                    {/* 최하단: 칭호1~3 */}
+                    {/* 최하단: 칭호1~3 (20% 확대) */}
                     {profile.honors?.slice(0, 3).map((honor: { color: string; text: string }, index: number) => (
                         <div 
                             key={index}
-                            className="w-[140px] h-[24px] bg-no-repeat bg-center bg-contain flex items-center justify-center overflow-hidden mb-1" 
+                            className="w-[168px] h-[29px] bg-no-repeat bg-center bg-contain flex items-center justify-center overflow-hidden mb-1" 
                             style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/honor_bg_${honorBgMap[honor.color] || 'normal'}.png)` }}
                         >
                             <div className="player_honor_text_view" style={{ width: '100%', textAlign: 'center' }}>
-                                <div className="player_honor_text text-black text-xs px-1 truncate" draggable="true">
+                                <div className="player_honor_text text-black text-xs px-2 truncate" draggable="true">
                                     <span>{honor.text}</span>
                                 </div>
                             </div>
