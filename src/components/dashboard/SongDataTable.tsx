@@ -185,6 +185,7 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
           {paginatedData.map((item) => {
             // 난이도 색상 조건
             let difficultyClass = '';
+            let difficultyStyle: React.CSSProperties | undefined = undefined;
             if (item.difficulty === 'MASTER') {
               difficultyClass = 'text-purple-600';
               if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -193,6 +194,9 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
             } else if (item.difficulty === 'ULTIMA') {
               if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 difficultyClass = 'text-[#683240]'; // 다크모드: 검붉은색
+                difficultyStyle = {
+                  WebkitTextStroke: '1px #fff',
+                };
               } else {
                 difficultyClass = 'text-gray-700'; // 화이트모드: 어두운 회색
               }
@@ -212,7 +216,7 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
                 <TableCell className={isMobileMode ? 'px-1 py-1' : ''}>{item.score.toLocaleString()}</TableCell>
                 <TableCell className={isMobileMode ? 'px-1 py-1' : ''}>{item.level}</TableCell>
                 <TableCell className={cn(isMobileMode ? 'font-semibold px-1 py-1' : 'font-semibold', difficultyClass)}>
-                  {difficultyShortMap[item.difficulty] || item.difficulty}
+                  <span style={difficultyStyle}>{difficultyShortMap[item.difficulty] || item.difficulty}</span>
                 </TableCell>
                 <TableCell className={isMobileMode ? 'px-1 py-1' : ''}>{item.const.toFixed(1)}</TableCell>
                 <TableCell className={isMobileMode ? 'text-right font-semibold px-1 py-1' : 'text-right font-semibold'}>{item.ratingValue.toFixed(4)}</TableCell>
