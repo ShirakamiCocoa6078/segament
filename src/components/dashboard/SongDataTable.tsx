@@ -173,9 +173,9 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
       <Table>
         <TableHeader>
           <TableRow className={isMobileMode ? 'text-xs' : ''}>
-            <SortableHeader sortKey="title"><span className={isMobileMode ? 'text-xs' : ''}>곡명</span></SortableHeader>
-            <SortableHeader sortKey="score"><span className={isMobileMode ? 'text-xs' : ''}>스코어</span></SortableHeader>
-            <SortableHeader sortKey="level"><span className={isMobileMode ? 'text-xs' : ''}>레벨</span></SortableHeader>
+            <SortableHeader sortKey="title"><span className={isMobileMode ? 'text-[10px]' : ''}>곡명</span></SortableHeader>
+            <SortableHeader sortKey="score"><span className={isMobileMode ? 'text-[10px]' : ''}>스코어</span></SortableHeader>
+            <SortableHeader sortKey="level">Lv <span className="inline-block align-middle ml-1 text-[10px]">▲▼</span></SortableHeader>
             <SortableHeader sortKey="difficulty"><span className={isMobileMode ? 'text-xs' : ''}>난이도</span></SortableHeader>
             <SortableHeader sortKey="const"><span className={isMobileMode ? 'text-xs' : ''}>상수</span></SortableHeader>
             <SortableHeader sortKey="ratingValue"><span className={isMobileMode ? 'text-xs' : ''}>레이팅</span></SortableHeader>
@@ -212,14 +212,14 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
                   'text-xs': isMobileMode,
                 })}
               >
-                <TableCell className={isMobileMode ? 'font-medium px-2 py-1' : 'font-medium'}>{item.title}</TableCell>
-                <TableCell className={isMobileMode ? 'px-1 py-1' : ''}>{item.score.toLocaleString()}</TableCell>
-                <TableCell className={isMobileMode ? 'px-1 py-1' : ''}>{item.level}</TableCell>
-                <TableCell className={cn(isMobileMode ? 'font-semibold px-1 py-1' : 'font-semibold', difficultyClass)}>
+                <TableCell className={isMobileMode ? 'font-medium px-1 py-1 text-[10px]' : 'font-medium px-1 py-1'}>{item.title}</TableCell>
+                <TableCell className={isMobileMode ? 'px-1 py-1 text-[10px]' : 'px-1 py-1'}>{item.score.toLocaleString()}</TableCell>
+                <TableCell className={isMobileMode ? 'px-1 py-1' : 'px-1 py-1'}>{item.level}</TableCell>
+                <TableCell className={cn(isMobileMode ? 'font-semibold px-1 py-1' : 'font-semibold px-1 py-1', difficultyClass)}>
                   <span style={difficultyStyle}>{difficultyShortMap[item.difficulty] || item.difficulty}</span>
                 </TableCell>
-                <TableCell className={isMobileMode ? 'px-1 py-1' : ''}>{item.const.toFixed(1)}</TableCell>
-                <TableCell className={isMobileMode ? 'text-right font-semibold px-1 py-1' : 'text-right font-semibold'}>{item.ratingValue.toFixed(4)}</TableCell>
+                <TableCell className={isMobileMode ? 'px-1 py-1' : 'px-1 py-1'}>{item.const.toFixed(1)}</TableCell>
+                <TableCell className={isMobileMode ? 'text-right font-semibold px-[1px] py-1' : 'text-right font-semibold px-[1px] py-1'}>{item.ratingValue.toFixed(4)}</TableCell>
               </TableRow>
             );
           })}
