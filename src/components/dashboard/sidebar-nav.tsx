@@ -200,23 +200,25 @@ export function SidebarNav() {
               <SidebarMenuSubItem>
                 <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/playPercent`}>
                   <SidebarMenuSubButton>
-                    <span>순회 진행도(개발중)</span>
+                    <span>순회 진행도</span>
+                  </SidebarMenuSubButton>
+                </Link>
+              </SidebarMenuSubItem>
+              <SidebarMenuSubItem>
+                <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/ratingHistory`}>
+                  <SidebarMenuSubButton>
+                    <span>레이팅 성장 그래프</span>
                   </SidebarMenuSubButton>
                 </Link>
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
-                  <span className="text-muted-foreground">레이팅 성장 그래프(추후 추가)</span>
+                  <span className="text-muted-foreground">상수 계산기</span>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
-                  <span className="text-muted-foreground">상수 계산기(추후 추가)</span>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-              <SidebarMenuSubItem>
-                <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
-                  <span className="text-muted-foreground">레이팅 계산기(추후 추가)</span>
+                  <span className="text-muted-foreground">레이팅 계산기</span>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             </SidebarMenuSub>
