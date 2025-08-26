@@ -39,6 +39,9 @@ export default function ChunithmRatingHistoryPage() {
   const displayCount = Math.max(5, Math.floor((sliderValue / 100) * total));
   const displayEntries = entries.slice(total - displayCount);
 
+  // 디버깅: 데이터 구조 확인
+  console.log('ratingHistory:', profile.ratingHistory);
+  console.log('displayEntries:', displayEntries);
   const data = {
     labels: displayEntries.map(([date]) => date.split('|')[0]),
     datasets: [
@@ -52,6 +55,7 @@ export default function ChunithmRatingHistoryPage() {
       },
     ],
   };
+  console.log('chart data:', data);
 
   const options = {
     responsive: true,
