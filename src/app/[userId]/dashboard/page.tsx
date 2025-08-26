@@ -134,10 +134,10 @@ export default function UserDashboardPage() {
       ) : (
         <div className="text-center py-8 sm:py-12">
           <div className="max-w-xs sm:max-w-md mx-auto">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">
               {isOwner ? '프로필이 없습니다' : '공개된 프로필이 없습니다'}
             </h2>
-            <p className="text-gray-600 mb-4 sm:mb-6 text-base sm:text-lg">
+            <p className="text-gray-600 dark:text-gray-200 mb-4 sm:mb-6 text-base sm:text-lg">
               {isOwner 
                 ? '게임 프로필을 등록하여 점수를 추적해보세요.' 
                 : '이 사용자는 아직 공개된 게임 프로필이 없습니다.'
