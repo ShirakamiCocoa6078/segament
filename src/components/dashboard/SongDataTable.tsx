@@ -118,8 +118,16 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
     </TableHead>
   );
 
+  // 모바일 모드 감지 (localStorage 기반)
+  const [isMobileMode, setIsMobileMode] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsMobileMode(localStorage.getItem('uiMode') === 'mobile');
+    }
+  }, []);
+
   return (
-    <div>
+    <div className={isMobileMode ? 'max-w-[420px] mx-auto' : ''}>
       {/* 수정: 페이지네이션 컨트롤 상단으로 이동 */}
       {showPagination && (
         <div className="flex items-center justify-end mb-4">
@@ -149,13 +157,13 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
 
       <Table>
         <TableHeader>
-          <TableRow>
-            <SortableHeader sortKey="title">곡명</SortableHeader>
-            <SortableHeader sortKey="score">스코어</SortableHeader>
-            <SortableHeader sortKey="level">레벨</SortableHeader>
-            <SortableHeader sortKey="difficulty">난이도</SortableHeader>
-            <SortableHeader sortKey="const">상수</SortableHeader>
-            <SortableHeader sortKey="ratingValue">레이팅</SortableHeader>
+          <TableRow className={isMobileMode ? 'text-xs' : ''}>
+            <SortableHeader sortKey="title"><span className={isMobileMode ? 'text-xs' : ''}>곡명</span></SortableHeader>
+            <SortableHeader sortKey="score"><span className={isMobileMode ? 'text-xs' : ''}>스코어</span></SortableHeader>
+            <SortableHeader sortKey="level"><span className={isMobileMode ? 'text-xs' : ''}>레벨</span></SortableHeader>
+            <SortableHeader sortKey="difficulty"><span className={isMobileMode ? 'text-xs' : ''}>난이도</span></SortableHeader>
+            <SortableHeader sortKey="const"><span className={isMobileMode ? 'text-xs' : ''}>상수</span></SortableHeader>
+            <SortableHeader sortKey="ratingValue"><span className={isMobileMode ? 'text-xs' : ''}>레이팅</span></SortableHeader>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -165,16 +173,17 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
               className={cn({
                 'bg-orange-50 dark:bg-orange-900/20': item.ratingListType === 'best',
                 'bg-yellow-50 dark:bg-yellow-900/20': item.ratingListType === 'new',
+                'text-xs': isMobileMode,
               })}
             >
-              <TableCell className="font-medium">{item.title}</TableCell>
-              <TableCell>{item.score.toLocaleString()}</TableCell>
-              <TableCell>{item.level}</TableCell>
-              <TableCell className={cn("font-semibold", difficultyColorMap[item.difficulty])}>
+              <TableCell className={isMobileMode ? 'font-medium px-2 py-1' : 'font-medium'}>{item.title}</TableCell>
+              <TableCell className={isMobileMode ? 'px-2 py-1' : ''}>{item.score.toLocaleString()}</TableCell>
+              <TableCell className={isMobileMode ? 'px-2 py-1' : ''}>{item.level}</TableCell>
+              <TableCell className={cn(isMobileMode ? 'font-semibold px-2 py-1' : 'font-semibold', difficultyColorMap[item.difficulty])}>
                 {item.difficulty}
               </TableCell>
-              <TableCell>{item.const.toFixed(1)}</TableCell>
-              <TableCell className="text-right font-semibold">{item.ratingValue.toFixed(4)}</TableCell>
+              <TableCell className={isMobileMode ? 'px-2 py-1' : ''}>{item.const.toFixed(1)}</TableCell>
+              <TableCell className={isMobileMode ? 'text-right font-semibold px-2 py-1' : 'text-right font-semibold'}>{item.ratingValue.toFixed(4)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
