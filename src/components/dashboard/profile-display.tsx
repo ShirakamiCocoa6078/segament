@@ -1,5 +1,7 @@
 // 파일 경로: src/components/dashboard/profile-display.tsx
+
 'use client';
+import React from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,16 +25,16 @@ interface ProfileDetail {
 
 // --- 헬퍼 함수 (이전과 동일) ---
 const getRatingColor = (rating: number): string => {
-  if (rating >= 17.00) return 'kiwami';
-  if (rating >= 16.00) return 'rainbow';
-  if (rating >= 15.25) return 'platinum';
-  if (rating >= 14.50) return 'gold';
-  if (rating >= 13.25) return 'silver';
-  if (rating >= 12.00) return 'bronze';
-  if (rating >= 10.00) return 'purple';
-  if (rating >= 7.00) return 'red';
-  if (rating >= 4.00) return 'orange';
-  return 'green';
+    if (rating >= 17.00) { return 'kiwami'; }
+    if (rating >= 16.00) { return 'rainbow'; }
+    if (rating >= 15.25) { return 'platinum'; }
+    if (rating >= 14.50) { return 'gold'; }
+    if (rating >= 13.25) { return 'silver'; }
+    if (rating >= 12.00) { return 'bronze'; }
+    if (rating >= 10.00) { return 'purple'; }
+    if (rating >= 7.00) { return 'red'; }
+    if (rating >= 4.00) { return 'orange'; }
+    return 'green';
 };
 
 const honorBgMap: Record<string, string> = {
@@ -45,33 +47,82 @@ const honorBgMap: Record<string, string> = {
 };
 
 export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
+    // 모바일 모드 감지
+    const [isMobileMode, setIsMobileMode] = React.useState(false);
+    React.useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setIsMobileMode(localStorage.getItem('uiMode') === 'mobile');
+        }
+    }, []);
+
     // 최신 레이팅 가져오기 (히스토리가 있으면 최신 값, 없으면 기본 rating)
     const getLatestRating = () => {
         if (!profile.ratingHistory || Object.keys(profile.ratingHistory).length === 0) {
             return profile.rating;
         }
-        
-        const sortedEntries = Object.entries(profile.ratingHistory).sort((a, b) => {
-            // 날짜-시간 문자열을 비교 (2025-08-12|11:04 형식)
-            return a[0].localeCompare(b[0]);
-        });
-        
+        const sortedEntries = Object.entries(profile.ratingHistory).sort((a, b) => a[0].localeCompare(b[0]));
         return sortedEntries[sortedEntries.length - 1][1];
     };
-
     const currentRating = getLatestRating();
-    const ratingColor = getRatingColor(currentRating);
-    const ratingDigits = currentRating.toFixed(2).split('');
 
-    // --- 신규: 레이팅 숫자별 스타일 정의 ---
-    const ratingDigitStyles = [
-        { width: '12px', height: '20px' }, // 첫 번째 숫자
-        { width: '12px', height: '20px' }, // 두 번째 숫자
-        { width: '5px', height: '6px' },   // 콤마 (기존 크기 유지)
-        { width: '12px', height: '20px' }, // 세 번째 숫자
-        { width: '12px', height: '20px' }, // 네 번째 숫자
-    ];
+    if (isMobileMode) {
+        // 모바일 레이아웃: 팀(최상단) → 프로필사진(상단) → 닉네임(중간) → 레벨/레이팅/플레이카운트(하단) → 칭호1~3(최하단)
+        return (
+            <Card className="w-full max-w-xs mx-auto p-2">
+                <CardHeader className="flex flex-col items-center gap-2 p-2">
+                    {/* 최상단: 팀 요소 */}
+                    {profile.teamName && (
+                        <div 
+                            className="text-xs font-semibold text-white bg-no-repeat bg-center bg-contain mb-2"
+                            style={{ 
+                                backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor || 'normal'}.png)`,
+                                display: 'flex',
+                                width: '140px',
+                                height: '32px',
+                                padding: '6px 18px',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                flexShrink: 0,
+                            }}
+                        >
+                            {profile.teamName}
+                        </div>
+                    )}
+                    {/* 상단: 프로필 사진 */}
+                    <Avatar className="h-16 w-16 mb-2">
+                        <AvatarImage src={profile.characterImage} alt={profile.playerName} />
+                        <AvatarFallback>{profile.playerName.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    {/* 중간: 닉네임 */}
+                    <CardTitle className="text-lg text-center mb-1">{profile.playerName}</CardTitle>
+                    {/* 하단: 레벨, 레이팅, 플레이카운트 */}
+                    <div className="flex flex-col items-center gap-1 text-xs text-muted-foreground mb-2">
+                        <span>Lv. {profile.level}</span>
+                        <span>Rating: <span className="font-bold text-blue-600 dark:text-blue-300">{currentRating.toFixed(2)}</span></span>
+                        <span>Play Count: {profile.playCount.toLocaleString()}</span>
+                    </div>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-1 items-center p-2">
+                    {/* 최하단: 칭호1~3 */}
+                    {profile.honors?.slice(0, 3).map((honor: { color: string; text: string }, index: number) => (
+                        <div 
+                            key={index}
+                            className="w-[140px] h-[24px] bg-no-repeat bg-center bg-contain flex items-center justify-center overflow-hidden mb-1" 
+                            style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/honor_bg_${honorBgMap[honor.color] || 'normal'}.png)` }}
+                        >
+                            <div className="player_honor_text_view" style={{ width: '100%', textAlign: 'center' }}>
+                                <div className="player_honor_text text-black text-xs px-1 truncate" draggable="true">
+                                    <span>{honor.text}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+        );
+    }
 
+    // 기존 PC 레이아웃
     return (
         <Card className="w-full max-w-4xl mx-auto">
             <CardHeader>
@@ -86,7 +137,6 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
                             {profile.teamName && (
                                 <div 
                                     className="text-sm font-semibold text-white bg-no-repeat bg-center bg-contain"
-                                    // --- 수정: 팀 엠블럼 스타일 적용 ---
                                     style={{ 
                                         backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/team_bg_${profile.teamEmblemColor || 'normal'}.png)`,
                                         display: 'flex',
