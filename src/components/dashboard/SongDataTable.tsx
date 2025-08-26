@@ -120,9 +120,16 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
 
   const SortableHeader = ({ sortKey: key, children }: { sortKey: SortKey, children: ReactNode }) => (
     <TableHead>
-        <Button variant="ghost" onClick={() => handleSort(key)} className="px-2">
-            {children} {renderSortArrow(key)}
+      {isMobileMode ? (
+        <Button variant="ghost" onClick={() => handleSort(key)} className="flex flex-col items-center px-1 py-0 min-w-0">
+          <span className="leading-tight mb-[-2px]">{children}</span>
+          <span className="mt-0">{renderSortArrow(key)}</span>
         </Button>
+      ) : (
+        <Button variant="ghost" onClick={() => handleSort(key)} className="px-2">
+          {children} {renderSortArrow(key)}
+        </Button>
+      )}
     </TableHead>
   );
 
