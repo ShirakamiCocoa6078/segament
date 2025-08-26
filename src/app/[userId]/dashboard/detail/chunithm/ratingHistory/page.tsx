@@ -44,7 +44,7 @@ export default function ChunithmRatingHistoryPage() {
     datasets: [
       {
         label: "레이팅",
-        data: displayEntries.map(([, rating]) => rating),
+        data: displayEntries.map(([, rating]) => Number(rating)),
         borderColor: "#3b82f6",
         backgroundColor: "rgba(59,130,246,0.1)",
         fill: true,
