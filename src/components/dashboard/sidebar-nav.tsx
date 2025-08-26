@@ -136,17 +136,6 @@ export function SidebarNav() {
   const chunithmProfiles = profiles.filter(p => p.gameType === 'CHUNITHM');
   const maimaiProfiles = profiles.filter(p => p.gameType === 'MAIMAI');
 
-  // 게임 확장/축소 토글
-  const toggleGame = (gameType: string) => {
-    const newExpanded = new Set(expandedGames);
-    if (newExpanded.has(gameType)) {
-      newExpanded.delete(gameType);
-    } else {
-      newExpanded.add(gameType);
-    }
-    setExpandedGames(newExpanded);
-  };
-
   return (
     <>
       <SidebarHeader>
@@ -159,154 +148,94 @@ export function SidebarNav() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          {/* 대시보드 메뉴 */}
+          {/* 츄니즘 */}
           <SidebarMenuItem>
-            <Link href={session?.user?.id ? `/${session.user.id}/dashboard` : "/"}>
-              <SidebarMenuButton
-                isActive={pathname.includes('/dashboard')}
-                tooltip={{ children: "대시보드" }}
-              >
-                <LayoutDashboard className="h-5 w-5" />
-                <span>대시보드</span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton tooltip={{ children: "츄니즘" }}>
+              <ChunithmIcon className="h-5 w-5" />
+              <span>츄니즘</span>
+            </SidebarMenuButton>
+            <SidebarMenuSub>
+              {chunithmProfiles.length > 0 ? (
+                chunithmProfiles.map((profile) => (
+                  <SidebarMenuSubItem key={profile.id}>
+                    <Link href={`/${profile.userId}/dashboard/detail/chunithm/${profile.region.toLowerCase()}`}>
+                      <SidebarMenuSubButton>
+                        <span>{profile.playerName} ({profile.region})</span>
+                      </SidebarMenuSubButton>
+                    </Link>
+                  </SidebarMenuSubItem>
+                ))
+              ) : (
+                <SidebarMenuSubItem>
+                  <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
+                    <span className="text-muted-foreground">프로필이 존재하지 않습니다.</span>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              )}
+            </SidebarMenuSub>
           </SidebarMenuItem>
 
-          {/* 츄니즘 메뉴 */}
-          <Collapsible open={expandedGames.has('CHUNITHM')} onOpenChange={() => toggleGame('CHUNITHM')}>
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton
-                  tooltip={{ children: "츄니즘" }}
-                  onClick={() => toggleGame('CHUNITHM')}
-                >
-                  <ChunithmIcon className="h-5 w-5" />
-                  <span>츄니즘</span>
-                  <ChevronRight 
-                    className={`ml-auto h-4 w-4 transition-transform duration-200 ${
-                      expandedGames.has('CHUNITHM') ? 'rotate-90' : ''
-                    }`} 
-                  />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {isLoading ? (
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton className="opacity-50">
-                        <span className="text-muted-foreground">로딩 중...</span>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ) : chunithmProfiles.length > 0 ? (
-                    chunithmProfiles.map((profile) => (
-                      <Collapsible key={profile.id}>
-                        <SidebarMenuSubItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuSubButton>
-                              <span>{profile.playerName} ({profile.region})</span>
-                              <ChevronRight className="ml-auto h-3 w-3" />
-                            </SidebarMenuSubButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              <SidebarMenuSubItem>
-                                <Link href={`/${profile.userId}/dashboard/detail/chunithm/${profile.region.toLowerCase()}`}>
-                                  <SidebarMenuSubButton>
-                                    <span>곡 프로필</span>
-                                  </SidebarMenuSubButton>
-                                </Link>
-                              </SidebarMenuSubItem>
-                              <SidebarMenuSubItem>
-                                <Link href={`/${profile.userId}/dashboard/detail/chunithm/playPercent`}>
-                                  <SidebarMenuSubButton>
-                                    <span>순회 진행도</span>
-                                  </SidebarMenuSubButton>
-                                </Link>
-                              </SidebarMenuSubItem>
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </SidebarMenuSubItem>
-                      </Collapsible>
-                    ))
-                  ) : (
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
-                        <span className="text-muted-foreground">프로필이 존재하지 않습니다.</span>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  )}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
+          {/* 마이마이 */}
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip={{ children: "마이마이" }}>
+              <MaimaiIcon className="h-5 w-5" />
+              <span>마이마이</span>
+            </SidebarMenuButton>
+            <SidebarMenuSub>
+              <SidebarMenuSubItem>
+                <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
+                  <span className="text-muted-foreground">프로필이 존재하지 않습니다.</span>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            </SidebarMenuSub>
+          </SidebarMenuItem>
 
-          {/* 마이마이 메뉴 */}
-          <Collapsible open={expandedGames.has('MAIMAI')} onOpenChange={() => toggleGame('MAIMAI')}>
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton
-                  tooltip={{ children: "마이마이" }}
-                  onClick={() => toggleGame('MAIMAI')}
-                >
-                  <MaimaiIcon className="h-5 w-5" />
-                  <span>마이마이</span>
-                  <ChevronRight 
-                    className={`ml-auto h-4 w-4 transition-transform duration-200 ${
-                      expandedGames.has('MAIMAI') ? 'rotate-90' : ''
-                    }`} 
-                  />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {isLoading ? (
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton className="opacity-50">
-                        <span className="text-muted-foreground">로딩 중...</span>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ) : maimaiProfiles.length > 0 ? (
-                    maimaiProfiles.map((profile) => (
-                      <Collapsible key={profile.id}>
-                        <SidebarMenuSubItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuSubButton>
-                              <span>{profile.playerName} ({profile.region})</span>
-                              <ChevronRight className="ml-auto h-3 w-3" />
-                            </SidebarMenuSubButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              <SidebarMenuSubItem>
-                                <Link href={`/${profile.userId}/dashboard/detail/maimai/${profile.region.toLowerCase()}`}>
-                                  <SidebarMenuSubButton>
-                                    <span>곡 프로필</span>
-                                  </SidebarMenuSubButton>
-                                </Link>
-                              </SidebarMenuSubItem>
-                              <SidebarMenuSubItem>
-                                <Link href={`/${profile.userId}/dashboard/detail/maimai/playPercent`}>
-                                  <SidebarMenuSubButton>
-                                    <span>순회 진행도</span>
-                                  </SidebarMenuSubButton>
-                                </Link>
-                              </SidebarMenuSubItem>
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </SidebarMenuSubItem>
-                      </Collapsible>
-                    ))
-                  ) : (
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
-                        <span className="text-muted-foreground">프로필이 존재하지 않습니다.</span>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  )}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
+          {/* 츄니즘 도구 */}
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip={{ children: "츄니즘 도구" }}>
+              <ChunithmIcon className="h-5 w-5" />
+              <span>츄니즘 도구</span>
+            </SidebarMenuButton>
+            <SidebarMenuSub>
+              <SidebarMenuSubItem>
+                <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/playPercent`}>
+                  <SidebarMenuSubButton>
+                    <span>순회 진행도</span>
+                  </SidebarMenuSubButton>
+                </Link>
+              </SidebarMenuSubItem>
+              <SidebarMenuSubItem>
+                <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
+                  <span className="text-muted-foreground">레이팅 성장 그래프(추후 추가)</span>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+              <SidebarMenuSubItem>
+                <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
+                  <span className="text-muted-foreground">상수 계산기(추후 추가)</span>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+              <SidebarMenuSubItem>
+                <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
+                  <span className="text-muted-foreground">레이팅 계산기(추후 추가)</span>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            </SidebarMenuSub>
+          </SidebarMenuItem>
+
+          {/* 마이마이 도구 */}
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip={{ children: "마이마이 도구" }}>
+              <MaimaiIcon className="h-5 w-5" />
+              <span>마이마이 도구</span>
+            </SidebarMenuButton>
+            <SidebarMenuSub>
+              <SidebarMenuSubItem>
+                <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
+                  <span className="text-muted-foreground">도구가 존재하지 않습니다.</span>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            </SidebarMenuSub>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
