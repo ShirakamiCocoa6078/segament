@@ -149,7 +149,7 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
   }, []);
 
   return (
-    <div className={isMobileMode ? 'max-w-[420px] mx-auto' : ''}>
+  <div className={isMobileMode ? 'w-full max-w-[525px] mx-auto' : ''}>
       {/* 수정: 페이지네이션 컨트롤 상단으로 이동 */}
       {showPagination && (
         <div className="flex items-center justify-end mb-4">
