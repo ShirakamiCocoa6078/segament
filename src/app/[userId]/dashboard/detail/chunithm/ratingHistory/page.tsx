@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProfileDisplay } from "@/components/dashboard/profile-display";
@@ -39,9 +40,12 @@ export default function ChunithmRatingHistoryPage() {
   const displayCount = Math.max(5, Math.floor((sliderValue / 100) * total));
   const displayEntries = entries.slice(total - displayCount);
 
-  // 디버깅: 데이터 구조 확인
-  console.log('ratingHistory:', profile.ratingHistory);
-  console.log('displayEntries:', displayEntries);
+  // 디버깅: 데이터 구조 확인 (useEffect로 브라우저 콘솔에 출력)
+  React.useEffect(() => {
+    console.log('ratingHistory:', profile.ratingHistory);
+    console.log('displayEntries:', displayEntries);
+    console.log('chart data:', data);
+  }, [profile.ratingHistory, displayEntries]);
   const data = {
     labels: displayEntries.map(([date]) => date.split('|')[0]),
     datasets: [
