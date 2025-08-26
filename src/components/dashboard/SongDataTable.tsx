@@ -175,7 +175,7 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
           <TableRow className={isMobileMode ? 'text-xs' : ''}>
             <SortableHeader sortKey="title"><span className={isMobileMode ? 'text-[10px]' : ''}>곡명</span></SortableHeader>
             <SortableHeader sortKey="score"><span className={isMobileMode ? 'text-[10px]' : ''}>스코어</span></SortableHeader>
-            <SortableHeader sortKey="level">Lv <span className="inline-block align-middle ml-1 text-[10px]">▲▼</span></SortableHeader>
+            <SortableHeader sortKey="level">Lv</SortableHeader>
             <SortableHeader sortKey="difficulty"><span className={isMobileMode ? 'text-xs' : ''}>난이도</span></SortableHeader>
             <SortableHeader sortKey="const"><span className={isMobileMode ? 'text-xs' : ''}>상수</span></SortableHeader>
             <SortableHeader sortKey="ratingValue"><span className={isMobileMode ? 'text-xs' : ''}>레이팅</span></SortableHeader>
