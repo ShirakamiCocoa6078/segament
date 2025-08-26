@@ -114,7 +114,7 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
                     {profile.honors?.slice(0, 3).map((honor: { color: string; text: string }, index: number) => (
                         <div 
                             key={index}
-                            className="w-[168px] h-[29px] bg-no-repeat bg-center bg-contain flex items-center justify-center overflow-hidden mb-1" 
+                            className="w-[185px] h-[32px] bg-no-repeat bg-center bg-contain flex items-center justify-center overflow-hidden mb-1" 
                             style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/honor_bg_${honorBgMap[honor.color] || 'normal'}.png)` }}
                         >
                             <div className="player_honor_text_view" style={{ width: '100%', textAlign: 'center' }}>
@@ -175,7 +175,7 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
                     {profile.honors?.slice(0, 3).map((honor: { color: string; text: string }, index: number) => (
                         <div 
                             key={index}
-                            className="w-[240px] h-[30px] bg-no-repeat bg-center bg-contain flex items-center justify-center overflow-hidden" 
+                            className="w-[264px] h-[33px] bg-no-repeat bg-center bg-contain flex items-center justify-center overflow-hidden" 
                             style={{ backgroundImage: `url(https://new.chunithm-net.com/chuni-mobile/html/mobile/images/honor_bg_${honorBgMap[honor.color] || 'normal'}.png)`}}
                         >
                             <div className="player_honor_text_view" style={{ width: '100%', textAlign: 'center' }}>

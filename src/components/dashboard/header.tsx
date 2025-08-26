@@ -38,9 +38,9 @@ export function Header() {
   const handleModeChange = () => {
     setMode(prev => {
       const nextMode = prev === 'pc' ? 'mobile' : 'pc';
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('uiMode', nextMode);
-      }
+      localStorage.setItem('uiMode', nextMode);
+      // 모드 변경 시 자동 새로고침
+      window.location.reload();
       return nextMode;
     });
   };
