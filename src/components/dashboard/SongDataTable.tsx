@@ -199,14 +199,7 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
                 difficultyClass = 'text-purple-400'; // 다크모드에서 10% 밝게
               }
             } else if (item.difficulty === 'ULTIMA') {
-              if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                difficultyClass = 'text-[#683240]'; // 다크모드: 검붉은색
-                difficultyStyle = {
-                  WebkitTextStroke: '1px #fff',
-                };
-              } else {
-                difficultyClass = 'text-[#683240]'; // 화이트모드: 검붉은색
-              }
+              difficultyClass = 'text-[#af4433]'; // 다크/화이트모드 모두 고정
             } else {
               difficultyClass = difficultyColorMap[item.difficulty] || '';
             }
