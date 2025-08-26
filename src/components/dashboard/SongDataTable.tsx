@@ -205,7 +205,7 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
                   WebkitTextStroke: '1px #fff',
                 };
               } else {
-                difficultyClass = 'text-gray-700'; // 화이트모드: 어두운 회색
+                difficultyClass = 'text-[#683240]'; // 화이트모드: 검붉은색
               }
             } else {
               difficultyClass = difficultyColorMap[item.difficulty] || '';
