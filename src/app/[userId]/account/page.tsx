@@ -11,6 +11,16 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 
 export default function AccountPage() {
+  // gameProfiles가 변경될 때마다 공개/비공개 상태 동기화
+  useEffect(() => {
+    if (gameProfiles.length > 0) {
+      const states: Record<string, boolean> = {};
+      gameProfiles.forEach((p: any) => {
+        states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : true;
+      });
+      setProfilePublicStates(states);
+    }
+  }, [gameProfiles]);
   const { data: session, update } = useSession();
   const router = useRouter();
   const { toast } = useToast();
@@ -21,6 +31,7 @@ export default function AccountPage() {
   const [gameProfiles, setGameProfiles] = useState<any[]>([]);
   const [profilePublicStates, setProfilePublicStates] = useState<Record<string, boolean>>({});
   const [isSaving, setIsSaving] = useState(false);
+
 
   useEffect(() => {
     if (session) {
@@ -33,16 +44,21 @@ export default function AccountPage() {
           .then(res => res.json())
           .then(data => {
             setGameProfiles(data.profiles || []);
-            // 프로필별 공개여부 상태 초기화 (기본값: 공개)
-            const states: Record<string, boolean> = {};
-            (data.profiles || []).forEach((p: any) => {
-              states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : true;
-            });
-            setProfilePublicStates(states);
           });
       }
     }
   }, [session]);
+
+  // gameProfiles가 변경될 때마다 공개/비공개 상태 동기화
+  useEffect(() => {
+    if (gameProfiles.length > 0) {
+      const states: Record<string, boolean> = {};
+      gameProfiles.forEach((p: any) => {
+        states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : true;
+      });
+      setProfilePublicStates(states);
+    }
+  }, [gameProfiles]);
 
   const checkUsername = async () => {
     if (!username) {
@@ -225,11 +241,13 @@ export default function AccountPage() {
               body: JSON.stringify({ publicStates: profilePublicStates }),
             });
             setIsSaving(false);
-            if (res.ok) {
-              toast({ title: '성공', description: '프로필 공개여부가 저장되었습니다.', duration: 3000, position: 'bottom-right' });
-            } else {
-              toast({ title: '오류', description: '프로필 공개여부 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
-            }
+            setTimeout(() => {
+              if (res.ok) {
+                toast({ title: '성공', description: '프로필 공개여부가 저장되었습니다.', duration: 3000, position: 'bottom-right' });
+              } else {
+                toast({ title: '오류', description: '프로필 공개여부 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
+              }
+            }, 0);
           }}
         >저장</Button>
       </div>
