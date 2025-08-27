@@ -92,14 +92,18 @@ export default function ChunithmRatingHistoryPage() {
 
   // 디버깅: 데이터 구조 확인 (useEffect로 브라우저 콘솔에 출력)
   React.useEffect(() => {
+    console.log('profiles 전체:', profiles);
+    profiles.forEach((p, idx) => {
+      console.log(`profiles[${idx}].id:`, p.id, 'ratingHistory:', p.ratingHistory);
+    });
     if (selectedProfile && selectedProfile.ratingHistory) {
-      console.log('ratingHistory:', selectedProfile.ratingHistory);
+      console.log('selectedProfile.ratingHistory:', selectedProfile.ratingHistory);
     } else {
-      console.log('ratingHistory: 없음 또는 profile이 undefined');
+      console.log('selectedProfile.ratingHistory: 없음 또는 profile이 undefined');
     }
     console.log('displayEntries:', displayEntries);
     console.log('chart data:', data);
-  }, [selectedProfile, displayEntries]);
+  }, [profiles, selectedProfile, displayEntries]);
   const data = {
     labels: displayEntries.map(([date]) => date.split('|')[0]),
     datasets: [
@@ -131,18 +135,24 @@ export default function ChunithmRatingHistoryPage() {
   return (
     <div className="max-w-xl mx-auto mt-8 p-4">
       <h2 className="text-xl font-bold mb-4">레이팅 성장 그래프</h2>
-        <button
-          onClick={handleDebugClick}
-          className="mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          디버그 출력
-        </button>
-      <Line data={data} options={options} />
-      <div className="mt-6">
-        <label className="block mb-2 text-sm font-medium text-muted-foreground">표시 구간 조절</label>
-        <Slider min={5} max={100} step={1} value={[sliderValue]} onValueChange={v => setSliderValue(v[0])} />
-        <div className="mt-2 text-xs text-muted-foreground">최근 {displayCount}개 데이터 표시</div>
-      </div>
+      <button
+        onClick={handleDebugClick}
+        className="mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        디버그 출력
+      </button>
+      {selectedProfile && selectedProfile.ratingHistory ? (
+        <>
+          <Line data={data} options={options} />
+          <div className="mt-6">
+            <label className="block mb-2 text-sm font-medium text-muted-foreground">표시 구간 조절</label>
+            <Slider min={5} max={100} step={1} value={[sliderValue]} onValueChange={v => setSliderValue(v[0])} />
+            <div className="mt-2 text-xs text-muted-foreground">최근 {displayCount}개 데이터 표시</div>
+          </div>
+        </>
+      ) : (
+        <div className="mt-6 text-muted-foreground">선택한 프로필에 레이팅 히스토리 데이터가 없습니다.</div>
+      )}
     </div>
   );
 }
