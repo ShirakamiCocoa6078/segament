@@ -34,10 +34,18 @@ export default function ChunithmRatingHistoryPage() {
 
   if (!profile || !profile.ratingHistory) {
     return (
-      <Card className="max-w-xl mx-auto mt-8 p-6 text-center">
-        <h2 className="text-xl font-bold mb-2">레이팅 성장 그래프</h2>
-        <p className="text-muted-foreground">해당 프로필에 레이팅 히스토리 데이터가 없습니다.</p>
-      </Card>
+      <div className="max-w-xl mx-auto mt-8 p-6 text-center">
+        <Card>
+          <h2 className="text-xl font-bold mb-2">레이팅 성장 그래프</h2>
+          <p className="text-muted-foreground">해당 프로필에 레이팅 히스토리 데이터가 없습니다.</p>
+        </Card>
+        <button
+          onClick={handleDebugClick}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          디버그 출력
+        </button>
+      </div>
     );
   }
 
