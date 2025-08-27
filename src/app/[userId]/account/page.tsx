@@ -11,16 +11,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 
 export default function AccountPage() {
-  // gameProfiles가 변경될 때마다 공개/비공개 상태 동기화
-  useEffect(() => {
-    if (gameProfiles.length > 0) {
-      const states: Record<string, boolean> = {};
-      gameProfiles.forEach((p: any) => {
-        states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : true;
-      });
-      setProfilePublicStates(states);
-    }
-  }, [gameProfiles]);
   const { data: session, update } = useSession();
   const router = useRouter();
   const { toast } = useToast();
@@ -31,7 +21,6 @@ export default function AccountPage() {
   const [gameProfiles, setGameProfiles] = useState<any[]>([]);
   const [profilePublicStates, setProfilePublicStates] = useState<Record<string, boolean>>({});
   const [isSaving, setIsSaving] = useState(false);
-
 
   useEffect(() => {
     if (session) {
@@ -59,6 +48,9 @@ export default function AccountPage() {
       setProfilePublicStates(states);
     }
   }, [gameProfiles]);
+
+  // ...기존 코드...
+  // 모든 useState, useEffect 선언 이후에 return문이 오직 하나만 존재하도록 정리
 
   const checkUsername = async () => {
     if (!username) {
