@@ -202,7 +202,7 @@ export default function AccountPage() {
               states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : true;
             });
             setProfilePublicStates(states);
-            toast({ title: '취소', description: '변경사항이 취소되었습니다.' });
+            router.back();
           }}
         >취소</Button>
         <Button
@@ -218,9 +218,9 @@ export default function AccountPage() {
             });
             setIsSaving(false);
             if (res.ok) {
-              toast({ title: '성공', description: '프로필 공개여부가 저장되었습니다.' });
+              toast({ title: '성공', description: '프로필 공개여부가 저장되었습니다.', duration: 3000, position: 'bottom-right' });
             } else {
-              toast({ title: '오류', description: '프로필 공개여부 저장에 실패했습니다.' });
+              toast({ title: '오류', description: '프로필 공개여부 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
             }
           }}
         >저장</Button>
