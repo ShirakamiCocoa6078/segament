@@ -92,14 +92,31 @@ export default function ChunithmRatingHistoryPage() {
 
   // 디버깅: 데이터 구조 확인 (useEffect로 브라우저 콘솔에 출력)
   React.useEffect(() => {
-    console.log('profiles 전체:', profiles);
+    console.log('profiles 전체 구조:', JSON.stringify(profiles, null, 2));
     profiles.forEach((p, idx) => {
-      console.log(`profiles[${idx}].id:`, p.id, 'ratingHistory:', p.ratingHistory);
+      console.log(`profiles[${idx}] keys:`, Object.keys(p));
+      console.log(`profiles[${idx}].id:`, p.id);
+      console.log(`profiles[${idx}].ratingHistory 타입:`, typeof p.ratingHistory);
+      console.log(`profiles[${idx}].ratingHistory 값:`, p.ratingHistory);
     });
-    if (selectedProfile && selectedProfile.ratingHistory) {
-      console.log('selectedProfile.ratingHistory:', selectedProfile.ratingHistory);
+    if (selectedProfile) {
+      console.log('selectedProfile keys:', Object.keys(selectedProfile));
+      console.log('selectedProfile.id:', selectedProfile.id);
+      console.log('selectedProfile.ratingHistory 타입:', typeof selectedProfile.ratingHistory);
+      console.log('selectedProfile.ratingHistory 값:', selectedProfile.ratingHistory);
+      if (selectedProfile.ratingHistory && typeof selectedProfile.ratingHistory === 'object') {
+        const keys = Object.keys(selectedProfile.ratingHistory);
+        console.log('selectedProfile.ratingHistory keys:', keys);
+        if (keys.length === 0) {
+          console.log('selectedProfile.ratingHistory: 빈 객체');
+        }
+      } else if (selectedProfile.ratingHistory === undefined) {
+        console.log('selectedProfile.ratingHistory: undefined');
+      } else if (selectedProfile.ratingHistory === null) {
+        console.log('selectedProfile.ratingHistory: null');
+      }
     } else {
-      console.log('selectedProfile.ratingHistory: 없음 또는 profile이 undefined');
+      console.log('selectedProfile: 없음');
     }
     console.log('displayEntries:', displayEntries);
     console.log('chart data:', data);
