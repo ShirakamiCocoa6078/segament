@@ -17,9 +17,17 @@ export default function ChunithmRatingHistoryPage() {
     // 디버그 버튼 클릭 핸들러
     const handleDebugClick = () => {
       console.log('profile:', profile);
-      console.log('ratingHistory:', profile.ratingHistory);
-      console.log('displayEntries:', displayEntries);
-      console.log('chart data:', data);
+      if (profile && profile.ratingHistory) {
+        console.log('ratingHistory:', profile.ratingHistory);
+      } else {
+        console.log('ratingHistory: 없음 또는 profile이 undefined');
+      }
+      if (typeof displayEntries !== 'undefined') {
+        console.log('displayEntries:', displayEntries);
+      }
+      if (typeof data !== 'undefined') {
+        console.log('chart data:', data);
+      }
     };
   const [sliderValue, setSliderValue] = useState<number>(100);
 
@@ -27,9 +35,13 @@ export default function ChunithmRatingHistoryPage() {
     async function fetchProfile() {
       const res = await fetch(`/api/profile/public/${userId}`);
       const data = await res.json();
-      setProfile(data.profile);
+      // profiles 배열에서 CHUNITHM 프로필 선택
+      const chunithmProfile = Array.isArray(data.profiles)
+        ? data.profiles.find((p: any) => p.gameType === 'CHUNITHM')
+        : undefined;
+      setProfile(chunithmProfile);
     }
-  if (userId) { fetchProfile(); }
+    if (userId) { fetchProfile(); }
   }, [userId]);
 
   if (!profile || !profile.ratingHistory) {
