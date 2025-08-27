@@ -60,6 +60,14 @@ export async function GET(
       );
     }
 
+    // 비공개 프로필 접근 제한
+    if (!profile.isPublic && !isOwner) {
+      return NextResponse.json(
+        { error: '비공개 프로필입니다.' },
+        { status: 403 }
+      );
+    }
+
     // 공개용 데이터 구성
     const publicProfile = {
       playerName: profile.playerName,

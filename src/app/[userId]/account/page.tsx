@@ -90,8 +90,16 @@ export default function AccountPage() {
     }
   };
 
+
   if (!session) {
-    return <div>로그인이 필요합니다.</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
+        <div className="mb-4 text-lg font-semibold text-red-500">로그인이 필요합니다.</div>
+        <Button variant="default" onClick={() => {
+          window.location.href = '/api/auth/signin';
+        }}>로그인</Button>
+      </div>
+    );
   }
 
   return (

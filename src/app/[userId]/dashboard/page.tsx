@@ -135,15 +135,23 @@ export default function UserDashboardPage() {
         <div className="text-center py-8 sm:py-12">
           <div className="max-w-xs sm:max-w-md mx-auto">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">
-              {isOwner ? '프로필이 없습니다' : '공개된 프로필이 없습니다'}
+              열람 가능한 프로필이 존재하지 않습니다.
             </h2>
-            <p className="text-gray-600 dark:text-gray-200 mb-4 sm:mb-6 text-base sm:text-lg">
-              {isOwner 
-                ? '게임 프로필을 등록하여 점수를 추적해보세요.' 
-                : '이 사용자는 아직 공개된 게임 프로필이 없습니다.'
-              }
-            </p>
-            {isOwner && <RegisterProfileDialog />}
+            <div className="mb-6 text-base sm:text-lg text-gray-600 dark:text-gray-200">
+              이 사용자는 모든 게임 프로필을 비공개로 설정했습니다.
+            </div>
+            {/* 로그인/내 대시보드로 이동 버튼 */}
+            {!session?.user ? (
+              <button
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                onClick={() => { window.location.href = '/'; }}
+              >로그인</button>
+            ) : (
+              <button
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}
+              >내 대시보드로 이동</button>
+            )}
           </div>
         </div>
       )}

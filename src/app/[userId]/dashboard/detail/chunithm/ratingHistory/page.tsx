@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProfileDisplay } from "@/components/dashboard/profile-display";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Line } from "react-chartjs-2";
 import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend } from "chart.js";
@@ -83,21 +84,21 @@ export default function ChunithmRatingHistoryPage() {
   if (!selectedProfile || !selectedProfile.ratingHistory) {
     if (!session || !session.user || !session.user.id) {
       return (
-        <div className="max-w-xl mx-auto mt-8 p-6 text-center">
+        <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
           <Card>
             <h2 className="text-xl font-bold mb-2">레이팅 성장 그래프</h2>
             <p className="text-muted-foreground">로그인한 유저만 자신의 레이팅 성장 그래프를 볼 수 있습니다.</p>
           </Card>
+          <Button variant="default" onClick={() => { window.location.href = '/api/auth/signin'; }}>로그인</Button>
         </div>
       );
     }
     return (
-      <div className="max-w-xl mx-auto mt-8 p-6 text-center">
+      <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
         <Card>
           <h2 className="text-xl font-bold mb-2">레이팅 성장 그래프</h2>
           <p className="text-muted-foreground">해당 프로필에 레이팅 히스토리 데이터가 없습니다.</p>
         </Card>
-        {/* 프로필 셀렉트 박스 */}
         {profiles.length > 0 && (
           <select
             className="mt-4 mb-2 px-4 py-2 border rounded"
@@ -117,6 +118,7 @@ export default function ChunithmRatingHistoryPage() {
         >
           디버그 출력
         </button>
+        <Button variant="outline" onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}>내 대시보드로 이동</Button>
       </div>
     );
   }

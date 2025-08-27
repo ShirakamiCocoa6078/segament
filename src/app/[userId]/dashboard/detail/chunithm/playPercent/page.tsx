@@ -286,7 +286,14 @@ export default function ChunithmPlayPercentPage() {
       {isLoadingProfiles ? (
         <div className="p-4 text-center">프로필을 불러오는 중...</div>
       ) : error ? (
-        <div className="p-4 text-center text-red-500">{error}</div>
+        <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
+          <div className="mb-4 text-lg font-semibold text-red-500">{error}</div>
+          {typeof session === 'undefined' || !session || !session.user ? (
+            <Button variant="default" onClick={() => { window.location.href = '/api/auth/signin'; }}>로그인</Button>
+          ) : (
+            <Button variant="outline" onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}>내 대시보드로 이동</Button>
+          )}
+        </div>
       ) : (
         <div>
           {/* 기준 선택 섹션 */}

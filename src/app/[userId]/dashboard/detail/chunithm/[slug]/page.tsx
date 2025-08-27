@@ -100,6 +100,32 @@ export default function UserChunithmDetailPage() {
   if (isLoading) return <div className="p-4 text-center">로딩 중...</div>;
   
   if (error) {
+    // 비공개 프로필 접근 시 안내 및 버튼
+    if (error === '비공개 프로필입니다.') {
+      return (
+        <div className="container mx-auto p-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <p className="text-red-500 mb-4">이 유저의 해당 프로필은 비공개 상태입니다. 본인 이외에는 액세스할 수 없습니다.</p>
+                {!session?.user ? (
+                  <Button
+                    variant="default"
+                    onClick={() => { window.location.href = '/'; }}
+                  >로그인</Button>
+                ) : (
+                  <Button
+                    variant="default"
+                    onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}
+                  >내 대시보드로 이동</Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+    // 기타 에러는 기존대로
     return (
       <div className="container mx-auto p-4">
         <Card>
