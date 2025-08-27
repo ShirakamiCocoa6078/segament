@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
 
 export default function AccountPage() {
   const { data: session, update } = useSession();
@@ -42,23 +43,6 @@ export default function AccountPage() {
       }
     }
   }, [session]);
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const res = await fetch('/api/account/update-profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, username }),
-    });
-
-    if (res.ok) {
-      await update({ name, username });
-      toast({ title: '성공', description: '프로필이 업데이트되었습니다.' });
-    } else {
-      const data = await res.json();
-      toast({ title: '오류', description: data.error || '프로필 업데이트에 실패했습니다.' });
-    }
-  };
 
   const checkUsername = async () => {
     if (!username) {
@@ -129,17 +113,19 @@ export default function AccountPage() {
                       profiles.map(profile => (
                         <div key={profile.id} className="flex items-center justify-between py-1 gap-2">
                           <span>{profile.playerName} - {profile.region}</span>
-                          {/* 공개/비공개 선택박스 */}
-                          <select
-                            value={profilePublicStates[profile.id] ? 'public' : 'private'}
-                            onChange={e => {
-                              setProfilePublicStates(prev => ({ ...prev, [profile.id]: e.target.value === 'public' }));
-                            }}
-                            className="border rounded px-2 py-1 text-sm"
-                          >
-                            <option value="public">공개</option>
-                            <option value="private">비공개</option>
-                          </select>
+                          {/* segament 스타일 Select 컴포넌트 적용 */}
+                          <div className="w-28">
+                            <Select
+                              value={profilePublicStates[profile.id] ? 'public' : 'private'}
+                              onValueChange={v => setProfilePublicStates(prev => ({ ...prev, [profile.id]: v === 'public' }))}
+                            >
+                              <SelectTrigger className="w-full h-9 text-sm" />
+                              <SelectContent>
+                                <SelectItem value="public">공개</SelectItem>
+                                <SelectItem value="private">비공개</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="destructive" size="sm">삭제</Button>
@@ -174,8 +160,20 @@ export default function AccountPage() {
         </CardContent>
       </Card>
       <Card className="border-destructive">
-      {/* 저장/취소 버튼 */}
+      {/* 저장/취소 버튼을 계정 삭제 박스 아래에 배치, 순서: 취소-저장 */}
       <div className="flex justify-end gap-2 mt-8">
+        <Button
+          variant="outline"
+          onClick={() => {
+            // 원래 상태로 복구
+            const states: Record<string, boolean> = {};
+            gameProfiles.forEach((p: any) => {
+              states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : true;
+            });
+            setProfilePublicStates(states);
+            toast({ title: '취소', description: '변경사항이 취소되었습니다.' });
+          }}
+        >취소</Button>
         <Button
           variant="default"
           disabled={isSaving}
@@ -195,18 +193,6 @@ export default function AccountPage() {
             }
           }}
         >저장</Button>
-        <Button
-          variant="outline"
-          onClick={() => {
-            // 원래 상태로 복구
-            const states: Record<string, boolean> = {};
-            gameProfiles.forEach((p: any) => {
-              states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : true;
-            });
-            setProfilePublicStates(states);
-            toast({ title: '취소', description: '변경사항이 취소되었습니다.' });
-          }}
-        >취소</Button>
       </div>
         <CardHeader>
           <CardTitle className="text-xl sm:text-2xl">계정 삭제</CardTitle>

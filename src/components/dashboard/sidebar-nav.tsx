@@ -184,7 +184,7 @@ export function SidebarNav() {
             <SidebarMenuSub>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
-                  <span className="text-muted-foreground">현재는 마이마이 프로필 시스템을 이용하실 수 없습니다.</span>
+                  <span className="text-muted-foreground">현재는 마이마이 프로필\n시스템을 이용하실 수 없습니다.</span>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             </SidebarMenuSub>
