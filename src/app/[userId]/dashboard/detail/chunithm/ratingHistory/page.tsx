@@ -13,47 +13,68 @@ Chart.register(LineController, LineElement, PointElement, LinearScale, Title, Ca
 export default function ChunithmRatingHistoryPage() {
   const params = useParams();
   const userId = params?.userId as string;
-  const [profile, setProfile] = useState<any>(null);
-    // 디버그 버튼 클릭 핸들러
-    const handleDebugClick = () => {
-      console.log('profile:', profile);
-      if (profile && profile.ratingHistory) {
-        console.log('ratingHistory:', profile.ratingHistory);
-      } else {
-        console.log('ratingHistory: 없음 또는 profile이 undefined');
-      }
-      if (typeof displayEntries !== 'undefined') {
-        console.log('displayEntries:', displayEntries);
-      }
-      if (typeof data !== 'undefined') {
-        console.log('chart data:', data);
-      }
-    };
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [selectedProfileId, setSelectedProfileId] = useState<string>("");
+  const selectedProfile = profiles.find(p => p.id === selectedProfileId);
+  // 디버그 버튼 클릭 핸들러
+  const handleDebugClick = () => {
+    console.log('profiles:', profiles);
+    console.log('selectedProfile:', selectedProfile);
+    if (selectedProfile && selectedProfile.ratingHistory) {
+      console.log('ratingHistory:', selectedProfile.ratingHistory);
+    } else {
+      console.log('ratingHistory: 없음 또는 profile이 undefined');
+    }
+    if (typeof displayEntries !== 'undefined') {
+      console.log('displayEntries:', displayEntries);
+    }
+    if (typeof data !== 'undefined') {
+      console.log('chart data:', data);
+    }
+  };
   const [sliderValue, setSliderValue] = useState<number>(100);
 
   useEffect(() => {
-    async function fetchProfile() {
+    async function fetchProfiles() {
       const res = await fetch(`/api/profile/public/${userId}`);
       const data = await res.json();
-      // profiles 배열에서 CHUNITHM 프로필 선택
-      const chunithmProfile = Array.isArray(data.profiles)
-        ? data.profiles.find((p: any) => p.gameType === 'CHUNITHM')
-        : undefined;
-      setProfile(chunithmProfile);
+      const chunithmProfiles = Array.isArray(data.profiles)
+        ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM')
+        : [];
+      setProfiles(chunithmProfiles);
+      // 기본 선택: ratingHistory가 있는 프로필, 없으면 첫 번째
+      if (chunithmProfiles.length > 0) {
+        const defaultProfile = chunithmProfiles.find((p: any) => p.ratingHistory) || chunithmProfiles[0];
+        setSelectedProfileId(defaultProfile.id);
+      }
     }
-    if (userId) { fetchProfile(); }
+    if (userId) { fetchProfiles(); }
   }, [userId]);
 
-  if (!profile || !profile.ratingHistory) {
+  if (!selectedProfile || !selectedProfile.ratingHistory) {
     return (
       <div className="max-w-xl mx-auto mt-8 p-6 text-center">
         <Card>
           <h2 className="text-xl font-bold mb-2">레이팅 성장 그래프</h2>
           <p className="text-muted-foreground">해당 프로필에 레이팅 히스토리 데이터가 없습니다.</p>
         </Card>
+        {/* 프로필 셀렉트 박스 */}
+        {profiles.length > 0 && (
+          <select
+            className="mt-4 mb-2 px-4 py-2 border rounded"
+            value={selectedProfileId}
+            onChange={e => setSelectedProfileId(e.target.value)}
+          >
+            {profiles.map(p => (
+              <option key={p.id} value={p.id}>
+                {p.region ? `${p.region} - ${p.playerName}` : p.playerName}
+              </option>
+            ))}
+          </select>
+        )}
         <button
           onClick={handleDebugClick}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           디버그 출력
         </button>
@@ -62,17 +83,23 @@ export default function ChunithmRatingHistoryPage() {
   }
 
   // ratingHistory: { '2025-08-12|11:04': 14.32, ... }
-  const entries = Object.entries(profile.ratingHistory).sort((a, b) => a[0].localeCompare(b[0]));
+  const entries = selectedProfile && selectedProfile.ratingHistory
+    ? Object.entries(selectedProfile.ratingHistory).sort((a, b) => a[0].localeCompare(b[0]))
+    : [];
   const total = entries.length;
   const displayCount = Math.max(5, Math.floor((sliderValue / 100) * total));
   const displayEntries = entries.slice(total - displayCount);
 
   // 디버깅: 데이터 구조 확인 (useEffect로 브라우저 콘솔에 출력)
   React.useEffect(() => {
-    console.log('ratingHistory:', profile.ratingHistory);
+    if (selectedProfile && selectedProfile.ratingHistory) {
+      console.log('ratingHistory:', selectedProfile.ratingHistory);
+    } else {
+      console.log('ratingHistory: 없음 또는 profile이 undefined');
+    }
     console.log('displayEntries:', displayEntries);
     console.log('chart data:', data);
-  }, [profile.ratingHistory, displayEntries]);
+  }, [selectedProfile, displayEntries]);
   const data = {
     labels: displayEntries.map(([date]) => date.split('|')[0]),
     datasets: [
