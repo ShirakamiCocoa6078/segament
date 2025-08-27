@@ -162,8 +162,8 @@ export default function AccountPage() {
         </CardContent>
       </Card>
       <Card className="border-destructive">
-      {/* 저장/취소 버튼을 모든 요소의 아래, 우측에 고정 */}
-      <div className="flex justify-end gap-2 mt-8 w-full">
+  {/* 저장/취소 버튼을 모든 요소의 가장 하단, 좌측에 상대적으로 배치 */}
+  <div className="flex justify-start gap-2 mt-8 w-full">
         <Button
           variant="outline"
           onClick={() => {
