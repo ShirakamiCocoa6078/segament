@@ -46,20 +46,28 @@ export default function ChunithmRatingHistoryPage() {
   const [sliderValue, setSliderValue] = useState<number>(100);
 
   useEffect(() => {
+    let isMounted = true;
     async function fetchProfiles() {
-      const res = await fetch(`/api/profile/public/${userId}`);
-      const data = await res.json();
-      const chunithmProfiles = Array.isArray(data.profiles)
-        ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM')
-        : [];
-      setProfiles(chunithmProfiles);
-      // 기본 선택: ratingHistory가 있는 프로필, 없으면 첫 번째
-      if (chunithmProfiles.length > 0) {
-        const defaultProfile = chunithmProfiles.find((p: any) => p.ratingHistory) || chunithmProfiles[0];
-        setSelectedProfileId(defaultProfile.id);
+      try {
+        const res = await fetch(`/api/profile/public/${userId}`);
+        const data = await res.json();
+        const chunithmProfiles = Array.isArray(data.profiles)
+          ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM')
+          : [];
+        if (isMounted) {
+          setProfiles(chunithmProfiles);
+          // 기본 선택: ratingHistory가 있는 프로필, 없으면 첫 번째
+          if (chunithmProfiles.length > 0) {
+            const defaultProfile = chunithmProfiles.find((p: any) => p.ratingHistory) || chunithmProfiles[0];
+            setSelectedProfileId(defaultProfile.id);
+          }
+        }
+      } catch (err) {
+        console.error('fetchProfiles error:', err);
       }
     }
     if (userId) { fetchProfiles(); }
+    return () => { isMounted = false; };
   }, [userId]);
 
   if (!selectedProfile || !selectedProfile.ratingHistory) {
