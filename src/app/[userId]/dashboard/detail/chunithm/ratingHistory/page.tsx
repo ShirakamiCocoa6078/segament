@@ -14,6 +14,13 @@ export default function ChunithmRatingHistoryPage() {
   const params = useParams();
   const userId = params?.userId as string;
   const [profile, setProfile] = useState<any>(null);
+    // 디버그 버튼 클릭 핸들러
+    const handleDebugClick = () => {
+      console.log('profile:', profile);
+      console.log('ratingHistory:', profile.ratingHistory);
+      console.log('displayEntries:', displayEntries);
+      console.log('chart data:', data);
+    };
   const [sliderValue, setSliderValue] = useState<number>(100);
 
   useEffect(() => {
@@ -77,6 +84,12 @@ export default function ChunithmRatingHistoryPage() {
   return (
     <div className="max-w-xl mx-auto mt-8 p-4">
       <h2 className="text-xl font-bold mb-4">레이팅 성장 그래프</h2>
+        <button
+          onClick={handleDebugClick}
+          className="mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          디버그 출력
+        </button>
       <Line data={data} options={options} />
       <div className="mt-6">
         <label className="block mb-2 text-sm font-medium text-muted-foreground">표시 구간 조절</label>
