@@ -8,6 +8,7 @@ export interface ProfileSummary {
   region: string;
   playerName: string;
   rating: number;
+  isPublic: boolean;
 }
 
 export interface GameProfile {

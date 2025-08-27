@@ -22,7 +22,7 @@ export async function GET(
             playerName: true,
             rating: true,
             ratingHistory: true,
-            // isPublic 필드가 있다면 여기서 필터링
+            isPublic: true,
           },
           orderBy: {
             updatedAt: 'desc',
@@ -51,6 +51,7 @@ export async function GET(
       playerName: profile.playerName,
       rating: profile.rating,
       ratingHistory: profile.ratingHistory,
+      isPublic: typeof profile.isPublic === 'boolean' ? profile.isPublic : true,
       // playCount 등 민감한 정보는 제외
     }));
 

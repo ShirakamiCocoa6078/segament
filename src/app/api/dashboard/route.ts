@@ -55,7 +55,12 @@ export async function GET(): Promise<NextResponse<DashboardResponse | { error: s
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ profiles: user.gameProfiles || [] });
+    // 각 프로필에 isPublic 포함
+    const profiles = (user.gameProfiles || []).map((p: any) => ({
+      ...p,
+      isPublic: typeof p.isPublic === 'boolean' ? p.isPublic : true
+    }));
+    return NextResponse.json({ profiles });
 
   } catch (error) {
     console.error('API Error in /api/dashboard:', error);

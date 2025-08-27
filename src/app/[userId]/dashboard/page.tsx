@@ -110,50 +110,90 @@ export default function UserDashboardPage() {
 
   const isOwner = accessMode.mode === 'owner';
 
+  // 프로필 렌더링 분기
+  let visibleProfiles = profiles;
+  if (!isOwner) {
+    visibleProfiles = profiles.filter(p => p.isPublic);
+  }
+
   return (
     <div className="container mx-auto p-2 sm:p-4">
-      {profiles.length > 0 ? (
-        <div>
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left w-full sm:w-auto">
-              {isOwner ? '내 대시보드' : `${userId}님의 프로필`}
-            </h1>
-            {isOwner && <RegisterProfileDialog />}
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {profiles.map(profile => (
-              <ProfileCard 
-                key={profile.id} 
-                profile={profile} 
-                userId={userId as string}
-                accessMode={accessMode}
-              />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="text-center py-8 sm:py-12">
-          <div className="max-w-xs sm:max-w-md mx-auto">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">
-              열람 가능한 프로필이 존재하지 않습니다.
-            </h2>
-            <div className="mb-6 text-base sm:text-lg text-gray-600 dark:text-gray-200">
-              이 사용자는 모든 게임 프로필을 비공개로 설정했습니다.
+      {isOwner ? (
+        visibleProfiles.length > 0 ? (
+          <div>
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left w-full sm:w-auto">
+                내 대시보드
+              </h1>
+              <RegisterProfileDialog />
             </div>
-            {/* 로그인/내 대시보드로 이동 버튼 */}
-            {!session?.user ? (
-              <button
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-                onClick={() => { window.location.href = '/'; }}
-              >로그인</button>
-            ) : (
-              <button
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-                onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}
-              >내 대시보드로 이동</button>
-            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {visibleProfiles.map(profile => (
+                <ProfileCard 
+                  key={profile.id} 
+                  profile={profile} 
+                  userId={userId as string}
+                  accessMode={accessMode}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-8 sm:py-12">
+            <div className="max-w-xs sm:max-w-md mx-auto">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">
+                등록된 게임 프로필이 없습니다.
+              </h2>
+              <div className="mb-6 text-base sm:text-lg text-gray-600 dark:text-gray-200">
+                게임 프로필을 등록해 주세요.
+              </div>
+              <RegisterProfileDialog />
+            </div>
+          </div>
+        )
+      ) : (
+        visibleProfiles.length > 0 ? (
+          <div>
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left w-full sm:w-auto">
+                {`${userId}님의 프로필`}
+              </h1>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {visibleProfiles.map(profile => (
+                <ProfileCard 
+                  key={profile.id} 
+                  profile={profile} 
+                  userId={userId as string}
+                  accessMode={accessMode}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-8 sm:py-12">
+            <div className="max-w-xs sm:max-w-md mx-auto">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">
+                열람 가능한 프로필이 존재하지 않습니다.
+              </h2>
+              <div className="mb-6 text-base sm:text-lg text-gray-600 dark:text-gray-200">
+                이 사용자는 모든 게임 프로필을 비공개로 설정했습니다.
+              </div>
+              {/* 로그인/내 대시보드로 이동 버튼 */}
+              {!session?.user ? (
+                <button
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                  onClick={() => { window.location.href = '/'; }}
+                >로그인</button>
+              ) : (
+                <button
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                  onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}
+                >내 대시보드로 이동</button>
+              )}
+            </div>
+          </div>
+        )
       )}
     </div>
   );
