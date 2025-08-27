@@ -25,6 +25,7 @@ export default function ChunithmRatingHistoryPage() {
       };
     } catch (e) {
       console.warn('ratingHistory JSON 파싱 실패:', e);
+      selectedProfile.ratingHistory = undefined;
     }
   }
   // 디버그 버튼 클릭 핸들러
@@ -177,7 +178,8 @@ export default function ChunithmRatingHistoryPage() {
       >
         디버그 출력
       </button>
-      {selectedProfile && selectedProfile.ratingHistory ? (
+      {/* ratingHistory가 object일 때만 차트 렌더링 */}
+      {selectedProfile && selectedProfile.ratingHistory && typeof selectedProfile.ratingHistory === 'object' ? (
         <>
           <Line data={data} options={options} />
           <div className="mt-6">
