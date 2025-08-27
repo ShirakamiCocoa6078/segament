@@ -15,7 +15,18 @@ export default function ChunithmRatingHistoryPage() {
   const userId = params?.userId as string;
   const [profiles, setProfiles] = useState<any[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
-  const selectedProfile = profiles.find(p => p.id === selectedProfileId);
+  let selectedProfile = profiles.find(p => p.id === selectedProfileId);
+  // ratingHistory가 string 타입으로 들어올 경우 파싱
+  if (selectedProfile && typeof selectedProfile.ratingHistory === 'string') {
+    try {
+      selectedProfile = {
+        ...selectedProfile,
+        ratingHistory: JSON.parse(selectedProfile.ratingHistory)
+      };
+    } catch (e) {
+      console.warn('ratingHistory JSON 파싱 실패:', e);
+    }
+  }
   // 디버그 버튼 클릭 핸들러
   const handleDebugClick = () => {
     console.log('profiles:', profiles);
