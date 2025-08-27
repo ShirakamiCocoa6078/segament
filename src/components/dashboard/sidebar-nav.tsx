@@ -200,14 +200,14 @@ export function SidebarNav() {
               <SidebarMenuSubItem>
                 <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/playPercent`}>
                   <SidebarMenuSubButton>
-                    <span>순회 진행도</span>
+                    <span>순회 진행도(개발중)</span>
                   </SidebarMenuSubButton>
                 </Link>
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
                 <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/ratingHistory`}>
                   <SidebarMenuSubButton>
-                    <span>레이팅 성장 그래프</span>
+                    <span>레이팅 성장 그래프(개발중)</span>
                   </SidebarMenuSubButton>
                 </Link>
               </SidebarMenuSubItem>
