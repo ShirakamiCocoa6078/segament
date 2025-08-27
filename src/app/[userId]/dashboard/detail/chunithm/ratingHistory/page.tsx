@@ -11,6 +11,14 @@ import { Chart, LineController, LineElement, PointElement, LinearScale, Title, C
 Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend);
 
 export default function ChunithmRatingHistoryPage() {
+  // 로그인 세션 확인
+  const [session, setSession] = useState<any>(null);
+  useEffect(() => {
+    // next-auth 세션 fetch
+    fetch('/api/auth/session')
+      .then(res => res.json())
+      .then(data => setSession(data));
+  }, []);
   const params = useParams();
   const userId = params?.userId as string;
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -50,14 +58,15 @@ export default function ChunithmRatingHistoryPage() {
     let isMounted = true;
     async function fetchProfiles() {
       try {
-        const res = await fetch(`/api/profile/public/${userId}`);
+        // 로그인 유저만 개인 데이터 fetch
+        if (!session || !session.user || !session.user.id) return;
+        const res = await fetch('/api/dashboard');
         const data = await res.json();
         const chunithmProfiles = Array.isArray(data.profiles)
           ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM')
           : [];
         if (isMounted) {
           setProfiles(chunithmProfiles);
-          // 기본 선택: ratingHistory가 있는 프로필, 없으면 첫 번째
           if (chunithmProfiles.length > 0) {
             const defaultProfile = chunithmProfiles.find((p: any) => p.ratingHistory) || chunithmProfiles[0];
             setSelectedProfileId(defaultProfile.id);
@@ -67,11 +76,21 @@ export default function ChunithmRatingHistoryPage() {
         console.error('fetchProfiles error:', err);
       }
     }
-    if (userId) { fetchProfiles(); }
+    if (session && session.user && session.user.id) { fetchProfiles(); }
     return () => { isMounted = false; };
   }, [userId]);
 
   if (!selectedProfile || !selectedProfile.ratingHistory) {
+    if (!session || !session.user || !session.user.id) {
+      return (
+        <div className="max-w-xl mx-auto mt-8 p-6 text-center">
+          <Card>
+            <h2 className="text-xl font-bold mb-2">레이팅 성장 그래프</h2>
+            <p className="text-muted-foreground">로그인한 유저만 자신의 레이팅 성장 그래프를 볼 수 있습니다.</p>
+          </Card>
+        </div>
+      );
+    }
     return (
       <div className="max-w-xl mx-auto mt-8 p-6 text-center">
         <Card>

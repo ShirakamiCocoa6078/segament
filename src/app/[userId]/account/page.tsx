@@ -18,6 +18,8 @@ export default function AccountPage() {
   const [username, setUsername] = useState('');
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [gameProfiles, setGameProfiles] = useState<any[]>([]);
+  const [profilePublicStates, setProfilePublicStates] = useState<Record<string, boolean>>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (session) {
@@ -28,7 +30,15 @@ export default function AccountPage() {
       if (session.user.id) {
         fetch('/api/dashboard')
           .then(res => res.json())
-          .then(data => setGameProfiles(data.profiles || []));
+          .then(data => {
+            setGameProfiles(data.profiles || []);
+            // 프로필별 공개여부 상태 초기화 (기본값: 공개)
+            const states: Record<string, boolean> = {};
+            (data.profiles || []).forEach((p: any) => {
+              states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : true;
+            });
+            setProfilePublicStates(states);
+          });
       }
     }
   }, [session]);
@@ -101,7 +111,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="container mx-auto p-2 sm:p-4">
+  <div className="container mx-auto p-2 sm:p-4">
       <Card className="mb-4">
         <CardHeader>
           <CardTitle className="text-xl sm:text-2xl">게임 프로필</CardTitle>
@@ -117,8 +127,19 @@ export default function AccountPage() {
                     <div className="font-semibold text-lg mb-2">{gameType}</div>
                     {profiles.length > 0 ? (
                       profiles.map(profile => (
-                        <div key={profile.id} className="flex items-center justify-between py-1">
+                        <div key={profile.id} className="flex items-center justify-between py-1 gap-2">
                           <span>{profile.playerName} - {profile.region}</span>
+                          {/* 공개/비공개 선택박스 */}
+                          <select
+                            value={profilePublicStates[profile.id] ? 'public' : 'private'}
+                            onChange={e => {
+                              setProfilePublicStates(prev => ({ ...prev, [profile.id]: e.target.value === 'public' }));
+                            }}
+                            className="border rounded px-2 py-1 text-sm"
+                          >
+                            <option value="public">공개</option>
+                            <option value="private">비공개</option>
+                          </select>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="destructive" size="sm">삭제</Button>
@@ -153,6 +174,40 @@ export default function AccountPage() {
         </CardContent>
       </Card>
       <Card className="border-destructive">
+      {/* 저장/취소 버튼 */}
+      <div className="flex justify-end gap-2 mt-8">
+        <Button
+          variant="default"
+          disabled={isSaving}
+          onClick={async () => {
+            setIsSaving(true);
+            // 공개여부 저장 API 호출
+            const res = await fetch('/api/account/update-profile', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ publicStates: profilePublicStates }),
+            });
+            setIsSaving(false);
+            if (res.ok) {
+              toast({ title: '성공', description: '프로필 공개여부가 저장되었습니다.' });
+            } else {
+              toast({ title: '오류', description: '프로필 공개여부 저장에 실패했습니다.' });
+            }
+          }}
+        >저장</Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            // 원래 상태로 복구
+            const states: Record<string, boolean> = {};
+            gameProfiles.forEach((p: any) => {
+              states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : true;
+            });
+            setProfilePublicStates(states);
+            toast({ title: '취소', description: '변경사항이 취소되었습니다.' });
+          }}
+        >취소</Button>
+      </div>
         <CardHeader>
           <CardTitle className="text-xl sm:text-2xl">계정 삭제</CardTitle>
           <CardDescription className="text-base sm:text-lg">이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.</CardDescription>
