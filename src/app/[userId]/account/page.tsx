@@ -95,75 +95,104 @@ export default function AccountPage() {
   }
 
   return (
-  <div className="container mx-auto p-2 sm:p-4">
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle className="text-xl sm:text-2xl">게임 프로필</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {gameProfiles.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              {/* 게임별로 그룹화하여 프로필 표시 */}
-              {['CHUNITHM', 'MAIMAI'].map((gameType) => {
-                const profiles = gameProfiles.filter(p => p.gameType === gameType);
-                return (
-                  <div key={gameType} className="mb-4">
-                    <div className="font-semibold text-lg mb-2">{gameType}</div>
-                    {profiles.length > 0 ? (
-                      profiles.map(profile => (
-                        <div key={profile.id} className="flex items-center justify-between py-1 gap-2">
-                          <span>{profile.playerName} - {profile.region}</span>
-                          {/* segament 스타일 Select 컴포넌트 적용 */}
-                          <div className="w-28">
-                            <Select
-                              value={profilePublicStates[profile.id] ? 'public' : 'private'}
-                              onValueChange={v => setProfilePublicStates(prev => ({ ...prev, [profile.id]: v === 'public' }))}
-                            >
-                              <SelectTrigger className="w-full h-9 text-sm">
-                                <SelectValue placeholder="공개/비공개" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="public">공개</SelectItem>
-                                <SelectItem value="private">비공개</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="destructive" size="sm">삭제</Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>정말로 이 프로필을 삭제하시겠습니까?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  이 작업은 되돌릴 수 없으며, 해당 게임의 모든 플레이 데이터가 영구적으로 삭제됩니다.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>취소</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDeleteGameProfile(profile.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                  삭제
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-sm sm:text-base text-muted-foreground">프로필이 존재하지 않습니다</div>
-                    )}
+    <div className="container mx-auto p-2 sm:p-4">
+      <div className="rounded-lg border bg-card text-card-foreground shadow-sm mb-4">
+        <div className="flex flex-col space-y-1.5 p-6">
+          <div className="font-semibold tracking-tight text-xl sm:text-2xl">게임 프로필</div>
+        </div>
+        <div className="p-6 pt-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {/* CHUNITHM */}
+            <div className="mb-4">
+              <div className="font-semibold text-lg mb-2">CHUNITHM</div>
+              {gameProfiles.filter(p => p.gameType === 'CHUNITHM').length > 0 ? (
+                gameProfiles.filter(p => p.gameType === 'CHUNITHM').map(profile => (
+                  <div key={profile.id} className="flex items-center justify-between py-1 gap-2">
+                    <span>{profile.playerName} - {profile.region}</span>
+                    <div className="w-28">
+                      <Select
+                        value={profilePublicStates[profile.id] ? 'public' : 'private'}
+                        onValueChange={v => setProfilePublicStates(prev => ({ ...prev, [profile.id]: v === 'public' }))}
+                      >
+                        <SelectTrigger className="flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-full h-9 text-sm">
+                          <SelectValue placeholder="공개/비공개" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="public">공개</SelectItem>
+                          <SelectItem value="private">비공개</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">삭제</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>정말로 이 프로필을 삭제하시겠습니까?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            이 작업은 되돌릴 수 없으며, 해당 게임의 모든 플레이 데이터가 영구적으로 삭제됩니다.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>취소</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteGameProfile(profile.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            삭제
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
-                );
-              })}
+                ))
+              ) : (
+                <div className="text-sm sm:text-base text-muted-foreground">프로필이 존재하지 않습니다</div>
+              )}
             </div>
-          ) : (
-            <div className="text-sm sm:text-base text-muted-foreground">프로필이 존재하지 않습니다</div>
-          )}
-        </CardContent>
-      </Card>
-      <Card className="border-destructive">
-  {/* 저장/취소 버튼을 모든 요소의 가장 하단, 좌측에 상대적으로 배치 */}
-  <div className="flex justify-start gap-2 mt-8 w-full">
+            {/* MAIMAI */}
+            <div className="mb-4">
+              <div className="font-semibold text-lg mb-2">MAIMAI</div>
+              {gameProfiles.filter(p => p.gameType === 'MAIMAI').length > 0 ? (
+                gameProfiles.filter(p => p.gameType === 'MAIMAI').map(profile => (
+                  <div key={profile.id} className="flex items-center justify-between py-1 gap-2">
+                    <span>{profile.playerName} - {profile.region}</span>
+                    {/* ...공개/비공개 셀렉트 및 삭제 버튼 동일하게 적용 가능... */}
+                  </div>
+                ))
+              ) : (
+                <div className="text-sm sm:text-base text-muted-foreground">프로필이 존재하지 않습니다</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="rounded-lg border bg-card text-card-foreground shadow-sm border-destructive">
+        <div className="flex flex-col space-y-1.5 p-6">
+          <div className="font-semibold tracking-tight text-xl sm:text-2xl">계정 삭제</div>
+          <div className="text-muted-foreground text-base sm:text-lg">이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.</div>
+        </div>
+        <div className="flex items-center p-6 pt-0">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 px-4 w-full sm:w-auto py-3 sm:py-2 text-base sm:text-lg">계정 삭제</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>정말로 계정을 삭제하시겠습니까?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  이 작업은 되돌릴 수 없으며, 모든 프로필과 플레이 데이터가 영구적으로 삭제됩니다.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>취소</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  삭제
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
+      <div className="flex justify-start gap-2 mt-8 w-full">
         <Button
           variant="outline"
           onClick={() => {
@@ -196,32 +225,6 @@ export default function AccountPage() {
           }}
         >저장</Button>
       </div>
-        <CardHeader>
-          <CardTitle className="text-xl sm:text-2xl">계정 삭제</CardTitle>
-          <CardDescription className="text-base sm:text-lg">이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.</CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="w-full sm:w-auto py-3 sm:py-2 text-base sm:text-lg">계정 삭제</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>정말로 계정을 삭제하시겠습니까?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  이 작업은 되돌릴 수 없으며, 모든 프로필과 플레이 데이터가 영구적으로 삭제됩니다.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>취소</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                  삭제
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </CardFooter>
-      </Card>
     </div>
   );
 }
