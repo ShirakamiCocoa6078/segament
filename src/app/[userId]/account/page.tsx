@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 
 export default function AccountPage() {
   const { data: session, update } = useSession();
@@ -119,7 +119,9 @@ export default function AccountPage() {
                               value={profilePublicStates[profile.id] ? 'public' : 'private'}
                               onValueChange={v => setProfilePublicStates(prev => ({ ...prev, [profile.id]: v === 'public' }))}
                             >
-                              <SelectTrigger className="w-full h-9 text-sm" />
+                              <SelectTrigger className="w-full h-9 text-sm">
+                                <SelectValue placeholder="공개/비공개" />
+                              </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="public">공개</SelectItem>
                                 <SelectItem value="private">비공개</SelectItem>
@@ -160,8 +162,8 @@ export default function AccountPage() {
         </CardContent>
       </Card>
       <Card className="border-destructive">
-      {/* 저장/취소 버튼을 계정 삭제 박스 아래에 배치, 순서: 취소-저장 */}
-      <div className="flex justify-end gap-2 mt-8">
+      {/* 저장/취소 버튼을 모든 요소의 아래, 우측에 고정 */}
+      <div className="flex justify-end gap-2 mt-8 w-full">
         <Button
           variant="outline"
           onClick={() => {
