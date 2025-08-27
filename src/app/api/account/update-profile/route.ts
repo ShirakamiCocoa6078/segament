@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { name, username } = await req.json();
+  const { name, username, publicStates } = await req.json();
 
     if (username) {
       const existingUser = await prisma.user.findUnique({
@@ -25,6 +25,7 @@ export async function POST(req: Request) {
       }
     }
 
+    // 기본 프로필 정보 업데이트
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: {
@@ -33,7 +34,18 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(updatedUser);
+    // 공개여부 상태가 전달된 경우 각 프로필에 반영
+    if (publicStates && typeof publicStates === 'object') {
+      const profileIds = Object.keys(publicStates);
+      for (const profileId of profileIds) {
+        await prisma.gameProfile.update({
+          where: { id: profileId },
+          data: { isPublic: !!publicStates[profileId] },
+        });
+      }
+    }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error updating profile:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
