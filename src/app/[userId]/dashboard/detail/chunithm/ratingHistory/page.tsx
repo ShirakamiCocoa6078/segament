@@ -24,8 +24,8 @@ export default function ChunithmRatingHistoryPage() {
   const userId = params?.userId as string;
   const [profiles, setProfiles] = useState<any[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
-  // CHUNITHM 프로필만 필터링
-  const chunithmProfiles = profiles.filter((p: any) => p.gameType === 'CHUNITHM');
+  // CHUNITHM 공개 프로필만 필터링
+  const chunithmProfiles = profiles.filter((p: any) => p.gameType === 'CHUNITHM' && p.isPublic);
   // 선택된 프로필
   let selectedProfile = chunithmProfiles.find(p => p.id === selectedProfileId);
   // ratingHistory가 string 타입으로 들어올 경우 파싱
@@ -36,7 +36,6 @@ export default function ChunithmRatingHistoryPage() {
         ratingHistory: JSON.parse(selectedProfile.ratingHistory)
       };
     } catch (e) {
-      console.warn('ratingHistory JSON 파싱 실패:', e);
       selectedProfile.ratingHistory = undefined;
     }
   }
@@ -62,18 +61,17 @@ export default function ChunithmRatingHistoryPage() {
     let isMounted = true;
     async function fetchProfiles() {
       try {
-        // 로그인 유저만 개인 데이터 fetch
-        if (!session || !session.user || !session.user.id) return;
+        if (!session || !session.user || !session.user.id) { return; }
         const res = await fetch('/api/dashboard');
         const data = await res.json();
         if (isMounted) {
           setProfiles(data.profiles || []);
-          // CHUNITHM 프로필만 필터링
+          // CHUNITHM 공개 프로필만 필터링
           const chunithmProfiles = Array.isArray(data.profiles)
-            ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM')
+            ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM' && p.isPublic)
             : [];
           if (chunithmProfiles.length > 0) {
-            // INTL 프로필 우선, 없으면 JP
+            // INTL > JP > 기타
             const intlProfile = chunithmProfiles.find((p: any) => p.region === 'INTL');
             const jpProfile = chunithmProfiles.find((p: any) => p.region === 'JP');
             const defaultProfile = intlProfile || jpProfile || chunithmProfiles[0];
@@ -81,12 +79,12 @@ export default function ChunithmRatingHistoryPage() {
           }
         }
       } catch (err) {
-        console.error('fetchProfiles error:', err);
+        // 에러 핸들링
       }
     }
     if (session && session.user && session.user.id) { fetchProfiles(); }
     return () => { isMounted = false; };
-  }, [userId]);
+  }, [userId, session]);
 
   if (!selectedProfile || !selectedProfile.ratingHistory) {
     if (!session || !session.user || !session.user.id) {
@@ -104,7 +102,7 @@ export default function ChunithmRatingHistoryPage() {
       <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
         <Card>
           <h2 className="text-xl font-bold mb-2">레이팅 성장 그래프</h2>
-          <p className="text-muted-foreground">해당 프로필에 레이팅 히스토리 데이터가 없습니다.</p>
+          <p className="text-muted-foreground">{chunithmProfiles.length === 0 ? '츄니즘 게임 프로필이 없습니다.' : '해당 프로필에 레이팅 히스토리 데이터가 없습니다.'}</p>
         </Card>
         {chunithmProfiles.length > 0 && (
           <select
@@ -119,12 +117,6 @@ export default function ChunithmRatingHistoryPage() {
             ))}
           </select>
         )}
-        <button
-          onClick={handleDebugClick}
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          디버그 출력
-        </button>
         <Button variant="outline" onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}>내 대시보드로 이동</Button>
       </div>
     );
