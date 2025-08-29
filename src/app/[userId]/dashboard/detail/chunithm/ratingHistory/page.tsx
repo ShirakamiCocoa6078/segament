@@ -41,7 +41,6 @@ export default function ChunithmRatingHistoryPage() {
     } else {
       parsedRatingHistory = selectedProfile.ratingHistory;
     }
-    import { useEffect, useState } from "react";
     // ...existing code...
     // 디버깅용 API 호출 함수들
   }
