@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ProfileDisplay } from "@/components/dashboard/profile-display";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { Slider } from "@/components/ui/slider";
 import { Line } from "react-chartjs-2";
 import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend } from "chart.js";
@@ -99,25 +100,28 @@ export default function ChunithmRatingHistoryPage() {
       );
     }
     return (
-      <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
-        <Card>
-          <h2 className="text-xl font-bold mb-2">레이팅 성장 그래프</h2>
-          <p className="text-muted-foreground">{chunithmProfiles.length === 0 ? '츄니즘 게임 프로필이 없습니다.' : '해당 프로필에 레이팅 히스토리 데이터가 없습니다.'}</p>
+      <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
+        <Card className="w-full max-w-2xl min-h-[220px] flex flex-col items-center justify-center p-8">
+          <h2 className="text-2xl font-bold mb-4">레이팅 성장 그래프</h2>
+          <div className="w-full max-w-md mx-auto mb-4">
+            {chunithmProfiles.length > 0 && (
+              <Select value={selectedProfileId} onValueChange={setSelectedProfileId}>
+                <SelectTrigger className="flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-full h-9 text-sm">
+                  <SelectValue placeholder="프로필 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  {chunithmProfiles.map(p => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.region ? `${p.region} - ${p.playerName}` : p.playerName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+          <p className="text-muted-foreground mb-2">{chunithmProfiles.length === 0 ? '츄니즘 게임 프로필이 없습니다.' : '해당 프로필에 레이팅 히스토리 데이터가 없습니다.'}</p>
+          <Button variant="outline" onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}>내 대시보드로 이동</Button>
         </Card>
-        {chunithmProfiles.length > 0 && (
-          <select
-            className="mt-4 mb-2 px-4 py-2 border rounded"
-            value={selectedProfileId}
-            onChange={e => setSelectedProfileId(e.target.value)}
-          >
-            {chunithmProfiles.map(p => (
-              <option key={p.id} value={p.id}>
-                {p.region ? `${p.region} - ${p.playerName}` : p.playerName}
-              </option>
-            ))}
-          </select>
-        )}
-        <Button variant="outline" onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}>내 대시보드로 이동</Button>
       </div>
     );
   }
@@ -190,34 +194,40 @@ export default function ChunithmRatingHistoryPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-8 p-4">
-      <h2 className="text-xl font-bold mb-4">레이팅 성장 그래프</h2>
-      {chunithmProfiles.length > 0 && (
-        <select
-          className="mb-4 px-4 py-2 border rounded"
-          value={selectedProfileId}
-          onChange={e => setSelectedProfileId(e.target.value)}
-        >
-          {chunithmProfiles.map(p => (
-            <option key={p.id} value={p.id}>
-              {p.region ? `${p.region} - ${p.playerName}` : p.playerName}
-            </option>
-          ))}
-        </select>
-      )}
-      {/* ratingHistory가 object일 때만 차트 렌더링 */}
-      {selectedProfile && selectedProfile.ratingHistory && typeof selectedProfile.ratingHistory === 'object' ? (
-        <>
-          <Line data={data} options={options} />
-          <div className="mt-6">
-            <label className="block mb-2 text-sm font-medium text-muted-foreground">표시 구간 조절</label>
-            <Slider min={5} max={100} step={1} value={[sliderValue]} onValueChange={v => setSliderValue(v[0])} />
-            <div className="mt-2 text-xs text-muted-foreground">최근 {displayCount}개 데이터 표시</div>
-          </div>
-        </>
-      ) : (
-        <div className="mt-6 text-muted-foreground">선택한 프로필에 레이팅 히스토리 데이터가 없습니다.</div>
-      )}
+    <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
+      <Card className="w-full max-w-2xl min-h-[220px] flex flex-col items-center justify-center p-8">
+        <h2 className="text-2xl font-bold mb-4">레이팅 성장 그래프</h2>
+        <div className="w-full max-w-md mx-auto mb-4">
+          {chunithmProfiles.length > 0 && (
+            <Select value={selectedProfileId} onValueChange={setSelectedProfileId}>
+              <SelectTrigger className="flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-full h-9 text-sm">
+                <SelectValue placeholder="프로필 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                {chunithmProfiles.map(p => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.region ? `${p.region} - ${p.playerName}` : p.playerName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+        {/* ratingHistory가 object일 때만 차트 렌더링 */}
+        {selectedProfile && selectedProfile.ratingHistory && typeof selectedProfile.ratingHistory === 'object' ? (
+          <>
+            <Line data={data} options={options} />
+            <div className="mt-6">
+              <label className="block mb-2 text-sm font-medium text-muted-foreground">표시 구간 조절</label>
+              <Slider min={5} max={100} step={1} value={[sliderValue]} onValueChange={v => setSliderValue(v[0])} />
+              <div className="mt-2 text-xs text-muted-foreground">최근 {displayCount}개 데이터 표시</div>
+            </div>
+            <Button variant="secondary" className="mt-4" onClick={handleDebugClick}>디버그 출력</Button>
+          </>
+        ) : (
+          <div className="mt-6 text-muted-foreground">선택한 프로필에 레이팅 히스토리 데이터가 없습니다.</div>
+        )}
+      </Card>
     </div>
   );
 }

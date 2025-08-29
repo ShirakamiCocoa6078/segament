@@ -50,7 +50,6 @@ export async function GET(
       region: profile.region,
       playerName: profile.playerName,
       rating: profile.rating,
-      ratingHistory: profile.ratingHistory,
       isPublic: typeof profile.isPublic === 'boolean' ? profile.isPublic : true,
       // playCount 등 민감한 정보는 제외
     }));

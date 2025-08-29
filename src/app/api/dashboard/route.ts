@@ -30,6 +30,7 @@ export async function GET(): Promise<NextResponse<DashboardResponse | { error: s
                 region: true,
                 playerName: true,
                 rating: true,
+                ratingHistory: true,
                   isPublic: true,
               },
               orderBy: {
