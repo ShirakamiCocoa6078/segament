@@ -235,20 +235,23 @@ export default function AccountPage() {
           disabled={isSaving}
           onClick={async () => {
             setIsSaving(true);
-            // 공개여부 저장 API 호출
-            const res = await fetch('/api/account/update-profile', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ publicStates: profilePublicStates }),
-            });
-            setIsSaving(false);
-            setTimeout(() => {
+            try {
+              const res = await fetch('/api/account/update-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ publicStates: profilePublicStates }),
+              });
+              setIsSaving(false);
               if (res.ok) {
-                toast({ title: '성공', description: '프로필 공개여부가 저장되었습니다.', duration: 3000, position: 'bottom-right' });
+                toast({ title: '저장 완료', description: '프로필 공개/비공개 설정이 정상적으로 저장되었습니다.', duration: 3000, position: 'bottom-right' });
               } else {
-                toast({ title: '오류', description: '프로필 공개여부 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
+                const data = await res.json();
+                toast({ title: '저장 실패', description: data?.error || '프로필 공개/비공개 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
               }
-            }, 0);
+            } catch (err) {
+              setIsSaving(false);
+              toast({ title: '저장 오류', description: '네트워크 또는 서버 오류로 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
+            }
           }}
         >저장</Button>
       </div>
