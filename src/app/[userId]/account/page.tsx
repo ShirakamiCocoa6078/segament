@@ -43,7 +43,7 @@ export default function AccountPage() {
     if (gameProfiles.length > 0) {
       const states: Record<string, boolean> = {};
       gameProfiles.forEach((p: any) => {
-        states[p.id] = !!p.isPublic;
+        states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : false;
       });
       setProfilePublicStates(states);
     }
@@ -127,11 +127,22 @@ export default function AccountPage() {
                     <span>{profile.playerName} - {profile.region}</span>
                     <div className="w-28">
                       <Select
-                        value={profilePublicStates[profile.id] ? 'public' : 'private'}
+                        value={
+                          typeof profilePublicStates[profile.id] === 'boolean'
+                            ? (profilePublicStates[profile.id] ? 'public' : 'private')
+                            : undefined
+                        }
+                        disabled={typeof profilePublicStates[profile.id] !== 'boolean'}
                         onValueChange={v => setProfilePublicStates(prev => ({ ...prev, [profile.id]: v === 'public' }))}
                       >
                         <SelectTrigger className="flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-full h-9 text-sm">
-                          <SelectValue placeholder="공개/비공개" />
+                          <SelectValue
+                            placeholder={
+                              typeof profilePublicStates[profile.id] === 'boolean'
+                                ? '공개/비공개'
+                                : '알 수 없음'
+                            }
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="public">공개</SelectItem>
