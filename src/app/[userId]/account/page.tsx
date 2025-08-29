@@ -40,14 +40,13 @@ export default function AccountPage() {
 
   // gameProfiles가 변경될 때마다 공개/비공개 상태 동기화
   useEffect(() => {
-    if (gameProfiles.length > 0) {
-      const states: Record<string, boolean> = {};
-      gameProfiles.forEach((p: any) => {
-        states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : false;
-      });
-      setProfilePublicStates(states);
-    }
-  }, [gameProfiles]);
+    const states: Record<string, boolean> = {};
+    gameProfiles.forEach((p: any) => {
+      states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : false;
+    });
+    setProfilePublicStates(states);
+    // account 페이지가 마운트될 때마다 동기화
+  }, []);
 
   // ...기존 코드...
   // 모든 useState, useEffect 선언 이후에 return문이 오직 하나만 존재하도록 정리
