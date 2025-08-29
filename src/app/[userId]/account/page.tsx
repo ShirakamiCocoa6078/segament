@@ -45,8 +45,7 @@ export default function AccountPage() {
       states[p.id] = typeof p.isPublic === 'boolean' ? p.isPublic : false;
     });
     setProfilePublicStates(states);
-    // account 페이지가 마운트될 때마다 동기화
-  }, []);
+  }, [gameProfiles]);
 
   // ...기존 코드...
   // 모든 useState, useEffect 선언 이후에 return문이 오직 하나만 존재하도록 정리
