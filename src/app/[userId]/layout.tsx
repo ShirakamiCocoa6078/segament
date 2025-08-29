@@ -13,6 +13,8 @@ import {
   SidebarInset,
 } from "@/components/ui/sidebar";
 
+import { Toaster } from "@/components/ui/toaster";
+
 interface UserLayoutProps {
   children: ReactNode;
 }
@@ -60,6 +62,8 @@ export default function UserLayout({ children }: UserLayoutProps) {
             </div>
           </main>
         </div>
+        {/* Toast 메시지 렌더링 */}
+        <Toaster />
       </SidebarInset>
     </SidebarProvider>
   );
