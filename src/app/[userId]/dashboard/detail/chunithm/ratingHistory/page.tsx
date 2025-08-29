@@ -13,6 +13,35 @@ import { Chart, LineController, LineElement, PointElement, LinearScale, Title, C
 Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend);
 
 export default function ChunithmRatingHistoryPage() {
+  // 디버깅용 버튼 상태 및 함수들 (최상단에 한 번만 선언)
+  const [debugLoading, setDebugLoading] = useState(false);
+  async function debugFetchDashboard() {
+    try {
+      const res = await fetch("/api/dashboard");
+      const data = await res.json();
+      console.log("[DEBUG] /api/dashboard 응답:", data);
+    } catch (e) {
+      console.error("[DEBUG] /api/dashboard 에러:", e);
+    }
+  }
+  async function debugFetchUpdateProfile() {
+    try {
+      const res = await fetch("/api/account/update-profile", { method: "POST" });
+      const data = await res.json();
+      console.log("[DEBUG] /api/account/update-profile 응답:", data);
+    } catch (e) {
+      console.error("[DEBUG] /api/account/update-profile 에러:", e);
+    }
+  }
+  async function debugFetchPublicProfile(userId: string) {
+    try {
+      const res = await fetch(`/api/profile/public/${userId}`);
+      const data = await res.json();
+      console.log(`[DEBUG] /api/profile/public/${userId} 응답:`, data);
+    } catch (e) {
+      console.error(`[DEBUG] /api/profile/public/${userId} 에러:`, e);
+    }
+  }
   // 로그인 세션 확인
   const [session, setSession] = useState<any>(null);
   useEffect(() => {
@@ -41,8 +70,6 @@ export default function ChunithmRatingHistoryPage() {
     } else {
       parsedRatingHistory = selectedProfile.ratingHistory;
     }
-    // ...existing code...
-    // 디버깅용 API 호출 함수들
   }
   // 디버그 버튼 클릭 핸들러
   const handleDebugClick = () => {
@@ -202,6 +229,43 @@ export default function ChunithmRatingHistoryPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
+      {/* 항상 보이는 디버깅 버튼 */}
+      <div className="my-4 flex gap-2">
+        <button
+          className="px-2 py-1 bg-blue-500 text-white rounded"
+          disabled={debugLoading}
+          onClick={async () => {
+            setDebugLoading(true);
+            await debugFetchDashboard();
+            setDebugLoading(false);
+          }}
+        >
+          /api/dashboard 호출
+        </button>
+        <button
+          className="px-2 py-1 bg-green-500 text-white rounded"
+          disabled={debugLoading}
+          onClick={async () => {
+            setDebugLoading(true);
+            await debugFetchUpdateProfile();
+            setDebugLoading(false);
+          }}
+        >
+          /api/account/update-profile 호출
+        </button>
+        <button
+          className="px-2 py-1 bg-purple-500 text-white rounded"
+          disabled={debugLoading}
+          onClick={async () => {
+            setDebugLoading(true);
+            await debugFetchPublicProfile(userId);
+            setDebugLoading(false);
+          }}
+        >
+          /api/profile/public/[userId] 호출
+        </button>
+      </div>
+      {/* ...기존 Card 및 그래프 UI... */}
       <Card className="w-full max-w-2xl min-h-[220px] flex flex-col items-center justify-center p-8">
         <h2 className="text-2xl font-bold mb-4">레이팅 성장 그래프</h2>
         <div className="w-full max-w-md mx-auto mb-4">
@@ -221,7 +285,7 @@ export default function ChunithmRatingHistoryPage() {
           )}
         </div>
         {/* ratingHistory가 object일 때만 차트 렌더링 */}
-  {selectedProfile && parsedRatingHistory && typeof parsedRatingHistory === 'object' ? (
+        {selectedProfile && parsedRatingHistory && typeof parsedRatingHistory === 'object' ? (
           <>
             <Line data={data} options={options} />
             <div className="mt-6">
