@@ -24,7 +24,10 @@ export default function ChunithmRatingHistoryPage() {
   const userId = params?.userId as string;
   const [profiles, setProfiles] = useState<any[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
-  let selectedProfile = profiles.find(p => p.id === selectedProfileId);
+  // CHUNITHM 프로필만 필터링
+  const chunithmProfiles = profiles.filter((p: any) => p.gameType === 'CHUNITHM');
+  // 선택된 프로필
+  let selectedProfile = chunithmProfiles.find(p => p.id === selectedProfileId);
   // ratingHistory가 string 타입으로 들어올 경우 파싱
   if (selectedProfile && typeof selectedProfile.ratingHistory === 'string') {
     try {
@@ -63,13 +66,17 @@ export default function ChunithmRatingHistoryPage() {
         if (!session || !session.user || !session.user.id) return;
         const res = await fetch('/api/dashboard');
         const data = await res.json();
-        const chunithmProfiles = Array.isArray(data.profiles)
-          ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM')
-          : [];
         if (isMounted) {
-          setProfiles(chunithmProfiles);
+          setProfiles(data.profiles || []);
+          // CHUNITHM 프로필만 필터링
+          const chunithmProfiles = Array.isArray(data.profiles)
+            ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM')
+            : [];
           if (chunithmProfiles.length > 0) {
-            const defaultProfile = chunithmProfiles.find((p: any) => p.ratingHistory) || chunithmProfiles[0];
+            // INTL 프로필 우선, 없으면 JP
+            const intlProfile = chunithmProfiles.find((p: any) => p.region === 'INTL');
+            const jpProfile = chunithmProfiles.find((p: any) => p.region === 'JP');
+            const defaultProfile = intlProfile || jpProfile || chunithmProfiles[0];
             setSelectedProfileId(defaultProfile.id);
           }
         }
@@ -99,13 +106,13 @@ export default function ChunithmRatingHistoryPage() {
           <h2 className="text-xl font-bold mb-2">레이팅 성장 그래프</h2>
           <p className="text-muted-foreground">해당 프로필에 레이팅 히스토리 데이터가 없습니다.</p>
         </Card>
-        {profiles.length > 0 && (
+        {chunithmProfiles.length > 0 && (
           <select
             className="mt-4 mb-2 px-4 py-2 border rounded"
             value={selectedProfileId}
             onChange={e => setSelectedProfileId(e.target.value)}
           >
-            {profiles.map(p => (
+            {chunithmProfiles.map(p => (
               <option key={p.id} value={p.id}>
                 {p.region ? `${p.region} - ${p.playerName}` : p.playerName}
               </option>
@@ -193,12 +200,19 @@ export default function ChunithmRatingHistoryPage() {
   return (
     <div className="max-w-xl mx-auto mt-8 p-4">
       <h2 className="text-xl font-bold mb-4">레이팅 성장 그래프</h2>
-      <button
-        onClick={handleDebugClick}
-        className="mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        디버그 출력
-      </button>
+      {chunithmProfiles.length > 0 && (
+        <select
+          className="mb-4 px-4 py-2 border rounded"
+          value={selectedProfileId}
+          onChange={e => setSelectedProfileId(e.target.value)}
+        >
+          {chunithmProfiles.map(p => (
+            <option key={p.id} value={p.id}>
+              {p.region ? `${p.region} - ${p.playerName}` : p.playerName}
+            </option>
+          ))}
+        </select>
+      )}
       {/* ratingHistory가 object일 때만 차트 렌더링 */}
       {selectedProfile && selectedProfile.ratingHistory && typeof selectedProfile.ratingHistory === 'object' ? (
         <>
