@@ -235,17 +235,7 @@ export default function AccountPage() {
             setIsSaving(false);
             setTimeout(() => {
               if (res.ok) {
-                toast({
-                  title: '프로필 공개여부가 저장되었습니다.',
-                  description: '변경된 정보로 다시 로그인해 주세요.',
-                  duration: 5000,
-                  position: 'bottom-right',
-                  action: (
-                    <Button variant="outline" size="sm" onClick={() => window.location.href = '/api/auth/signin'}>
-                      재로그인
-                    </Button>
-                  )
-                });
+                toast({ title: '성공', description: '프로필 공개여부가 저장되었습니다.', duration: 3000, position: 'bottom-right' });
               } else {
                 toast({ title: '오류', description: '프로필 공개여부 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
               }
