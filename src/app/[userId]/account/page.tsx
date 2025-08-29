@@ -241,15 +241,19 @@ export default function AccountPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ publicStates: profilePublicStates }),
               });
+              console.log('[DEBUG] update-profile 응답:', res);
               setIsSaving(false);
               if (res.ok) {
+                console.log('[DEBUG] 저장 성공, toast 호출');
                 toast({ title: '저장 완료', description: '프로필 공개/비공개 설정이 정상적으로 저장되었습니다.', duration: 3000, position: 'bottom-right' });
               } else {
                 const data = await res.json();
+                console.log('[DEBUG] 저장 실패, toast 호출', data);
                 toast({ title: '저장 실패', description: data?.error || '프로필 공개/비공개 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
               }
             } catch (err) {
               setIsSaving(false);
+              console.log('[DEBUG] 네트워크/서버 오류', err);
               toast({ title: '저장 오류', description: '네트워크 또는 서버 오류로 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
             }
           }}
