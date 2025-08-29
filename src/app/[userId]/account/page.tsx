@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 
@@ -245,16 +245,16 @@ export default function AccountPage() {
               setIsSaving(false);
               if (res.ok) {
                 console.log('[DEBUG] 저장 성공, toast 호출');
-                toast({ title: '저장 완료', description: '프로필 공개/비공개 설정이 정상적으로 저장되었습니다.', duration: 3000, position: 'bottom-right' });
+                toast({ title: '저장 완료', description: '프로필 공개/비공개 설정이 정상적으로 저장되었습니다.', duration: 3000 });
               } else {
                 const data = await res.json();
                 console.log('[DEBUG] 저장 실패, toast 호출', data);
-                toast({ title: '저장 실패', description: data?.error || '프로필 공개/비공개 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
+                toast({ title: '저장 실패', description: data?.error || '프로필 공개/비공개 저장에 실패했습니다.', duration: 3000 });
               }
             } catch (err) {
               setIsSaving(false);
               console.log('[DEBUG] 네트워크/서버 오류', err);
-              toast({ title: '저장 오류', description: '네트워크 또는 서버 오류로 저장에 실패했습니다.', duration: 3000, position: 'bottom-right' });
+              toast({ title: '저장 오류', description: '네트워크 또는 서버 오류로 저장에 실패했습니다.', duration: 3000 });
             }
           }}
         >저장</Button>
@@ -265,7 +265,6 @@ export default function AccountPage() {
               title: '테스트 토스트',
               description: '이것은 토스트 메시지 출력 테스트입니다.',
               duration: 3000,
-              position: 'bottom-right',
             });
           }}
         >토스트 테스트</Button>
