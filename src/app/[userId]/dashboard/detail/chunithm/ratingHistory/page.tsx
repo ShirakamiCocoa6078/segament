@@ -24,8 +24,8 @@ export default function ChunithmRatingHistoryPage() {
   const userId = params?.userId as string;
   const [profiles, setProfiles] = useState<any[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
-  // CHUNITHM 공개 프로필만 필터링
-  const chunithmProfiles = profiles.filter((p: any) => p.gameType === 'CHUNITHM' && p.isPublic);
+  // CHUNITHM 모든 프로필 필터링 (isPublic 관계없이)
+  const chunithmProfiles = profiles.filter((p: any) => p.gameType === 'CHUNITHM');
   // 선택된 프로필
   let selectedProfile = chunithmProfiles.find(p => p.id === selectedProfileId);
   // ratingHistory가 string 타입으로 들어올 경우 파싱
@@ -66,9 +66,9 @@ export default function ChunithmRatingHistoryPage() {
         const data = await res.json();
         if (isMounted) {
           setProfiles(data.profiles || []);
-          // CHUNITHM 공개 프로필만 필터링
+          // CHUNITHM 모든 프로필 필터링 (isPublic 관계없이)
           const chunithmProfiles = Array.isArray(data.profiles)
-            ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM' && p.isPublic)
+            ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM')
             : [];
           if (chunithmProfiles.length > 0) {
             // INTL > JP > 기타
