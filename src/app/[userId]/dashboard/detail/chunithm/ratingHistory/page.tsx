@@ -29,15 +29,17 @@ export default function ChunithmRatingHistoryPage() {
   const chunithmProfiles = profiles.filter((p: any) => p.gameType === 'CHUNITHM');
   // 선택된 프로필
   let selectedProfile = chunithmProfiles.find(p => p.id === selectedProfileId);
-  // ratingHistory가 string 타입으로 들어올 경우 파싱
-  if (selectedProfile && typeof selectedProfile.ratingHistory === 'string') {
-    try {
-      selectedProfile = {
-        ...selectedProfile,
-        ratingHistory: JSON.parse(selectedProfile.ratingHistory)
-      };
-    } catch (e) {
-      selectedProfile.ratingHistory = undefined;
+  // ratingHistory 파싱 결과를 별도 변수에 저장
+  let parsedRatingHistory: any = undefined;
+  if (selectedProfile) {
+    if (typeof selectedProfile.ratingHistory === 'string') {
+      try {
+        parsedRatingHistory = JSON.parse(selectedProfile.ratingHistory);
+      } catch (e) {
+        parsedRatingHistory = undefined;
+      }
+    } else {
+      parsedRatingHistory = selectedProfile.ratingHistory;
     }
   }
   // 디버그 버튼 클릭 핸들러
@@ -88,7 +90,7 @@ export default function ChunithmRatingHistoryPage() {
   }, [userId, session]);
 
   if (!selectedProfile || !selectedProfile.ratingHistory) {
-    if (!session || !session.user || !session.user.id) {
+  if (!session || !session.user || !session.user.id) {
       return (
         <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
           <Card>
@@ -127,8 +129,8 @@ export default function ChunithmRatingHistoryPage() {
   }
 
   // ratingHistory: { '2025-08-12|11:04': 14.32, ... }
-  const entries = selectedProfile && selectedProfile.ratingHistory
-    ? Object.entries(selectedProfile.ratingHistory).sort((a, b) => a[0].localeCompare(b[0]))
+  const entries = parsedRatingHistory
+    ? Object.entries(parsedRatingHistory).sort((a, b) => a[0].localeCompare(b[0]))
     : [];
   const total = entries.length;
   const displayCount = Math.max(5, Math.floor((sliderValue / 100) * total));
@@ -214,7 +216,7 @@ export default function ChunithmRatingHistoryPage() {
           )}
         </div>
         {/* ratingHistory가 object일 때만 차트 렌더링 */}
-        {selectedProfile && selectedProfile.ratingHistory && typeof selectedProfile.ratingHistory === 'object' ? (
+  {selectedProfile && parsedRatingHistory && typeof parsedRatingHistory === 'object' ? (
           <>
             <Line data={data} options={options} />
             <div className="mt-6">
