@@ -137,16 +137,19 @@ export default function ChunithmRatingHistoryPage() {
     fetchProfiles();
   }, [userId]);
   useEffect(() => {
-    if (
-      chunithmProfiles.length > 0 &&
-      (!selectedProfileId || !chunithmProfiles.some(p => p.id === selectedProfileId))
-    ) {
-      const intlProfile = chunithmProfiles.find((p: any) => p.region === 'INTL');
-      const jpProfile = chunithmProfiles.find((p: any) => p.region === 'JP');
-      const defaultProfile = intlProfile || jpProfile || chunithmProfiles[0];
+    // 무한 렌더링 방지: profiles가 비어있거나 chunithmProfiles가 비어있으면 아무것도 하지 않음
+    if (!Array.isArray(profiles) || profiles.length === 0) return;
+    if (!Array.isArray(chunithmProfiles) || chunithmProfiles.length === 0) return;
+    // selectedProfileId가 이미 chunithmProfiles에 포함되어 있으면 setState 호출하지 않음
+    if (selectedProfileId && chunithmProfiles.some(p => p.id === selectedProfileId)) return;
+    // 초기화 조건: selectedProfileId가 빈 문자열이거나 유효하지 않을 때만 실행
+    const intlProfile = chunithmProfiles.find((p: any) => p.region === 'INTL');
+    const jpProfile = chunithmProfiles.find((p: any) => p.region === 'JP');
+    const defaultProfile = intlProfile || jpProfile || chunithmProfiles[0];
+    if (defaultProfile && defaultProfile.id) {
       setSelectedProfileId(defaultProfile.id);
     }
-  }, [chunithmProfiles]);
+  }, [chunithmProfiles, profiles, selectedProfileId]);
 
   if (!selectedProfile || !selectedProfile.ratingHistory) {
   if (!session || !session.user || !session.user.id) {
