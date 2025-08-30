@@ -116,35 +116,25 @@ export default function ChunithmRatingHistoryPage() {
   const [sliderValue, setSliderValue] = useState<number>(100);
 
   useEffect(() => {
-    let isMounted = true;
     async function fetchProfiles() {
       try {
-        // session은 내부에서만 체크
         const res = await fetch('/api/dashboard');
         const data = await res.json();
-        if (isMounted) {
-          setProfiles(data.profiles || []);
-          // CHUNITHM 모든 프로필 필터링 (isPublic 관계없이)
-          const chunithmProfiles = Array.isArray(data.profiles)
-            ? data.profiles.filter((p: any) => p.gameType === 'CHUNITHM')
-            : [];
-          if (chunithmProfiles.length > 0) {
-            // INTL > JP > 기타
-            const intlProfile = chunithmProfiles.find((p: any) => p.region === 'INTL');
-            const jpProfile = chunithmProfiles.find((p: any) => p.region === 'JP');
-            const defaultProfile = intlProfile || jpProfile || chunithmProfiles[0];
-            // 현재 값과 다를 때만 setState
-            if (defaultProfile.id !== selectedProfileId) {
-              setSelectedProfileId(defaultProfile.id);
-            }
-          }
+        console.log('[DEBUG] dashboard API 응답:', data);
+        if (Array.isArray(data.profiles)) {
+          setProfiles(data.profiles);
+        } else if (Array.isArray(data)) {
+          setProfiles(data);
+        } else {
+          console.warn('[DEBUG] profiles 데이터가 배열이 아님:', data.profiles);
+          setProfiles([]);
         }
       } catch (err) {
-        // 에러 핸들링
+        console.error('[DEBUG] fetchProfiles 에러:', err);
+        setProfiles([]);
       }
     }
-    if (session && session.user && session.user.id) { fetchProfiles(); }
-    return () => { isMounted = false; };
+    fetchProfiles();
   }, [userId]);
 
   if (!selectedProfile || !selectedProfile.ratingHistory) {
