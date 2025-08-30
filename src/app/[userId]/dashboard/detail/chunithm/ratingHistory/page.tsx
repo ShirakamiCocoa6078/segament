@@ -136,6 +136,16 @@ export default function ChunithmRatingHistoryPage() {
     }
     fetchProfiles();
   }, [userId]);
+  useEffect(() => {
+    if (chunithmProfiles.length > 0) {
+      const intlProfile = chunithmProfiles.find((p: any) => p.region === 'INTL');
+      const jpProfile = chunithmProfiles.find((p: any) => p.region === 'JP');
+      const defaultProfile = intlProfile || jpProfile || chunithmProfiles[0];
+      if (defaultProfile.id !== selectedProfileId) {
+        setSelectedProfileId(defaultProfile.id);
+      }
+    }
+  }, [chunithmProfiles, selectedProfileId]);
 
   if (!selectedProfile || !selectedProfile.ratingHistory) {
   if (!session || !session.user || !session.user.id) {
