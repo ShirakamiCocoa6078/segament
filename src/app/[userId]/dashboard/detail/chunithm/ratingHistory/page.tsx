@@ -55,7 +55,33 @@ export default function ChunithmRatingHistoryPage() {
   const [profiles, setProfiles] = useState<any[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
   // CHUNITHM 모든 프로필 필터링 (isPublic 관계없이)
-  const chunithmProfiles = profiles.filter((p: any) => p.gameType === 'CHUNITHM');
+  const chunithmProfiles = Array.isArray(profiles)
+    ? profiles.filter((p: any) => {
+        // 필드 존재 여부 및 값 타입 체크
+        if (!p) return false;
+        if (typeof p.gameType !== 'string') {
+          console.warn('gameType 필드가 string이 아님:', p);
+          return false;
+        }
+        // 대소문자 무시 비교
+        return p.gameType.trim().toUpperCase() === 'CHUNITHM';
+      })
+    : [];
+  // 콘솔 로그로 데이터 흐름 확인
+  useEffect(() => {
+    console.log('[DEBUG] profiles:', profiles);
+    console.log('[DEBUG] chunithmProfiles:', chunithmProfiles);
+    if (profiles.length > 0) {
+      profiles.forEach((p, idx) => {
+        console.log(`[DEBUG] profiles[${idx}]:`, p);
+      });
+    }
+    if (chunithmProfiles.length > 0) {
+      chunithmProfiles.forEach((p, idx) => {
+        console.log(`[DEBUG] chunithmProfiles[${idx}]:`, p);
+      });
+    }
+  }, [profiles, chunithmProfiles]);
   // 선택된 프로필
   let selectedProfile = chunithmProfiles.find(p => p.id === selectedProfileId);
   // ratingHistory 파싱 결과를 별도 변수에 저장
