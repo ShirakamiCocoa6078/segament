@@ -163,7 +163,7 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
                             <span>Lv. {profile.level}</span>
                             <div className="flex items-end space-x-0.5">
                                 <span className="mr-1">Rating: </span>
-                                <span className="font-bold text-lg md:text-xl text-blue-600 dark:text-blue-300">{currentRating.toFixed(2)}</span>
+                                <span className="font-bold text-lg md:text-xl text-blue-600 dark:text-blue-300">{typeof currentRating === 'number' && !isNaN(currentRating) ? currentRating.toFixed(2) : '-'}</span>
                             </div>
                             <span>Play Count: {profile.playCount.toLocaleString()}</span>
                         </div>
