@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
-import songData from '@/../data/chunithmSongData.json';
+import songData from '@/lib/chunithmSongData.json';
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);

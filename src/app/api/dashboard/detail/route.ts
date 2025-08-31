@@ -5,7 +5,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
 import { calculateRating } from '@/lib/ratingUtils';
-import songData from '@/../data/chunithmSongData.json';
+import songData from '@/lib/chunithmSongData.json';
 
 // 타입 정의
 interface SongInfo {

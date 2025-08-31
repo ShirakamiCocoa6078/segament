@@ -3,7 +3,7 @@
 
 import { ChunithmSongCard } from './ChunithmSongCard';
 import { calculateRating } from '@/lib/ratingUtils';
-import chunithmSongData from '@/../data/chunithmSongData.json';
+import chunithmSongData from '@/lib/chunithmSongData.json';
 
 interface SongData {
   id: string;

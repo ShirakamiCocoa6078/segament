@@ -4,7 +4,8 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
-import chunithmSongData from '@/data/chunithmSongData.json';
+import fs from "fs";
+const chunithmSongData = JSON.parse(fs.readFileSync(process.cwd() + "/src/lib/chunithmSongData.json", "utf-8"));
 
 export async function OPTIONS(request: NextRequest) {
   const headers = new Headers();
