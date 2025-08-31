@@ -62,15 +62,9 @@ export function ProfileDisplay({ profile }: { profile: ProfileDetail }) {
         }
     }, []);
 
-    // 최신 레이팅 가져오기 (히스토리가 있으면 최신 값, 없으면 기본 rating)
-    const getLatestRating = () => {
-        if (!profile.ratingHistory || Object.keys(profile.ratingHistory).length === 0) {
-            return profile.rating;
-        }
-        const sortedEntries = Object.entries(profile.ratingHistory).sort((a, b) => a[0].localeCompare(b[0]));
-        return sortedEntries[sortedEntries.length - 1][1];
-    };
-    const currentRating = getLatestRating();
+
+    // 레이팅은 항상 profile.rating에서 직접 가져옴
+    const currentRating = profile.rating;
 
     if (isMobileMode) {
         // 모바일 레이아웃: 팀(최상단, 20% 확대) → 프로필사진(상단) → 닉네임(중간) → 레벨/레이팅/플레이카운트(하단) → 칭호1~3(최하단, 20% 확대)
