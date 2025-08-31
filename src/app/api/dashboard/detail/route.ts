@@ -121,7 +121,11 @@ export async function GET(request: NextRequest) {
         if (songDifficultyInfo && typeof songDifficultyInfo.const === 'number') {
           enrichedItem.const = songDifficultyInfo.const;
           enrichedItem.level = songDifficultyInfo.level || 'N/A';
-          enrichedItem.ratingValue = calculateRating(enrichedItem.const, item.score || 0);
+          const constValue = typeof enrichedItem.const === 'number' ? enrichedItem.const : 0;
+          const scoreValue = typeof item.score === 'number' ? item.score : 0;
+          enrichedItem.ratingValue = calculateRating(constValue, scoreValue);
+        } else {
+          enrichedItem.ratingValue = 0;
         }
 
         // ratingList 항목의 경우 플레이로그에서 상세 정보 가져오기
