@@ -158,11 +158,11 @@ export function SidebarNav() {
               {chunithmProfiles.length > 0 ? (
                 chunithmProfiles.map((profile) => (
                   <SidebarMenuSubItem key={profile.id}>
-                    <Link href={`/${profile.userId}/dashboard/detail/chunithm/${profile.region.toLowerCase()}`}>
-                      <SidebarMenuSubButton>
+                    <SidebarMenuSubButton asChild>
+                      <Link href={`/${profile.userId}/dashboard/detail/chunithm/${profile.region.toLowerCase()}`}>
                         <span>{profile.playerName} ({profile.region})</span>
-                      </SidebarMenuSubButton>
-                    </Link>
+                      </Link>
+                    </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                 ))
               ) : (
@@ -198,18 +198,18 @@ export function SidebarNav() {
             </SidebarMenuButton>
             <SidebarMenuSub>
               <SidebarMenuSubItem>
-                <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/playPercent`}>
-                  <SidebarMenuSubButton>
+                <SidebarMenuSubButton asChild>
+                  <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/playPercent`}>
                     <span>순회 진행도(개발중)</span>
-                  </SidebarMenuSubButton>
-                </Link>
+                  </Link>
+                </SidebarMenuSubButton>
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
-                <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/ratingHistory`}>
-                  <SidebarMenuSubButton>
+                <SidebarMenuSubButton asChild>
+                  <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/ratingHistory`}>
                     <span>레이팅 성장 그래프(개발중)</span>
-                  </SidebarMenuSubButton>
-                </Link>
+                  </Link>
+                </SidebarMenuSubButton>
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButton className="cursor-not-allowed opacity-50">

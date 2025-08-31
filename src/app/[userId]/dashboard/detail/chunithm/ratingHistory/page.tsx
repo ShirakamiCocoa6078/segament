@@ -1,334 +1,200 @@
 "use client";
-import React from "react";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { ProfileDisplay } from "@/components/dashboard/profile-display";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
-import { Slider } from "@/components/ui/slider";
-import { Line } from "react-chartjs-2";
-import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend } from "chart.js";
-
-Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend);
+import React, { useEffect, useState } from "react";
 
 export default function ChunithmRatingHistoryPage() {
-  // 디버깅용 버튼 상태 및 함수들 (최상단에 한 번만 선언)
-  const [debugLoading, setDebugLoading] = useState(false);
-  async function debugFetchDashboard() {
-    try {
-      const res = await fetch("/api/dashboard");
-      const data = await res.json();
-      console.log("[DEBUG] /api/dashboard 응답:", data);
-    } catch (e) {
-      console.error("[DEBUG] /api/dashboard 에러:", e);
-    }
-  }
-  async function debugFetchUpdateProfile() {
-    try {
-      const res = await fetch("/api/account/update-profile", { method: "POST" });
-      const data = await res.json();
-      console.log("[DEBUG] /api/account/update-profile 응답:", data);
-    } catch (e) {
-      console.error("[DEBUG] /api/account/update-profile 에러:", e);
-    }
-  }
-  async function debugFetchPublicProfile(userId: string) {
-    try {
-      const res = await fetch(`/api/profile/public/${userId}`);
-      const data = await res.json();
-      console.log(`[DEBUG] /api/profile/public/${userId} 응답:`, data);
-    } catch (e) {
-      console.error(`[DEBUG] /api/profile/public/${userId} 에러:`, e);
-    }
-  }
-  // 로그인 세션 확인
-  const [session, setSession] = useState<any>(null);
-  useEffect(() => {
-    // next-auth 세션 fetch
-    fetch('/api/auth/session')
-      .then(res => res.json())
-      .then(data => setSession(data));
-  }, []);
-  const params = useParams();
-  const userId = params?.userId as string;
   const [profiles, setProfiles] = useState<any[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
-  // CHUNITHM 모든 프로필 필터링 (isPublic 관계없이)
-  const chunithmProfiles = Array.isArray(profiles)
-    ? profiles.filter((p: any) => {
-        // 필드 존재 여부 및 값 타입 체크
-        if (!p) return false;
-        if (typeof p.gameType !== 'string') {
-          console.warn('gameType 필드가 string이 아님:', p);
-          return false;
-        }
-        // 대소문자 무시 비교
-        return p.gameType.trim().toUpperCase() === 'CHUNITHM';
-      })
-    : [];
-  // 콘솔 로그로 데이터 흐름 확인
-  useEffect(() => {
-    console.log('[DEBUG] profiles:', profiles);
-    console.log('[DEBUG] chunithmProfiles:', chunithmProfiles);
-    if (profiles.length > 0) {
-      profiles.forEach((p, idx) => {
-        console.log(`[DEBUG] profiles[${idx}]:`, p);
-      });
-    }
-    if (chunithmProfiles.length > 0) {
-      chunithmProfiles.forEach((p, idx) => {
-        console.log(`[DEBUG] chunithmProfiles[${idx}]:`, p);
-      });
-    }
-  }, [profiles, chunithmProfiles]);
-  // 선택된 프로필
-  let selectedProfile = chunithmProfiles.find(p => p.id === selectedProfileId);
-  // ratingHistory 파싱 결과를 별도 변수에 저장
-  let parsedRatingHistory: any = undefined;
-  if (selectedProfile) {
-    if (typeof selectedProfile.ratingHistory === 'string') {
-      try {
-        parsedRatingHistory = JSON.parse(selectedProfile.ratingHistory);
-      } catch (e) {
-        parsedRatingHistory = undefined;
-      }
-    } else {
-      parsedRatingHistory = selectedProfile.ratingHistory;
-    }
-  }
-  // 디버그 버튼 클릭 핸들러
-  const handleDebugClick = () => {
-    console.log('profiles:', profiles);
-    console.log('selectedProfile:', selectedProfile);
-    if (selectedProfile && selectedProfile.ratingHistory) {
-      console.log('ratingHistory:', selectedProfile.ratingHistory);
-    } else {
-      console.log('ratingHistory: 없음 또는 profile이 undefined');
-    }
-    if (typeof displayEntries !== 'undefined') {
-      console.log('displayEntries:', displayEntries);
-    }
-    if (typeof data !== 'undefined') {
-      console.log('chart data:', data);
-    }
-  };
-  const [sliderValue, setSliderValue] = useState<number>(100);
+  const [selectWidth, setSelectWidth] = useState<number>(180); // 기본값
+  const textMeasureRef = React.useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     async function fetchProfiles() {
       try {
-        const res = await fetch('/api/dashboard');
+        const res = await fetch("/api/dashboard");
         const data = await res.json();
-        console.log('[DEBUG] dashboard API 응답:', data);
         if (Array.isArray(data.profiles)) {
           setProfiles(data.profiles);
-        } else if (Array.isArray(data)) {
-          setProfiles(data);
         } else {
-          console.warn('[DEBUG] profiles 데이터가 배열이 아님:', data.profiles);
           setProfiles([]);
         }
-      } catch (err) {
-        console.error('[DEBUG] fetchProfiles 에러:', err);
+      } catch {
         setProfiles([]);
       }
     }
     fetchProfiles();
-  }, [userId]);
-  useEffect(() => {
-    // 무한 렌더링 방지: profiles가 비어있거나 chunithmProfiles가 비어있으면 아무것도 하지 않음
-    if (!Array.isArray(profiles) || profiles.length === 0) return;
-    if (!Array.isArray(chunithmProfiles) || chunithmProfiles.length === 0) return;
-    // selectedProfileId가 이미 chunithmProfiles에 포함되어 있으면 setState 호출하지 않음
-    if (selectedProfileId && chunithmProfiles.some(p => p.id === selectedProfileId)) return;
-    // 초기화 조건: selectedProfileId가 빈 문자열이거나 유효하지 않을 때만 실행
-    const intlProfile = chunithmProfiles.find((p: any) => p.region === 'INTL');
-    const jpProfile = chunithmProfiles.find((p: any) => p.region === 'JP');
-    const defaultProfile = intlProfile || jpProfile || chunithmProfiles[0];
-    if (defaultProfile && defaultProfile.id) {
-      setSelectedProfileId(defaultProfile.id);
-    }
-  }, [chunithmProfiles, profiles, selectedProfileId]);
+  }, []);
 
-  if (!selectedProfile || !selectedProfile.ratingHistory) {
-  if (!session || !session.user || !session.user.id) {
-      return (
-        <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
-          <Card>
-            <h2 className="text-xl font-bold mb-2">레이팅 성장 그래프</h2>
-            <p className="text-muted-foreground">로그인한 유저만 자신의 레이팅 성장 그래프를 볼 수 있습니다.</p>
-          </Card>
-          <Button variant="default" onClick={() => { window.location.href = '/api/auth/signin'; }}>로그인</Button>
-        </div>
-      );
+  const chunithmProfiles = profiles.filter(
+    (p: any) => p.gameType === "CHUNITHM"
+  );
+
+  // 가장 긴 option 텍스트 계산
+  useEffect(() => {
+    let longest = "프로필이 존재하지 않습니다";
+    if (chunithmProfiles.length > 0) {
+      longest = chunithmProfiles
+        .map((p: any) => `${p.playerName} - ${p.region}`)
+        .reduce((a, b) => (a.length > b.length ? a : b), "");
     }
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
-        <Card className="w-full max-w-2xl min-h-[220px] flex flex-col items-center justify-center p-8">
-          <h2 className="text-2xl font-bold mb-4">레이팅 성장 그래프</h2>
-          <div className="w-full max-w-md mx-auto mb-4">
-            {chunithmProfiles.length > 0 && (
-              <Select value={selectedProfileId} onValueChange={setSelectedProfileId}>
-                <SelectTrigger className="flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-full h-9 text-sm">
-                  <SelectValue placeholder="프로필 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  {chunithmProfiles.map(p => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.region ? `${p.region} - ${p.playerName}` : p.playerName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </div>
-          <p className="text-muted-foreground mb-2">{chunithmProfiles.length === 0 ? '츄니즘 게임 프로필이 없습니다.' : '해당 프로필에 레이팅 히스토리 데이터가 없습니다.'}</p>
-          <Button variant="outline" onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}>내 대시보드로 이동</Button>
-        </Card>
-      </div>
-    );
+    if (textMeasureRef.current) {
+      textMeasureRef.current.textContent = longest;
+      const width = textMeasureRef.current.offsetWidth + 40; // padding 등 여유
+      setSelectWidth(width);
+    }
+  }, [chunithmProfiles]);
+
+  // 브라우저 크기 감지 및 그래프 크기 계산
+  const [windowSize, setWindowSize] = useState({ width: 1200, height: 800 });
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // 그래프 비율 계산
+  let graphHeight = Math.floor(windowSize.height / 3);
+  let graphWidth = graphHeight * 3;
+  // 모바일(가로 600 이하)일 때는 가로의 1/4, 세로는 가로의 1/4
+  if (windowSize.width <= 600) {
+    graphWidth = Math.floor(windowSize.width * 0.95);
+    graphHeight = Math.floor(windowSize.width / 4);
   }
 
-  // ratingHistory: { '2025-08-12|11:04': 14.32, ... }
-  const entries = parsedRatingHistory
-    ? Object.entries(parsedRatingHistory).sort((a, b) => a[0].localeCompare(b[0]))
-    : [];
-  const total = entries.length;
-  const displayCount = Math.max(5, Math.floor((sliderValue / 100) * total));
-  const displayEntries = entries.slice(total - displayCount);
-
-  // 디버깅: 데이터 구조 확인 (useEffect로 브라우저 콘솔에 출력)
-  React.useEffect(() => {
-    console.log('profiles 전체 구조:', JSON.stringify(profiles, null, 2));
-    profiles.forEach((p, idx) => {
-      console.log(`profiles[${idx}] keys:`, Object.keys(p));
-      console.log(`profiles[${idx}].id:`, p.id);
-      console.log(`profiles[${idx}].ratingHistory 타입:`, typeof p.ratingHistory);
-      console.log(`profiles[${idx}].ratingHistory 값:`, p.ratingHistory);
-    });
-    if (selectedProfile) {
-      console.log('selectedProfile keys:', Object.keys(selectedProfile));
-      console.log('selectedProfile.id:', selectedProfile.id);
-      console.log('selectedProfile.ratingHistory 타입:', typeof selectedProfile.ratingHistory);
-      console.log('selectedProfile.ratingHistory 값:', selectedProfile.ratingHistory);
-      if (selectedProfile.ratingHistory && typeof selectedProfile.ratingHistory === 'object') {
-        const keys = Object.keys(selectedProfile.ratingHistory);
-        console.log('selectedProfile.ratingHistory keys:', keys);
-        if (keys.length === 0) {
-          console.log('selectedProfile.ratingHistory: 빈 객체');
-        }
-      } else if (selectedProfile.ratingHistory === undefined) {
-        console.log('selectedProfile.ratingHistory: undefined');
-      } else if (selectedProfile.ratingHistory === null) {
-        console.log('selectedProfile.ratingHistory: null');
-      }
-    } else {
-      console.log('selectedProfile: 없음');
-    }
-    console.log('displayEntries:', displayEntries);
-    console.log('chart data:', data);
-  }, [profiles, selectedProfile, displayEntries]);
-  const data = {
-    labels: displayEntries.map(([date]) => date.split('|')[0]),
-    datasets: [
-      {
-        label: "레이팅",
-        data: displayEntries.map(([, rating]) => Number(rating)),
-        borderColor: "#3b82f6",
-        backgroundColor: "rgba(59,130,246,0.1)",
-        fill: true,
-        tension: 0.2,
-      },
-    ],
-  };
-  console.log('chart data:', data);
-
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: { display: false },
-      title: { display: false },
-      tooltip: { enabled: true },
-    },
-    scales: {
-      x: { title: { display: true, text: "날짜" } },
-      y: { title: { display: true, text: "레이팅" }, min: 0, max: 20 },
-    },
+  // 그래프 영역 스타일
+  const graphBoxStyle = {
+    width: graphWidth,
+    height: graphHeight,
+    minWidth: 240,
+    minHeight: 120,
+    maxWidth: "100%",
+    maxHeight: "100%"
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
-      {/* 항상 보이는 디버깅 버튼 */}
-      <div className="my-4 flex gap-2">
-        <button
-          className="px-2 py-1 bg-blue-500 text-white rounded"
-          disabled={debugLoading}
-          onClick={async () => {
-            setDebugLoading(true);
-            await debugFetchDashboard();
-            setDebugLoading(false);
-          }}
+    <div className="w-full flex flex-col items-center mt-8">
+      {/* 최상단: 큰 텍스트 */}
+      <h1 className="text-3xl font-bold mb-6">레이팅 성장 그래프</h1>
+
+      {/* 선택 박스 (가장 긴 텍스트에 맞춰 width 자동 조정) */}
+      <div className="mb-4" style={{ width: selectWidth }}>
+        <select
+          className="w-full p-2 border rounded"
+          value={selectedProfileId}
+          onChange={(e) => setSelectedProfileId(e.target.value)}
         >
-          /api/dashboard 호출
-        </button>
-        <button
-          className="px-2 py-1 bg-green-500 text-white rounded"
-          disabled={debugLoading}
-          onClick={async () => {
-            setDebugLoading(true);
-            await debugFetchUpdateProfile();
-            setDebugLoading(false);
-          }}
-        >
-          /api/account/update-profile 호출
-        </button>
-        <button
-          className="px-2 py-1 bg-purple-500 text-white rounded"
-          disabled={debugLoading}
-          onClick={async () => {
-            setDebugLoading(true);
-            await debugFetchPublicProfile(userId);
-            setDebugLoading(false);
-          }}
-        >
-          /api/profile/public/[userId] 호출
-        </button>
-      </div>
-      {/* ...기존 Card 및 그래프 UI... */}
-      <Card className="w-full max-w-2xl min-h-[220px] flex flex-col items-center justify-center p-8">
-        <h2 className="text-2xl font-bold mb-4">레이팅 성장 그래프</h2>
-        <div className="w-full max-w-md mx-auto mb-4">
-          {chunithmProfiles.length > 0 && (
-            <Select value={selectedProfileId} onValueChange={setSelectedProfileId}>
-              <SelectTrigger className="flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-full h-9 text-sm">
-                <SelectValue placeholder="프로필 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                {chunithmProfiles.map(p => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.region ? `${p.region} - ${p.playerName}` : p.playerName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <option value="" disabled>
+            프로필을 선택
+          </option>
+          {chunithmProfiles.length === 0 ? (
+            <option value="" disabled>프로필이 존재하지 않습니다</option>
+          ) : (
+            chunithmProfiles.map((p: any) => (
+              <option key={p.id} value={p.id}>
+                {p.playerName} - {p.region}
+              </option>
+            ))
           )}
-        </div>
-        {/* ratingHistory가 object일 때만 차트 렌더링 */}
-        {selectedProfile && parsedRatingHistory && typeof parsedRatingHistory === 'object' ? (
-          <>
-            <Line data={data} options={options} />
-            <div className="mt-6">
-              <label className="block mb-2 text-sm font-medium text-muted-foreground">표시 구간 조절</label>
-              <Slider min={5} max={100} step={1} value={[sliderValue]} onValueChange={v => setSliderValue(v[0])} />
-              <div className="mt-2 text-xs text-muted-foreground">최근 {displayCount}개 데이터 표시</div>
-            </div>
-            <Button variant="secondary" className="mt-4" onClick={handleDebugClick}>디버그 출력</Button>
-          </>
+        </select>
+        {/* 숨겨진 span으로 텍스트 길이 측정 */}
+        <span
+          ref={textMeasureRef}
+          style={{
+            position: "absolute",
+            visibility: "hidden",
+            whiteSpace: "nowrap",
+            fontSize: "1rem",
+            fontWeight: "normal",
+            padding: "8px"
+          }}
+        />
+      </div>
+
+      {/* 그래프 박스 */}
+  <div className="border rounded flex items-center justify-center bg-muted" style={graphBoxStyle}>
+        {selectedProfileId === "" || chunithmProfiles.length === 0 ? (
+          <span className="text-muted-foreground">프로필이 선택되지 않았습니다.</span>
         ) : (
-          <div className="mt-6 text-muted-foreground">선택한 프로필에 레이팅 히스토리 데이터가 없습니다.</div>
+          (() => {
+            const selectedProfile = chunithmProfiles.find((p: any) => p.id === selectedProfileId);
+            console.log("selectedProfile", selectedProfile);
+            console.log("ratingHistory", selectedProfile?.ratingHistory);
+            if (!selectedProfile || !selectedProfile.ratingHistory) {
+              return <span className="text-muted-foreground">프로필이 선택되지 않았습니다.</span>;
+            }
+            // ratingHistory: Record<string, number> 형태 지원
+            let historyArr: { date: string; rating: number }[] = [];
+            if (Array.isArray(selectedProfile.ratingHistory)) {
+              historyArr = selectedProfile.ratingHistory;
+            } else if (typeof selectedProfile.ratingHistory === 'object') {
+              historyArr = Object.entries(selectedProfile.ratingHistory).map(([date, rating]) => ({
+                date,
+                rating: Number(rating)
+              }));
+            }
+            if (historyArr.length === 0) {
+              return <span className="text-muted-foreground">프로필이 선택되지 않았습니다.</span>;
+            }
+            const dates = historyArr.map(r => r.date);
+            const ratings = historyArr.map(r => r.rating);
+            const minRating = Math.min(...ratings);
+            const maxRating = Math.max(...ratings);
+            return (
+              <div className="w-full h-full flex flex-col justify-between">
+                {/* 좌측 축 (레이팅) */}
+                <div className="flex flex-row h-full">
+                  <div className="flex flex-col justify-between items-end mr-2 h-full" style={{ minWidth: 60 }}>
+                    <span>{maxRating}</span>
+                    <span>{minRating}</span>
+                  </div>
+                  {/* 그래프 영역 (간단한 선 그래프) */}
+                  <div className="flex-1 flex items-center">
+                    {/* 실제 그래프는 추후 Chart.js 등으로 대체 가능 */}
+                    <svg
+                      width={graphWidth}
+                      height={graphHeight}
+                      viewBox={`0 0 ${dates.length * 40} ${graphHeight}`}
+                    >
+                      {/* 축 */}
+                      <line x1="0" y1="0" x2="0" y2={graphHeight} stroke="#888" />
+                      <line x1="0" y1={graphHeight} x2={dates.length * 40} y2={graphHeight} stroke="#888" />
+                      {/* 데이터 */}
+                      {historyArr.map((r: any, i: number) => {
+                        const y = graphHeight - ((r.rating - minRating) / (maxRating - minRating || 1)) * (graphHeight - 20);
+                        const x = i * 40 + 20;
+                        return (
+                          <circle key={i} cx={x} cy={y} r={4} fill="#3b82f6" />
+                        );
+                      })}
+                      {/* 선 연결 */}
+                      {historyArr.length > 1 && (
+                        <polyline
+                          fill="none"
+                          stroke="#3b82f6"
+                          strokeWidth={2}
+                          points={historyArr.map((r: any, i: number) => {
+                            const y = graphHeight - ((r.rating - minRating) / (maxRating - minRating || 1)) * (graphHeight - 20);
+                            const x = i * 40 + 20;
+                            return `${x},${y}`;
+                          }).join(" ")}
+                        />
+                      )}
+                    </svg>
+                  </div>
+                </div>
+                {/* 하단 축 (날짜) */}
+                <div className="flex flex-row justify-between mt-2" style={{ width: dates.length * 40 }}>
+                  {dates.map((d: string, i: number) => (
+                    <span key={i} className="text-xs" style={{ minWidth: 40, textAlign: "center" }}>{d}</span>
+                  ))}
+                </div>
+              </div>
+            );
+          })()
         )}
-      </Card>
+      </div>
     </div>
   );
 }
