@@ -74,7 +74,7 @@ function updateRatingHistory(prevHistory: any, newData: any, date: string) {
   // 디버그: N20 계산 과정 출력
   console.log('[N20eve 디버그] 곡 id 리스트:', N20Ids);
   console.log('[N20eve 디버그] 곡별 score 매핑:', scores);
-  const n20Ratings = N20Ids.map(id => {
+  const n20Ratings = N20Ids.map((id: string) => {
     const item = newArr.find((e: any) => e.id === id);
     if (!item) {
       console.log(`[N20eve 디버그] 곡 id ${id}에 해당하는 ratingLists.new 항목 없음`);
@@ -93,9 +93,9 @@ function updateRatingHistory(prevHistory: any, newData: any, date: string) {
       : undefined;
     console.log(`[N20eve 디버그] 곡: ${item.title} (${id}, ${item.difficulty}) const: ${constValue}, score: ${scoreValue}, rating: ${rating}`);
     return rating;
-  }).filter(v => typeof v === 'number');
+  }).filter((v: number | undefined) => typeof v === 'number');
   const avgN20 = n20Ratings.length > 0
-    ? Math.round(n20Ratings.reduce((a, b) => a + b, 0) / n20Ratings.length * 10000) / 10000
+    ? Math.round(n20Ratings.reduce((a: number, b: number) => a + b, 0) / n20Ratings.length * 10000) / 10000
     : 0;
   console.log(`[N20eve 디버그] N20 곡별 rating 배열:`, n20Ratings);
   console.log(`[N20eve 디버그] N20 평균값(저장 예정):`, avgN20);
