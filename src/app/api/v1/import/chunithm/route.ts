@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
 import fs from "fs";
+import { calculateRating } from '@/lib/ratingUtils';
 const chunithmSongData = JSON.parse(fs.readFileSync(process.cwd() + "/src/lib/chunithmSongData.json", "utf-8"));
 
 export async function OPTIONS(request: NextRequest) {
@@ -165,8 +166,27 @@ export async function POST(req: Request) {
             scores[item.id] = item.score;
           }
         });
-        const avgB30 = getAverageRating(bestIds, scores);
-        const avgN20 = getAverageRating(newIds, scores);
+        // 곡별 레이팅 공식 적용
+        const getRatingAverage = (songIds: string[], scores: Record<string, number>) => {
+          const ratings = songIds.map(id => {
+            const item = [...bestArr, ...newArr].find((e: any) => e.id === id);
+            if (!item) return undefined;
+            const song = chunithmSongData.find((e: any) => e.meta.id === id);
+            if (!song) return undefined;
+            // 난이도 키 추출
+            const diffKey = item.difficulty?.toLowerCase();
+            const constValue = song.data?.[diffKey]?.const;
+            const scoreValue = scores[id];
+            return (typeof constValue === 'number' && typeof scoreValue === 'number')
+              ? calculateRating(constValue, scoreValue)
+              : undefined;
+          }).filter(v => typeof v === 'number');
+          return ratings.length > 0
+            ? Math.round(ratings.reduce((a, b) => a + b, 0) / ratings.length * 10000) / 10000
+            : 0;
+        };
+        const avgB30 = getRatingAverage(bestIds, scores);
+        const avgN20 = getRatingAverage(newIds, scores);
         const rating = typeof gameProfile.rating === 'number' ? gameProfile.rating : Number(gameProfile.rating);
         const prevB30 = prevHistory.B30eve && typeof prevHistory.B30eve === 'object' ? Object.values(prevHistory.B30eve).at(-1) : undefined;
         const prevN20 = prevHistory.N20eve && typeof prevHistory.N20eve === 'object' ? Object.values(prevHistory.N20eve).at(-1) : undefined;
