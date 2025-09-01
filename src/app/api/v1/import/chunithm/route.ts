@@ -24,9 +24,9 @@ function round4(val: number) {
 
 // 곡별 평균 계산
 function getAverageRating(songIds: string[], scores: Record<string, number>) {
-  const ratings = songIds.map(id => scores[id]).filter(v => typeof v === "number");
-  if (ratings.length === 0) return 0;
-  return round4(ratings.reduce((a, b) => a + b, 0) / ratings.length);
+  // ratingLists(best/new)에서 곡별 const/난이도/score를 모두 매칭하여 레이팅 공식 적용
+  // 호출부에서 ratingLists를 추가로 전달해야 함
+  return 0; // 더 아래에서 실제 계산
 }
 
 // n번째 등록 key 생성
@@ -47,14 +47,32 @@ function updateRatingHistory(prevHistory: any, newData: any, date: string) {
   if (!updated.N20eve) updated.N20eve = {};
   if (!updated.rating) updated.rating = {};
 
-  // 곡별 레이팅 계산 (실제 곡/점수 구조에 맞게 조정 필요)
+  // 곡별 레이팅 계산 (상수/난이도/점수 모두 매칭)
   const B30Ids = newData.B30; // B30 곡 id 배열
   const N20Ids = newData.N20; // N20 곡 id 배열
   const scores = newData.scores; // { 곡id: 점수 }
   const rating = round4(newData.rating);
-
-  const avgB30 = getAverageRating(B30Ids, scores);
-  const avgN20 = getAverageRating(N20Ids, scores);
+  const bestArr = Array.isArray(newData.best) ? newData.best : [];
+  const newArr = Array.isArray(newData.new) ? newData.new : [];
+  const getRatingAverage = (songIds: string[], scores: Record<string, number>, ratingLists: any[]) => {
+    const ratings = songIds.map(id => {
+      const item = ratingLists.find((e: any) => e.id === id);
+      if (!item) return undefined;
+      const song = chunithmSongData.find((e: any) => e.meta.id === id);
+      if (!song) return undefined;
+      const diffKey = item.difficulty?.toLowerCase();
+      const constValue = song.data?.[diffKey]?.const;
+      const scoreValue = scores[id];
+      return (typeof constValue === 'number' && typeof scoreValue === 'number')
+        ? calculateRating(constValue, scoreValue)
+        : undefined;
+    }).filter(v => typeof v === 'number');
+    return ratings.length > 0
+      ? Math.round(ratings.reduce((a, b) => a + b, 0) / ratings.length * 10000) / 10000
+      : 0;
+  };
+  const avgB30 = getRatingAverage(B30Ids, scores, bestArr);
+  const avgN20 = getRatingAverage(N20Ids, scores, newArr);
 
   // 변화 감지
   const prevB30 = Object.values(updated.B30eve).at(-1);
