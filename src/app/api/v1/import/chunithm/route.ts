@@ -71,8 +71,35 @@ function updateRatingHistory(prevHistory: any, newData: any, date: string) {
       ? Math.round(ratings.reduce((a, b) => a + b, 0) / ratings.length * 10000) / 10000
       : 0;
   };
+  // 디버그: N20 계산 과정 출력
+  console.log('[N20eve 디버그] 곡 id 리스트:', N20Ids);
+  console.log('[N20eve 디버그] 곡별 score 매핑:', scores);
+  const n20Ratings = N20Ids.map(id => {
+    const item = newArr.find((e: any) => e.id === id);
+    if (!item) {
+      console.log(`[N20eve 디버그] 곡 id ${id}에 해당하는 ratingLists.new 항목 없음`);
+      return undefined;
+    }
+    const song = chunithmSongData.find((e: any) => e.meta.id === id);
+    if (!song) {
+      console.log(`[N20eve 디버그] 곡 id ${id}에 해당하는 chunithmSongData 없음`);
+      return undefined;
+    }
+    const diffKey = item.difficulty?.toLowerCase();
+    const constValue = song.data?.[diffKey]?.const;
+    const scoreValue = scores[id];
+    const rating = (typeof constValue === 'number' && typeof scoreValue === 'number')
+      ? calculateRating(constValue, scoreValue)
+      : undefined;
+    console.log(`[N20eve 디버그] 곡: ${item.title} (${id}, ${item.difficulty}) const: ${constValue}, score: ${scoreValue}, rating: ${rating}`);
+    return rating;
+  }).filter(v => typeof v === 'number');
+  const avgN20 = n20Ratings.length > 0
+    ? Math.round(n20Ratings.reduce((a, b) => a + b, 0) / n20Ratings.length * 10000) / 10000
+    : 0;
+  console.log(`[N20eve 디버그] N20 곡별 rating 배열:`, n20Ratings);
+  console.log(`[N20eve 디버그] N20 평균값(저장 예정):`, avgN20);
   const avgB30 = getRatingAverage(B30Ids, scores, bestArr);
-  const avgN20 = getRatingAverage(N20Ids, scores, newArr);
 
   // 변화 감지
   const prevB30 = Object.values(updated.B30eve).at(-1);
