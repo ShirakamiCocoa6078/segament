@@ -70,15 +70,24 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
     };
   });
 
-  // 레이팅 통계 계산
-  const ratings = displaySongs
+  // 레이팅 통계 계산 및 콘솔 출력
+  const ratings = enrichedSongs
     .filter(song => song.const && song.score)
-    .map(song => calculateRating(song.const!, song.score));
-  
+    .map(song => {
+      const rating = calculateRating(song.const!, song.score);
+      console.log(`[${type}] 곡: ${song.title} (${song.id}, ${song.difficulty}) const: ${song.const}, score: ${song.score}, rating: ${rating.toFixed(4)}`);
+      return rating;
+    });
+
+  const averageRating = ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : 0;
+  if (ratings.length > 0) {
+    console.log(`[${type}] 평균 레이팅: ${averageRating.toFixed(4)}`);
+  }
+
   const ratingStats = ratings.length > 0 ? {
     max: Math.max(...ratings),
     min: Math.min(...ratings),
-    average: ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length
+    average: averageRating
   } : null;
 
   if (displaySongs.length === 0) {
