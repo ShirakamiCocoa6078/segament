@@ -96,15 +96,14 @@ export async function POST(req: Request) {
         where: { userId_gameType_region: { userId: session.user.id, gameType, region } }
       });
 
-      // ratingHistory 구조화
+      // ratingHistory 구조화 (북마크릿 저장 로직은 그대로)
       let updatedRatingHistory: any = existingProfile?.ratingHistory ?? {};
 
       // 북마크릿에서 받은 데이터 구조에 맞게 newData 생성
-      // 실제 B30/N20 곡 id 추출, scores, rating 값은 gameData에서 전달받아야 함
       const newData = {
-        B30: gameData.B30Ids ?? [], // B30 곡 id 배열
-        N20: gameData.N20Ids ?? [], // N20 곡 id 배열
-        scores: gameData.scores ?? {}, // { 곡id: 점수 }
+        B30: gameData.B30Ids ?? [],
+        N20: gameData.N20Ids ?? [],
+        scores: gameData.scores ?? {},
         rating: profile.rating
       };
       const date = profile.ratingTimestamp?.split('|')[0] ?? '';
@@ -114,6 +113,7 @@ export async function POST(req: Request) {
       // ratingTimestamp는 데이터베이스에 저장하지 않음
       const { ratingTimestamp: _, ...profileData } = profile;
 
+      // 북마크릿 데이터 저장
       const gameProfile = await tx.gameProfile.upsert({
         where: { userId_gameType_region: { userId: session.user.id, gameType, region } },
         update: {
@@ -141,6 +141,53 @@ export async function POST(req: Request) {
           ratingLists: gameData.ratingLists,
         }
       });
+
+      // 저장 이후 ratingLists 기반 평균값 계산 및 ratingHistory 갱신
+      const dbGameData = await tx.gameData.findUnique({ where: { profileId: gameProfile.id } });
+      // ratingLists 타입 안전하게 변환
+      let ratingLists: any = dbGameData?.ratingLists;
+      if (typeof ratingLists === 'string') {
+        try { ratingLists = JSON.parse(ratingLists); } catch { ratingLists = {}; }
+      }
+      // ratingHistory 타입 안전하게 변환
+      let prevHistory: any = gameProfile.ratingHistory;
+      if (typeof prevHistory === 'string') {
+        try { prevHistory = JSON.parse(prevHistory); } catch { prevHistory = {}; }
+      }
+      if (ratingLists && typeof ratingLists === 'object') {
+        const bestArr = Array.isArray(ratingLists.best) ? ratingLists.best : [];
+        const newArr = Array.isArray(ratingLists.new) ? ratingLists.new : [];
+        const bestIds = bestArr.map((item: any) => item.id);
+        const newIds = newArr.map((item: any) => item.id);
+        const scores: Record<string, number> = {};
+        [...bestArr, ...newArr].forEach((item: any) => {
+          if (item && item.id && typeof item.score === 'number') {
+            scores[item.id] = item.score;
+          }
+        });
+        const avgB30 = getAverageRating(bestIds, scores);
+        const avgN20 = getAverageRating(newIds, scores);
+        const rating = typeof gameProfile.rating === 'number' ? gameProfile.rating : Number(gameProfile.rating);
+        const prevB30 = prevHistory.B30eve && typeof prevHistory.B30eve === 'object' ? Object.values(prevHistory.B30eve).at(-1) : undefined;
+        const prevN20 = prevHistory.N20eve && typeof prevHistory.N20eve === 'object' ? Object.values(prevHistory.N20eve).at(-1) : undefined;
+        const prevRating = prevHistory.rating && typeof prevHistory.rating === 'object' ? Object.values(prevHistory.rating).at(-1) : undefined;
+        if (!prevHistory.B30eve || prevB30 !== avgB30 || !prevHistory.N20eve || prevN20 !== avgN20 || !prevHistory.rating || prevRating !== rating) {
+          // 변화가 있으면 ratingHistory 갱신
+          const dateKey = date || new Date().toISOString().slice(0, 10);
+          const newHistory: any = {
+            B30eve: prevHistory.B30eve && typeof prevHistory.B30eve === 'object' ? { ...prevHistory.B30eve } : {},
+            N20eve: prevHistory.N20eve && typeof prevHistory.N20eve === 'object' ? { ...prevHistory.N20eve } : {},
+            rating: prevHistory.rating && typeof prevHistory.rating === 'object' ? { ...prevHistory.rating } : {}
+          };
+          newHistory.B30eve[dateKey] = avgB30;
+          newHistory.N20eve[dateKey] = avgN20;
+          newHistory.rating[dateKey] = rating;
+          await tx.gameProfile.update({
+            where: { id: gameProfile.id },
+            data: { ratingHistory: newHistory }
+          });
+        }
+      }
 
       return gameProfile;
     });
