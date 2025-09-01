@@ -150,7 +150,9 @@ export async function POST(req: Request) {
         B30: gameData.B30Ids ?? [],
         N20: gameData.N20Ids ?? [],
         scores: gameData.scores ?? {},
-        rating: profile.rating
+        rating: profile.rating,
+        best: gameData.ratingLists?.best ?? [],
+        new: gameData.ratingLists?.new ?? []
       };
       const date = profile.ratingTimestamp?.split('|')[0] ?? '';
 
