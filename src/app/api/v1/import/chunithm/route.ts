@@ -130,6 +130,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
+    console.log('[API 요청 body 디버그]', JSON.stringify(body, null, 2));
     const { gameType, region, profile, gameData } = body;
 
     if (!profile || !profile.playerName) {
