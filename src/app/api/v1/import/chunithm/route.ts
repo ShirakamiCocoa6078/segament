@@ -41,84 +41,15 @@ function getNextKey(obj: Record<string, any>, date: string) {
 }
 
 // ratingHistory 업데이트
-function updateRatingHistory(prevHistory: any, newData: any, date: string) {
-  const updated = { ...prevHistory };
-  if (!updated.B30eve) updated.B30eve = {};
-  if (!updated.N20eve) updated.N20eve = {};
+function updateRatingHistory(prevHistory: any, newRating: number, date: string) {
+  const updated: any = { ...prevHistory };
   if (!updated.rating) updated.rating = {};
-
-  // 곡별 레이팅 계산 (상수/난이도/점수 모두 매칭)
-  const B30Ids = newData.B30; // B30 곡 id 배열
-  const N20Ids = newData.N20; // N20 곡 id 배열
-  const scores = newData.scores; // { 곡id: 점수 }
-  const rating = round4(newData.rating);
-  const bestArr = Array.isArray(newData.best) ? newData.best : [];
-  const newArr = Array.isArray(newData.new) ? newData.new : [];
-  const getRatingAverage = (songIds: string[], scores: Record<string, number>, ratingLists: any[]) => {
-    const ratings = songIds.map(id => {
-      const item = ratingLists.find((e: any) => e.id === id);
-      if (!item) return undefined;
-      const song = chunithmSongData.find((e: any) => e.meta.id === id);
-      if (!song) return undefined;
-      const diffKey = item.difficulty?.toLowerCase();
-      const constValue = song.data?.[diffKey]?.const;
-      const scoreValue = scores[id];
-      return (typeof constValue === 'number' && typeof scoreValue === 'number')
-        ? calculateRating(constValue, scoreValue)
-        : undefined;
-    }).filter(v => typeof v === 'number');
-    return ratings.length > 0
-      ? Math.round(ratings.reduce((a, b) => a + b, 0) / ratings.length * 10000) / 10000
-      : 0;
-  };
-  // 디버그: N20 계산 과정 출력
-  console.log('[N20eve 디버그] 곡 id 리스트:', N20Ids);
-  console.log('[N20eve 디버그] 곡별 score 매핑:', scores);
-  const n20Ratings = N20Ids.map((id: string) => {
-    const item = newArr.find((e: any) => e.id === id);
-    if (!item) {
-      console.log(`[N20eve 디버그] 곡 id ${id}에 해당하는 ratingLists.new 항목 없음`);
-      return undefined;
-    }
-    const song = chunithmSongData.find((e: any) => e.meta.id === id);
-    if (!song) {
-      console.log(`[N20eve 디버그] 곡 id ${id}에 해당하는 chunithmSongData 없음`);
-      return undefined;
-    }
-    const diffKey = item.difficulty?.toLowerCase();
-    const constValue = song.data?.[diffKey]?.const;
-    const scoreValue = scores[id];
-    const rating = (typeof constValue === 'number' && typeof scoreValue === 'number')
-      ? calculateRating(constValue, scoreValue)
-      : undefined;
-    console.log(`[N20eve 디버그] 곡: ${item.title} (${id}, ${item.difficulty}) const: ${constValue}, score: ${scoreValue}, rating: ${rating}`);
-    return rating;
-  }).filter((v: number | undefined) => typeof v === 'number');
-  const avgN20 = n20Ratings.length > 0
-    ? Math.round(n20Ratings.reduce((a: number, b: number) => a + b, 0) / n20Ratings.length * 10000) / 10000
-    : 0;
-  console.log(`[N20eve 디버그] N20 곡별 rating 배열:`, n20Ratings);
-  console.log(`[N20eve 디버그] N20 평균값(저장 예정):`, avgN20);
-  const avgB30 = getRatingAverage(B30Ids, scores, bestArr);
-
-  // 변화 감지
-  const prevB30 = Object.values(updated.B30eve).at(-1);
-  const prevN20 = Object.values(updated.N20eve).at(-1);
-  const prevRating = Object.values(updated.rating).at(-1);
-
-  const changes = [];
-  if (prevB30 !== avgB30) changes.push("B30eve");
-  if (prevN20 !== avgN20) changes.push("N20eve");
-  if (prevRating !== rating) changes.push("rating");
-  if (changes.length === 0) return updated;
-
-  // 중복 등록 처리
-  const key = getNextKey(updated.rating, date);
-
-  updated.B30eve[key] = avgB30;
-  updated.N20eve[key] = avgN20;
-  updated.rating[key] = rating;
-
+  const lastKey = Object.keys(updated.rating).at(-1);
+  const lastValue = lastKey ? updated.rating[lastKey] : undefined;
+  if (lastValue !== newRating) {
+    const key = lastKey && lastKey.startsWith(date) ? getNextKey(updated.rating, date) : date;
+    updated.rating[key] = newRating;
+  }
   return updated;
 }
 
@@ -157,7 +88,7 @@ export async function POST(req: Request) {
       };
       const date = profile.ratingTimestamp?.split('|')[0] ?? '';
 
-      updatedRatingHistory = updateRatingHistory(updatedRatingHistory, newData, date);
+  updatedRatingHistory = updateRatingHistory(updatedRatingHistory, newData.rating, date);
 
       // ratingTimestamp는 데이터베이스에 저장하지 않음
       const { ratingTimestamp: _, ...profileData } = profile;
@@ -191,71 +122,8 @@ export async function POST(req: Request) {
         }
       });
 
-      // 저장 이후 ratingLists 기반 평균값 계산 및 ratingHistory 갱신
-      const dbGameData = await tx.gameData.findUnique({ where: { profileId: gameProfile.id } });
-      // ratingLists 타입 안전하게 변환
-      let ratingLists: any = dbGameData?.ratingLists;
-      if (typeof ratingLists === 'string') {
-        try { ratingLists = JSON.parse(ratingLists); } catch { ratingLists = {}; }
-      }
-      // ratingHistory 타입 안전하게 변환
-      let prevHistory: any = gameProfile.ratingHistory;
-      if (typeof prevHistory === 'string') {
-        try { prevHistory = JSON.parse(prevHistory); } catch { prevHistory = {}; }
-      }
-      if (ratingLists && typeof ratingLists === 'object') {
-        const bestArr = Array.isArray(ratingLists.best) ? ratingLists.best : [];
-        const newArr = Array.isArray(ratingLists.new) ? ratingLists.new : [];
-        const bestIds = bestArr.map((item: any) => item.id);
-        const newIds = newArr.map((item: any) => item.id);
-        const scores: Record<string, number> = {};
-        [...bestArr, ...newArr].forEach((item: any) => {
-          if (item && item.id && typeof item.score === 'number') {
-            scores[item.id] = item.score;
-          }
-        });
-        // 곡별 레이팅 공식 적용
-        const getRatingAverage = (songIds: string[], scores: Record<string, number>) => {
-          const ratings = songIds.map(id => {
-            const item = [...bestArr, ...newArr].find((e: any) => e.id === id);
-            if (!item) return undefined;
-            const song = chunithmSongData.find((e: any) => e.meta.id === id);
-            if (!song) return undefined;
-            // 난이도 키 추출
-            const diffKey = item.difficulty?.toLowerCase();
-            const constValue = song.data?.[diffKey]?.const;
-            const scoreValue = scores[id];
-            return (typeof constValue === 'number' && typeof scoreValue === 'number')
-              ? calculateRating(constValue, scoreValue)
-              : undefined;
-          }).filter(v => typeof v === 'number');
-          return ratings.length > 0
-            ? Math.round(ratings.reduce((a, b) => a + b, 0) / ratings.length * 10000) / 10000
-            : 0;
-        };
-        const avgB30 = getRatingAverage(bestIds, scores);
-        const avgN20 = getRatingAverage(newIds, scores);
-        const rating = typeof gameProfile.rating === 'number' ? gameProfile.rating : Number(gameProfile.rating);
-        const prevB30 = prevHistory.B30eve && typeof prevHistory.B30eve === 'object' ? Object.values(prevHistory.B30eve).at(-1) : undefined;
-        const prevN20 = prevHistory.N20eve && typeof prevHistory.N20eve === 'object' ? Object.values(prevHistory.N20eve).at(-1) : undefined;
-        const prevRating = prevHistory.rating && typeof prevHistory.rating === 'object' ? Object.values(prevHistory.rating).at(-1) : undefined;
-        if (!prevHistory.B30eve || prevB30 !== avgB30 || !prevHistory.N20eve || prevN20 !== avgN20 || !prevHistory.rating || prevRating !== rating) {
-          // 변화가 있으면 ratingHistory 갱신
-          const dateKey = date || new Date().toISOString().slice(0, 10);
-          const newHistory: any = {
-            B30eve: prevHistory.B30eve && typeof prevHistory.B30eve === 'object' ? { ...prevHistory.B30eve } : {},
-            N20eve: prevHistory.N20eve && typeof prevHistory.N20eve === 'object' ? { ...prevHistory.N20eve } : {},
-            rating: prevHistory.rating && typeof prevHistory.rating === 'object' ? { ...prevHistory.rating } : {}
-          };
-          newHistory.B30eve[dateKey] = avgB30;
-          newHistory.N20eve[dateKey] = avgN20;
-          newHistory.rating[dateKey] = rating;
-          await tx.gameProfile.update({
-            where: { id: gameProfile.id },
-            data: { ratingHistory: newHistory }
-          });
-        }
-      }
+  // 평균값 계산 및 B30/N20 관련 로직 완전 삭제
+  // rating 값만 관리
 
       return gameProfile;
     });
