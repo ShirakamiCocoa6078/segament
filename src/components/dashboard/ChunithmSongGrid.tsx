@@ -75,13 +75,13 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
     .filter(song => song.const && song.score)
     .map(song => {
       const rating = calculateRating(song.const!, song.score);
-      console.log(`[${type}] 곡: ${song.title} (${song.id}, ${song.difficulty}) const: ${song.const}, score: ${song.score}, rating: ${rating.toFixed(4)}`);
+  // 디버깅 콘솔 로그 제거
       return rating;
     });
 
   const averageRating = ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : 0;
   if (ratings.length > 0) {
-    console.log(`[${type}] 평균 레이팅: ${averageRating.toFixed(4)}`);
+  // 디버깅 콘솔 로그 제거
   }
 
   const ratingStats = ratings.length > 0 ? {
@@ -141,7 +141,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
               key={`${song.id}-${song.difficulty}-${index}`} 
               className={`w-full ${type === 'new' ? 'max-w-[637px]' : 'max-w-[490px]'} ${gridColumnClass}`}
             >
-              <ChunithmSongCard song={song} />
+              <ChunithmSongCard song={song} index={index} />
             </div>
           );
         })}

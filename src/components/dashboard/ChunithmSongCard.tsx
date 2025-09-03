@@ -22,6 +22,7 @@ interface SongData {
 
 interface ChunithmSongCardProps {
   song: SongData;
+  index?: number;
 }
 
 // 아이콘 매핑
@@ -56,7 +57,7 @@ const DIFFICULTY_COLORS = {
   ULTIMA: 'linear-gradient(45deg, #232323 25%, #FF3A3A 25%, #FF3A3A 50%, #232323 50%, #232323 75%, #FF3A3A 75%)'
 };
 
-export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
+export function ChunithmSongCard({ song, index }: ChunithmSongCardProps) {
   const [jacketUrl, setJacketUrl] = useState<string>('');
 
   useEffect(() => {
@@ -122,6 +123,26 @@ export function ChunithmSongCard({ song }: ChunithmSongCardProps) {
 
       {/* 스코어와 아이콘을 겹쳐서 배치하는 컨테이너 */}
       <div className="relative px-3 py-2 flex-shrink-0 min-w-0">
+        {/* 순위 표시 (#n) */}
+        {typeof index === 'number' && (
+          <div
+            className={
+              `absolute font-bold italic`
+            }
+            style={{
+              left: '-55px', // 카드 전체 기준 좌측에서 75px(55px 더 왼쪽)
+              top: '25px', // 카드 전체 기준 상단에서 25px
+              color: typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? '#949494'
+                : '#4c4c4c',
+              fontSize: '150%',
+              zIndex: 10,
+              opacity: 0.85,
+            }}
+          >
+            #{index + 1}
+          </div>
+        )}
         {/* 스코어 */}
         <div className="text-right mb-2">
           <p className="text-lg font-bold text-blue-600">
