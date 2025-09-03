@@ -75,18 +75,20 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
     .filter(song => song.const && song.score)
     .map(song => {
       const rating = calculateRating(song.const!, song.score);
-  // 디버깅 콘솔 로그 제거
-      return rating;
+      // 각 곡의 레이팅은 소수점 2자리 버림
+      return Math.floor(rating * 100) / 100;
     });
 
-  const averageRating = ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : 0;
+  const averageRating = ratings.length > 0
+    ? Math.round((ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length) * 10000) / 10000
+    : 0;
   if (ratings.length > 0) {
   // 디버깅 콘솔 로그 제거
   }
 
   const ratingStats = ratings.length > 0 ? {
-    max: Math.max(...ratings),
-    min: Math.min(...ratings),
+    max: Math.floor(Math.max(...ratings) * 100) / 100,
+    min: Math.floor(Math.min(...ratings) * 100) / 100,
     average: averageRating
   } : null;
 
@@ -111,10 +113,10 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
           {ratingStats && (
             <div className="text-xs text-gray-600 flex flex-wrap gap-4 justify-center sm:justify-end">
               <span className="text-green-600 font-medium">
-                최대: {ratingStats.max.toFixed(4)}
+                최대: {ratingStats.max.toFixed(2)}
               </span>
               <span className="text-red-600 font-medium">
-                최소: {ratingStats.min.toFixed(4)}
+                최소: {ratingStats.min.toFixed(2)}
               </span>
               <span className="text-blue-600 font-medium">
                 평균: {ratingStats.average.toFixed(4)}
