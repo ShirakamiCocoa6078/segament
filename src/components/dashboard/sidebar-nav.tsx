@@ -212,8 +212,10 @@ export function SidebarNav() {
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
-                <SidebarMenuSubButton className="cursor-not-allowed opacity-50">
-                  <span className="text-muted-foreground">상수 계산기</span>
+                <SidebarMenuSubButton asChild>
+                  <Link href={`/${session?.user?.id}/constCalChu`}>
+                    <span>상수 계산기</span>
+                  </Link>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
