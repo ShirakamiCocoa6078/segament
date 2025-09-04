@@ -37,6 +37,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
     if (!diffData) {
       return { level: undefined, const: undefined };
     }
+    // const 값이 "nn.n?" 형태면 그대로 반환
     return { level: diffData.level, const: diffData.const };
   }
   const getGridConfig = () => {
@@ -63,10 +64,22 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
   // 곡 데이터에 level/const를 주입
   const enrichedSongs = displaySongs.map(song => {
     const detail = getSongDetail(song.id, song.difficulty);
+    // const가 "nn.n?" 형태면 실제 계산에는 parseFloat, 표시는 원본 유지
+    let constValue = detail.const ?? song.const;
+    let displayConst = constValue;
+    let calcConst: number | undefined = undefined;
+    if (typeof constValue === 'string' && constValue.endsWith('?')) {
+      calcConst = parseFloat(constValue);
+    } else if (typeof constValue === 'string') {
+      calcConst = parseFloat(constValue);
+    } else if (typeof constValue === 'number') {
+      calcConst = constValue;
+    }
     return {
       ...song,
       level: detail.level ?? song.level,
-      const: detail.const ?? song.const,
+      const: calcConst,
+      displayConst,
     };
   });
 
@@ -127,7 +140,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
       </div>
       
       <div className={`grid ${config.className} ${config.gap} justify-items-center`}>
-        {enrichedSongs.map((song, index) => {
+  {enrichedSongs.map((song, index) => {
           // New 20에서 마지막 2개 요소(19, 20번째)의 위치 조정 (XL 화면에서만)
           let gridColumnClass = '';
           if (type === 'new' && enrichedSongs.length === 20) {
@@ -143,6 +156,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
               key={`${song.id}-${song.difficulty}-${index}`} 
               className={`w-full ${type === 'new' ? 'max-w-[637px]' : 'max-w-[490px]'} ${gridColumnClass}`}
             >
+              {/* displayConst와 const를 모두 전달 */}
               <ChunithmSongCard song={song} index={index} />
             </div>
           );

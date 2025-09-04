@@ -2685,6 +2685,9 @@
       "music_idx_1057": {
         "music_name": "Over Heart"
       },
+      "music_idx_2859": {
+        "music_name": "Burn!!!"
+      },
       "music_idx_684": {
         "music_name": "Black'n White JAMMIN' CATS"
       },
@@ -4536,6 +4539,15 @@
       },
       "music_idx_2846": {
         "music_name": "Tru'nembra"
+      },
+      "music_idx_2855": {
+        "music_name": "内臓♡マニピ"
+      },
+      "music_idx_2856": {
+        "music_name": "Steamed on the Beat"
+      },
+      "music_idx_2857": {
+        "music_name": "Challenger!!"
       }
     }
   },
@@ -9055,6 +9067,9 @@
       "music_idx_2847": {
         "music_name": "単位がない！"
       },
+      "music_idx_2859": {
+        "music_name": "Burn!!!"
+      },
       "music_idx_2828": {
         "music_name": "Energizing Flame"
       },
@@ -9102,6 +9117,15 @@
       },
       "music_idx_2846": {
         "music_name": "Tru'nembra"
+      },
+      "music_idx_2855": {
+        "music_name": "内臓♡マニピ"
+      },
+      "music_idx_2856": {
+        "music_name": "Steamed on the Beat"
+      },
+      "music_idx_2857": {
+        "music_name": "Challenger!!"
       }
     }
   },
@@ -12571,6 +12595,10 @@
         "music_name": "MELtin' 17",
         "diff": "BASIC"
       },
+      "music_idx_2859": {
+        "music_name": "Burn!!!",
+        "diff": "BASIC"
+      },
       "music_idx_684": {
         "music_name": "Black'n White JAMMIN' CATS",
         "diff": "BASIC"
@@ -13830,6 +13858,14 @@
       "music_idx_2845": {
         "music_name": "Star Saveler",
         "diff": "BASIC"
+      },
+      "music_idx_2856": {
+        "music_name": "Steamed on the Beat",
+        "diff": "BASIC"
+      },
+      "music_idx_2857": {
+        "music_name": "Challenger!!",
+        "diff": "BASIC"
       }
     },
     "LEVEL 4": {
@@ -14895,6 +14931,10 @@
       },
       "music_idx_2844": {
         "music_name": "あの日、あの部屋で、あったこと",
+        "diff": "BASIC"
+      },
+      "music_idx_2855": {
+        "music_name": "内臓♡マニピ",
         "diff": "BASIC"
       },
       "music_idx_2776": {
@@ -18405,6 +18445,10 @@
         "music_name": "Over Heart",
         "diff": "ADVANCED"
       },
+      "music_idx_2859": {
+        "music_name": "Burn!!!",
+        "diff": "ADVANCED"
+      },
       "music_idx_684": {
         "music_name": "Black'n White JAMMIN' CATS",
         "diff": "ADVANCED"
@@ -19983,6 +20027,14 @@
         "music_name": "Star Saveler",
         "diff": "ADVANCED"
       },
+      "music_idx_2856": {
+        "music_name": "Steamed on the Beat",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2857": {
+        "music_name": "Challenger!!",
+        "diff": "ADVANCED"
+      },
       "music_idx_133": {
         "music_name": "シリョクケンサ",
         "diff": "EXPERT"
@@ -20681,6 +20733,10 @@
       },
       "music_idx_2767": {
         "music_name": "HeinousЯeaper",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2855": {
+        "music_name": "内臓♡マニピ",
         "diff": "ADVANCED"
       },
       "music_idx_2779": {
@@ -24843,6 +24899,10 @@
         "music_name": "Crystallize",
         "diff": "EXPERT"
       },
+      "music_idx_2857": {
+        "music_name": "Challenger!!",
+        "diff": "EXPERT"
+      },
       "music_idx_303": {
         "music_name": "Dreams Dreams:Kids Ver.",
         "diff": "MASTER"
@@ -25363,6 +25423,10 @@
       },
       "music_idx_2834": {
         "music_name": "luminoid love PART2",
+        "diff": "EXPERT"
+      },
+      "music_idx_2855": {
+        "music_name": "内臓♡マニピ",
         "diff": "EXPERT"
       },
       "music_idx_2479": {
@@ -26093,6 +26157,10 @@
         "music_name": "New York Back Raise",
         "diff": "EXPERT"
       },
+      "music_idx_2859": {
+        "music_name": "Burn!!!",
+        "diff": "EXPERT"
+      },
       "music_idx_713": {
         "music_name": "larva",
         "diff": "EXPERT"
@@ -26215,6 +26283,10 @@
       },
       "music_idx_2843": {
         "music_name": "ノーライ",
+        "diff": "EXPERT"
+      },
+      "music_idx_2856": {
+        "music_name": "Steamed on the Beat",
         "diff": "EXPERT"
       },
       "music_idx_2684": {
@@ -31539,6 +31611,10 @@
         "music_name": "MELtin' 17",
         "diff": "MASTER"
       },
+      "music_idx_2859": {
+        "music_name": "Burn!!!",
+        "diff": "MASTER"
+      },
       "music_idx_2466": {
         "music_name": "Λlteration",
         "diff": "MASTER"
@@ -32069,6 +32145,14 @@
       },
       "music_idx_2845": {
         "music_name": "Star Saveler",
+        "diff": "MASTER"
+      },
+      "music_idx_2856": {
+        "music_name": "Steamed on the Beat",
+        "diff": "MASTER"
+      },
+      "music_idx_2857": {
+        "music_name": "Challenger!!",
         "diff": "MASTER"
       },
       "music_idx_2683": {
@@ -32907,6 +32991,10 @@
       },
       "music_idx_2843": {
         "music_name": "ノーライ",
+        "diff": "MASTER"
+      },
+      "music_idx_2855": {
+        "music_name": "内臓♡マニピ",
         "diff": "MASTER"
       },
       "music_idx_2820": {

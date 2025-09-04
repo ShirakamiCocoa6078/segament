@@ -12,6 +12,7 @@ interface SongData {
   score: number;
   level?: string;
   const?: number;
+  displayConst?: string | number;
   clearType?: number; // 숫자로 변경
   comboType?: number;
   fullChainType?: number;
@@ -112,8 +113,14 @@ export function ChunithmSongCard({ song, index }: ChunithmSongCardProps) {
           <p className="text-xs text-gray-600 dark:text-gray-300">
             레벨: {song.level || 'N/A'}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-300">
-            상수: {song.const ? song.const.toFixed(1) : 'N/A'}
+          <p
+            className={`text-xs ${typeof song.displayConst === 'string' && song.displayConst.endsWith('?') ? 'text-red-500 font-bold' : 'text-gray-500 dark:text-gray-300'}`}
+          >
+            상수: {song.displayConst
+              ? (typeof song.displayConst === 'string'
+                  ? song.displayConst
+                  : song.displayConst.toFixed(1))
+              : 'N/A'}
           </p>
           <p className="text-xs text-purple-600 dark:text-purple-300 font-medium">
             레이팅: {songRating > 0 ? (Math.floor(songRating * 100) / 100).toFixed(2) : 'N/A'}

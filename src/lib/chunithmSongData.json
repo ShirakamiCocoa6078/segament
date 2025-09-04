@@ -19324,7 +19324,8 @@
         "const": 12.5
       },
       "ultima": {
-        "level": "13+"
+        "level": "13+",
+        "const": 13.7
       }
     }
   },
@@ -23455,6 +23456,32 @@
       "master": {
         "level": "13+",
         "const": 13.9
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2859",
+      "title": "Burn!!!",
+      "genre": "イロドリミドリ",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "const": "11.5?",
+        "level": "11+"
+      },
+      "master": {
+        "const": 14.1,
+        "level": "14"
       }
     }
   },
@@ -39547,6 +39574,84 @@
       "master": {
         "level": "15+",
         "const": 15.6
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2855",
+      "title": "内臓♡マニピ",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 8,
+        "level": "8"
+      },
+      "expert": {
+        "const": 10.5,
+        "level": "10+"
+      },
+      "master": {
+        "const": 14.7,
+        "level": "14+"
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2856",
+      "title": "Steamed on the Beat",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 7,
+        "level": "7"
+      },
+      "expert": {
+        "const": "11.5?",
+        "level": "11+"
+      },
+      "master": {
+        "const": 14,
+        "level": "14"
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2857",
+      "title": "Challenger!!",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 7,
+        "level": "7"
+      },
+      "expert": {
+        "const": 10,
+        "level": "10"
+      },
+      "master": {
+        "const": 14,
+        "level": "14"
       }
     }
   }
