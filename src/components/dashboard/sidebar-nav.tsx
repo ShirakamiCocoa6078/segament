@@ -213,7 +213,7 @@ export function SidebarNav() {
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButton asChild>
-                  <Link href={`/${session?.user?.id}/constCalChu`}>
+                  <Link href={`/${session?.user?.id}/chunithm/calc/const`}>
                     <span>상수 계산기</span>
                   </Link>
                 </SidebarMenuSubButton>
