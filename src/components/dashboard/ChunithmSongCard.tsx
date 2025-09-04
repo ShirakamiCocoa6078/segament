@@ -72,9 +72,18 @@ export function ChunithmSongCard({ song, index }: ChunithmSongCardProps) {
   const comboType = Number(song.comboType) || 0;
   const fullChainType = Number(song.fullChainType) || 0;
 
+  // BAS/ADV/EXP/MAS/ULT → BASIC/ADVANCED/EXPERT/MASTER/ULTIMA 변환
+  const difficultyMap: Record<string, string> = {
+    'BAS': 'BASIC',
+    'ADV': 'ADVANCED',
+    'EXP': 'EXPERT',
+    'MAS': 'MASTER',
+    'ULT': 'ULTIMA',
+  };
   const getDifficultyColor = () => {
-    const difficulty = song.difficulty?.toUpperCase();
-    return DIFFICULTY_COLORS[difficulty as keyof typeof DIFFICULTY_COLORS] || '#232323';
+    const raw = song.difficulty?.toUpperCase();
+    const mapped = difficultyMap[raw || ''] || raw;
+    return DIFFICULTY_COLORS[mapped as keyof typeof DIFFICULTY_COLORS] || '#232323';
   };
 
   const formatScore = (score: number) => {
@@ -82,7 +91,14 @@ export function ChunithmSongCard({ song, index }: ChunithmSongCardProps) {
   };
 
   // 레이팅 계산
-  const songRating = song.const && song.score ? calculateRating(song.const, song.score) : 0;
+  let songRating = 0;
+  if (song.const && song.score) {
+    if (song.score > 1009000) {
+      songRating = song.const + 2.15;
+    } else {
+      songRating = calculateRating(song.const, song.score);
+    }
+  }
 
   return (
   <div className="relative flex items-center w-full max-w-[490px] h-[100px] bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
@@ -187,7 +203,10 @@ export function ChunithmSongCard({ song, index }: ChunithmSongCardProps) {
         className="w-[9px] h-[100px] rounded-r-lg flex-shrink-0"
         style={{
           background: getDifficultyColor(),
-          backgroundSize: song.difficulty?.toUpperCase() === 'ULTIMA' ? '8px 8px' : 'auto'
+          backgroundSize:
+            (song.difficulty?.toUpperCase() === 'ULT' || song.difficulty?.toUpperCase() === 'ULTIMA')
+              ? '8px 8px'
+              : 'auto',
         }}
       />
     </div>

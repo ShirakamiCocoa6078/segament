@@ -1,8 +1,26 @@
-[
-  {
-    "songId": "example_ID",
-    "title": "example_song",
-    "diff" : "MAS",
-    "const": 18.0
+{
+  "meta": {
+    "id": "0000",
+    "title": "Example Song Title",
+    "genre": "Example Genre",
+    "version": "CHUNITHM example version"
+    },
+  "data": {
+    "basic": {
+      "const": 0,
+      "level": "0"
+    },
+    "advanced": {
+      "const": 0,
+      "level": "0"
+    },
+    "expert": {
+      "const": 0,
+      "level": "0"
+    },
+    "master": {
+      "const": 0,
+      "level": "0"
+    }
   }
-]
+}
