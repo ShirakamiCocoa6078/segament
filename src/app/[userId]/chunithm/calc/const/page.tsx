@@ -1,4 +1,4 @@
-// src/app/[userId]/constCalChu/page.tsx
+// src/app/[userId]/chunithm/calc/const/page.tsx
 'use client';
 
 import { useState } from 'react';
