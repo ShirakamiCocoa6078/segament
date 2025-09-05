@@ -7,39 +7,50 @@
  * @returns 계산된 단일 곡 레이팅 값
  */
 export function calculateRating(constant: number, score: number): number {
+  let result = 0;
   if (score >= 1009000) { // SSS+
-    return constant + 2.15;
+    result = (constant*100) + (2.15 * 100);
+    return result / 100;
   }
   if (score >= 1007500) { // SSS
-    return constant + 2.00 + ( Math.floor((score - 1007500)/100) * 0.01);
+    result = (constant * 100) + (2.0 * 100) + ( Math.floor((score - 1007500)/100));
+    return result / 100;
   }
   if (score >= 1005000) { // SS+
-    return constant + 1.50 + ( Math.floor((score - 1005000)/50) * 0.01);
+    result = (constant * 100) + (1.50 * 100) + ( Math.floor((score - 1005000)/50));
+    return result / 100;
   }
   if (score >= 1000000) { // SS
-    return constant + 1.00 + ( Math.floor((score - 1000000)/100) * 0.01);
+    result = (constant * 100) + (1.0 * 100) + ( Math.floor((score - 1000000)/100));
+    return result / 100;
   }
   if (score >= 990000) { // S+
-    return constant + 0.6 + ( Math.floor((score - 990000)/250) * 0.01);
+    result = (constant * 100) + (0.6 * 100) + ( Math.floor((score - 990000)/250));
+    return result / 100;
   }
   if (score >= 975000) { // S
-    return constant + ( Math.floor((score - 975000)/250) * 0.01);
+    result = (constant * 100) + ( Math.floor((score - 975000)/250));
+    return result / 100;
   }
   if (score >= 950000) { // AAA
-    return constant - 1.50;
+    result = (constant * 100) - (1.5 * 100);
+    return result / 100;
   }
   if (score >= 925000) { // AA
-    return constant - 3.00;
+    result = (constant * 100) - (3.0 * 100);
+    return result / 100;
   }
   if (score >= 900000) { // A
-    return constant - 5.00;
+    result = (constant * 100) - (5.0 * 100);
+    return result / 100;
   }
   if (score >= 800000) { // BBB
-    return (constant - 5.00) / 2;
+    result = (constant * 100 - (5.0 * 100)) / 2;
+    return result / 100;
   }
   // B, C, D
   if(score < 800000){
-    return 0;
+    return result;
   }
-  return 0;
+  return result;
 }

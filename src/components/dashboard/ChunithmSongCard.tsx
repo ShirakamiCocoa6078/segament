@@ -94,7 +94,7 @@ export function ChunithmSongCard({ song, index }: ChunithmSongCardProps) {
   let songRating = 0;
   if (song.const && song.score) {
     if (song.score > 1009000) {
-      songRating = song.const + 2.15;
+      songRating = ((song.const * 100) + (2.15 * 100)) / 100;
     } else {
       songRating = calculateRating(song.const, song.score);
     }
