@@ -4548,6 +4548,9 @@
       },
       "music_idx_2857": {
         "music_name": "Challenger!!"
+      },
+      "music_idx_2858": {
+        "music_name": "Everything Will Be One"
       }
     }
   },
@@ -9126,6 +9129,9 @@
       },
       "music_idx_2857": {
         "music_name": "Challenger!!"
+      },
+      "music_idx_2858": {
+        "music_name": "Everything Will Be One"
       }
     }
   },
@@ -17029,6 +17035,10 @@
         "music_name": "神鳴",
         "diff": "BASIC"
       },
+      "music_idx_2858": {
+        "music_name": "Everything Will Be One",
+        "diff": "BASIC"
+      },
       "music_idx_2849": {
         "music_name": "1番輝く星",
         "diff": "ADVANCED"
@@ -24099,6 +24109,10 @@
         "music_name": "Tru'nembra",
         "diff": "ADVANCED"
       },
+      "music_idx_2858": {
+        "music_name": "Everything Will Be One",
+        "diff": "ADVANCED"
+      },
       "music_idx_2851": {
         "music_name": "幽霊船戦",
         "diff": "EXPERT"
@@ -29961,6 +29975,10 @@
         "music_name": "〚献身〛 ～Paradox of Choice",
         "diff": "EXPERT"
       },
+      "music_idx_2858": {
+        "music_name": "Everything Will Be One",
+        "diff": "EXPERT"
+      },
       "music_idx_2850": {
         "music_name": "うい麦畑でつかまえて",
         "diff": "MASTER"
@@ -33533,6 +33551,10 @@
       },
       "music_idx_2844": {
         "music_name": "あの日、あの部屋で、あったこと",
+        "diff": "MASTER"
+      },
+      "music_idx_2858": {
+        "music_name": "Everything Will Be One",
         "diff": "MASTER"
       },
       "music_idx_455": {

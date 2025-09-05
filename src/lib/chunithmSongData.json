@@ -19324,8 +19324,7 @@
         "const": 12.5
       },
       "ultima": {
-        "level": "13+",
-        "const": 13.7
+        "level": "13+"
       }
     }
   },
@@ -23476,12 +23475,12 @@
         "level": "6"
       },
       "expert": {
-        "const": "11.5?",
-        "level": "11+"
+        "level": "11+",
+        "const": 11.7
       },
       "master": {
-        "const": 14.1,
-        "level": "14"
+        "level": "14",
+        "const": 14.1
       }
     }
   },
@@ -39594,12 +39593,12 @@
         "level": "8"
       },
       "expert": {
-        "const": 10.5,
-        "level": "10+"
+        "level": "10+",
+        "const": 10.8
       },
       "master": {
-        "const": 14.7,
-        "level": "14+"
+        "level": "14+",
+        "const": 14.7
       }
     }
   },
@@ -39620,12 +39619,12 @@
         "level": "7"
       },
       "expert": {
-        "const": "11.5?",
-        "level": "11+"
+        "level": "11+",
+        "const": 11.9
       },
       "master": {
-        "const": 14,
-        "level": "14"
+        "level": "14",
+        "const": 14
       }
     }
   },
@@ -39646,12 +39645,38 @@
         "level": "7"
       },
       "expert": {
+        "level": "10",
+        "const": 10.3
+      },
+      "master": {
+        "level": "14",
+        "const": 14
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2858",
+      "title": "Everything Will Be One",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 6,
+        "level": "6"
+      },
+      "advanced": {
         "const": 10,
         "level": "10"
       },
+      "expert": {
+        "const": "13.5?",
+        "level": "13+"
+      },
       "master": {
-        "const": 14,
-        "level": "14"
+        "const": 15.4,
+        "level": "15"
       }
     }
   }
