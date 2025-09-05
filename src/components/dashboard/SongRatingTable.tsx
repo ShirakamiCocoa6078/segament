@@ -44,7 +44,7 @@ export function SongRatingTable({ songs }: SongRatingTableProps) {
             </TableCell>
             <TableCell>{song.score.toLocaleString()}</TableCell>
             <TableCell>{song.const.toFixed(1)}</TableCell>
-            <TableCell className="text-right font-semibold">{song.ratingValue.toFixed(4)}</TableCell>
+            <TableCell className="text-right font-semibold">{song.ratingValue.toFixed(2)}</TableCell>
           </TableRow>
         ))}
       </TableBody>
