@@ -139,7 +139,7 @@ export function ChunithmSongCard({ song, index }: ChunithmSongCardProps) {
               : 'N/A'}
           </p>
           <p className="text-xs text-purple-600 dark:text-purple-300 font-medium">
-            레이팅: {songRating > 0 ? (Math.floor(songRating * 100) / 100).toFixed(2) : 'N/A'}
+            레이팅: {songRating > 0 ? songRating : 'N/A'}
           </p>
         </div>
       </div>
