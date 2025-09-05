@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
           enrichedItem.level = songDifficultyInfo.level || 'N/A';
           const constValue = typeof enrichedItem.const === 'number' ? enrichedItem.const : 0;
           const scoreValue = typeof item.score === 'number' ? item.score : 0;
-          enrichedItem.ratingValue = Math.floor(calculateRating(constValue, scoreValue) * 100) / 100;
+          enrichedItem.ratingValue = calculateRating(constValue, scoreValue);
         } else {
           enrichedItem.ratingValue = 0;
         }
