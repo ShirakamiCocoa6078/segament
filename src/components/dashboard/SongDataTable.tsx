@@ -219,7 +219,7 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
                   <span style={difficultyStyle}>{difficultyShortMap[item.difficulty] || item.difficulty}</span>
                 </TableCell>
                 <TableCell className={isMobileMode ? 'px-1 py-1' : 'px-1 py-1'}>{item.const.toFixed(1)}</TableCell>
-                <TableCell className={isMobileMode ? 'text-right font-semibold px-[1px] py-1' : 'text-right font-semibold px-[1px] py-1'}>{item.ratingValue.toFixed(4)}</TableCell>
+                <TableCell className={isMobileMode ? 'text-right font-semibold px-[1px] py-1' : 'text-right font-semibold px-[1px] py-1'}>{item.ratingValue.toFixed(2)}</TableCell>
               </TableRow>
             );
           })}
