@@ -141,7 +141,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
         return Math.floor((song.const! + 2.15) * 100) / 100;
       }
       const rating = calculateRating(song.const!, song.score);
-      return Math.floor(rating * 100) / 100;
+      return rating;
     });
 
   const averageRating = ratings.length > 0
