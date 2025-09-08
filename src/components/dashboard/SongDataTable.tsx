@@ -2,18 +2,12 @@
 'use client';
 
 import { useState, useMemo, useEffect, ReactNode } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowUpDown, ChevronLeft, ChevronRight, ArrowUp, ArrowDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, scoreToRank } from '@/lib/utils';
+import { SongRecordCard } from './SongRecordCard';
 
 // --- 타입 정의 (이전과 동일) ---
 interface SongData {
@@ -51,33 +45,37 @@ const levelToNumber = (level: string): number => {
 };
 
 export function SongDataTable({ data, showPagination = false }: SongDataTableProps) {
-  // 난이도 축약 표기
-  const difficultyShortMap: { [key: string]: string } = {
-    BASIC: 'BAS',
-    ADVANCED: 'ADV',
-    EXPERT: 'EXP',
-    MASTER: 'MAS',
-    ULTIMA: 'ULT',
-  };
+  // 정렬 관련 상태
   const [sortKey, setSortKey] = useState<SortKey>('ratingValue');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  
   const [rowsPerPage, setRowsPerPage] = useState(() => {
     if (typeof window !== 'undefined') {
-        const savedValue = localStorage.getItem('segament-rowsPerPage');
-        return savedValue ? Number(savedValue) : 15;
+      const savedValue = localStorage.getItem('segament-rowsPerPage');
+      return savedValue ? Number(savedValue) : 15;
     }
     return 15;
   });
-  
   const [currentPage, setCurrentPage] = useState(1);
-
+  // 모바일 모드 감지
+  const [isMobileMode, setIsMobileMode] = useState(false);
   useEffect(() => {
     if (typeof window !== 'undefined') {
-        localStorage.setItem('segament-rowsPerPage', String(rowsPerPage));
+      const updateMode = () => {
+        setIsMobileMode(localStorage.getItem('uiMode') === 'mobile');
+      };
+      updateMode();
+      window.addEventListener('storage', updateMode);
+      return () => {
+        window.removeEventListener('storage', updateMode);
+      };
+    }
+  }, []);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('segament-rowsPerPage', String(rowsPerPage));
     }
   }, [rowsPerPage]);
-
+  // 정렬 함수
   const sortedData = useMemo(() => {
     return [...data].sort((a, b) => {
       const aVal = a[sortKey];
@@ -95,15 +93,13 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
       return sortDirection === 'asc' ? compare : -compare;
     });
   }, [data, sortKey, sortDirection]);
-
   const totalPages = showPagination && rowsPerPage > 0 ? Math.ceil(sortedData.length / rowsPerPage) : 1;
   const paginatedData = useMemo(() => {
-  if (!showPagination || rowsPerPage === 0) { return sortedData; }
+    if (!showPagination || rowsPerPage === 0) { return sortedData; }
     const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     return sortedData.slice(start, end);
   }, [sortedData, currentPage, rowsPerPage, showPagination]);
-
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
       setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
@@ -112,147 +108,120 @@ export function SongDataTable({ data, showPagination = false }: SongDataTablePro
       setSortDirection('desc');
     }
   };
-  
-  const renderSortArrow = (key: SortKey) => {
-    if (sortKey === key) return <ArrowUpDown className="ml-2 h-4 w-4" />;
-    return <ArrowUpDown className="ml-2 h-4 w-4 opacity-20" />;
-  };
-
-  const SortableHeader = ({ sortKey: key, children }: { sortKey: SortKey, children: ReactNode }) => (
-    <TableHead>
-      {isMobileMode ? (
-        <Button variant="ghost" onClick={() => handleSort(key)} className="flex flex-col items-center px-1 py-0 min-w-0">
-          <span className="leading-tight mb-[-2px]">{children}</span>
-          <span className="mt-0">{renderSortArrow(key)}</span>
-        </Button>
-      ) : (
-        <Button variant="ghost" onClick={() => handleSort(key)} className="px-2">
-          {children} {renderSortArrow(key)}
-        </Button>
-      )}
-    </TableHead>
-  );
-
-  // 모바일 모드 감지 (localStorage 기반)
-  const [isMobileMode, setIsMobileMode] = useState(false);
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const updateMode = () => {
-        setIsMobileMode(localStorage.getItem('uiMode') === 'mobile');
-      };
-      updateMode();
-      window.addEventListener('storage', updateMode);
-      return () => {
-        window.removeEventListener('storage', updateMode);
-      };
-    }
-  }, []);
-
+  // --- 모바일 UI ---
+  if (isMobileMode) {
+    return (
+      <div className="w-full max-w-[525px] mx-auto">
+        {/* 모바일 정렬 UI */}
+        <div className="flex items-center justify-between mb-2">
+          <Select value={sortKey} onValueChange={v => setSortKey(v as SortKey)}>
+            <SelectTrigger className="w-[110px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ratingValue">레이팅</SelectItem>
+              <SelectItem value="level">레벨</SelectItem>
+              <SelectItem value="score">스코어</SelectItem>
+              <SelectItem value="title">곡명</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm" onClick={() => setSortDirection(d => d === 'asc' ? 'desc' : 'asc')}>
+            {sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+          </Button>
+        </div>
+        {/* 카드 리스트 */}
+        <div>
+          {sortedData.map(song => (
+            <SongRecordCard key={song.id + song.difficulty} song={song} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  // --- PC 테이블 UI ---
   return (
-  <div className={isMobileMode ? 'w-full max-w-[525px] mx-auto' : ''}>
-      {/* 수정: 페이지네이션 컨트롤 상단으로 이동 */}
+    <div>
+      {/* 페이지네이션 컨트롤 상단 */}
       {showPagination && (
         <div className="flex items-center justify-end mb-4">
-            <div className="flex items-center space-x-2">
-                <p className="text-sm text-muted-foreground">페이지에 표시하는 곡 수:</p>
-                <Select
-                    value={rowsPerPage.toString()}
-                    onValueChange={(value) => {
-                        setRowsPerPage(value === '0' ? 0 : Number(value));
-                        setCurrentPage(1);
-                    }}
-                >
-                    <SelectTrigger className="w-[80px]">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="15">15</SelectItem>
-                        <SelectItem value="30">30</SelectItem>
-                        <SelectItem value="50">50</SelectItem>
-                        <SelectItem value="100">100</SelectItem>
-                        <SelectItem value="0">All</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
+          <div className="flex items-center space-x-2">
+            <p className="text-sm text-muted-foreground">페이지에 표시하는 곡 수:</p>
+            <Select
+              value={rowsPerPage.toString()}
+              onValueChange={value => {
+                setRowsPerPage(value === '0' ? 0 : Number(value));
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-[80px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="15">15</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+                <SelectItem value="0">All</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       )}
-
       <Table>
         <TableHeader>
-          <TableRow className={isMobileMode ? 'text-xs' : ''}>
-            <SortableHeader sortKey="title"><span className={isMobileMode ? 'text-[10px]' : ''}>곡명</span></SortableHeader>
-            <SortableHeader sortKey="score"><span className={isMobileMode ? 'text-[10px]' : ''}>스코어</span></SortableHeader>
-            <SortableHeader sortKey="level">Lv</SortableHeader>
-            <SortableHeader sortKey="difficulty"><span className={isMobileMode ? 'text-xs' : ''}>난이도</span></SortableHeader>
-            <SortableHeader sortKey="const"><span className={isMobileMode ? 'text-xs' : ''}>상수</span></SortableHeader>
-            <SortableHeader sortKey="ratingValue"><span className={isMobileMode ? 'text-xs' : ''}>레이팅</span></SortableHeader>
+          <TableRow>
+            <TableHead className="px-2">곡명</TableHead>
+            <TableHead className="px-2 cursor-pointer" onClick={() => handleSort('score')}>스코어 / 랭크 {sortKey === 'score' && (sortDirection === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />)}</TableHead>
+            <TableHead className="px-2 cursor-pointer" onClick={() => handleSort('level')}>레벨 / 난이도 {sortKey === 'level' && (sortDirection === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />)}</TableHead>
+            <TableHead className="px-2 cursor-pointer" onClick={() => handleSort('const')}>상수 {sortKey === 'const' && (sortDirection === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />)}</TableHead>
+            <TableHead className="px-2 cursor-pointer" onClick={() => handleSort('ratingValue')}>레이팅 {sortKey === 'ratingValue' && (sortDirection === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />)}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {paginatedData.map((item) => {
-            // 난이도 색상 조건
-            let difficultyClass = '';
-            let difficultyStyle: React.CSSProperties | undefined = undefined;
-            if (item.difficulty === 'MASTER') {
-              difficultyClass = 'text-purple-600';
-              if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                difficultyClass = 'text-purple-400'; // 다크모드에서 10% 밝게
-              }
-            } else if (item.difficulty === 'ULTIMA') {
-              difficultyClass = 'text-[#af4433]'; // 다크/화이트모드 모두 고정
-            } else {
-              difficultyClass = difficultyColorMap[item.difficulty] || '';
-            }
-            return (
-              <TableRow 
-                key={`${item.id}-${item.difficulty}`}
-                className={cn({
-                  'bg-orange-50 dark:bg-orange-900/20': item.ratingListType === 'best',
-                  'bg-yellow-50 dark:bg-yellow-900/20': item.ratingListType === 'new',
-                  'text-xs': isMobileMode,
-                })}
-              >
-                <TableCell className={isMobileMode ? 'font-medium px-1 py-1 text-[10px]' : 'font-medium px-[0.25rem] py-1'}>{item.title}</TableCell>
-                <TableCell className={isMobileMode ? 'px-1 py-1 text-[10px]' : 'px-[0.25rem] py-1'}>{item.score.toLocaleString()}</TableCell>
-                <TableCell className={isMobileMode ? 'px-1 py-1' : 'px-1 py-1'}>{item.level}</TableCell>
-                <TableCell className={cn(isMobileMode ? 'font-semibold px-1 py-1' : 'font-semibold px-1 py-1', difficultyClass)}>
-                  <span style={difficultyStyle}>{difficultyShortMap[item.difficulty] || item.difficulty}</span>
-                </TableCell>
-                <TableCell className={isMobileMode ? 'px-1 py-1' : 'px-1 py-1'}>{item.const.toFixed(1)}</TableCell>
-                <TableCell className={isMobileMode ? 'text-right font-semibold px-[1px] py-1' : 'text-right font-semibold px-[1px] py-1'}>{item.ratingValue.toFixed(2)}</TableCell>
-              </TableRow>
-            );
-          })}
+          {paginatedData.map(item => (
+            <TableRow key={item.id + item.difficulty} className={cn({
+              'bg-orange-50 dark:bg-orange-900/20': item.ratingListType === 'best',
+              'bg-yellow-50 dark:bg-yellow-900/20': item.ratingListType === 'new',
+            })}>
+              <TableCell className="font-medium px-2 py-1 truncate max-w-[180px]">{item.title}</TableCell>
+              <TableCell className="px-2 py-1 text-right whitespace-nowrap">
+                {item.score.toLocaleString()} <span className="text-xs text-muted-foreground">({scoreToRank(item.score)})</span>
+              </TableCell>
+              <TableCell className="px-2 py-1 text-center">
+                {item.level} <span className="font-semibold ml-1">{item.difficulty.slice(0, 3)}</span>
+              </TableCell>
+              <TableCell className="px-2 py-1 text-center">{item.const.toFixed(1)}</TableCell>
+              <TableCell className="px-2 py-1 text-right font-bold">{item.ratingValue.toFixed(2)}</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
-      
-      {/* 수정: 페이지 이동 컨트롤만 하단에 남김 */}
+      {/* 페이지 이동 컨트롤 하단 */}
       {showPagination && (
         <div className="flex items-center justify-end mt-4">
-            <div className="flex items-center space-x-4">
-                <span className="text-sm text-muted-foreground">
-                    Page {currentPage} of {totalPages}
-                </span>
-                <div className="flex items-center space-x-2">
-                    <Button variant="outline" size="icon" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
-                        <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
-                        <ChevronRight className="h-4 w-4" />
-                    </Button>
-                </div>
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </span>
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="icon" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
+          </div>
         </div>
       )}
-
-      {/* 신규: 페이지 스크롤 버튼 */}
+      {/* 페이지 스크롤 버튼 */}
       <div className="fixed bottom-8 right-8 flex flex-col space-y-2">
-          <Button variant="outline" size="icon" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-              <ArrowUp className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}>
-              <ArrowDown className="h-4 w-4" />
-          </Button>
+        <Button variant="outline" size="icon" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <ArrowUp className="h-4 w-4" />
+        </Button>
+        <Button variant="outline" size="icon" onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}>
+          <ArrowDown className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );
