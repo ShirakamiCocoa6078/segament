@@ -32,6 +32,7 @@ const sortOptions: { value: SortKey, label: string }[] = [
   { value: 'const', label: '상수' },
   { value: 'score', label: '스코어' },
   { value: 'title', label: '곡명' },
+  { value: 'difficulty', label: '난이도' },
 ];
 
 const secondarySortOptions: { value: SortKey | 'none', label: string }[] = [
@@ -73,9 +74,15 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
 
   // 정렬
   const sortedData = useMemo(() => {
+    const difficultyOrder = ['ULT', 'MAS', 'EXP', 'ADV', 'BAS'];
     const compare = (a: SongData, b: SongData, key: SortKey) => {
       if (key === 'level') {
         return levelToNumber(a.level) - levelToNumber(b.level);
+      }
+      if (key === 'difficulty') {
+        const idxA = difficultyOrder.indexOf(a.difficulty);
+        const idxB = difficultyOrder.indexOf(b.difficulty);
+        return idxA - idxB;
       }
       const valA = a[key];
       const valB = b[key];
@@ -154,28 +161,18 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
       {/* 카드 그리드: 2열, 카드 크기 축소, 오버레이 적용 */}
       <div className="grid grid-cols-2 gap-2">
         {paginatedData.map((song) => {
-          let centerLabel = null;
+          let bestRank: number | null = null;
+          let newRank: number | null = null;
           if (song.ratingListType === 'best') {
             const idx = sortedBestList.findIndex(s => s.title === song.title && s.difficulty === song.difficulty);
-            if (idx !== -1)
-              centerLabel = (
-                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-[22px] font-extrabold opacity-60 pointer-events-none select-none" style={{textShadow:'0 0 8px #0002'}}>
-                  B#{idx+1}
-                </span>
-              );
+            if (idx !== -1) bestRank = idx + 1;
           } else if (song.ratingListType === 'new') {
             const idx = sortedNewList.findIndex(s => s.title === song.title && s.difficulty === song.difficulty);
-            if (idx !== -1)
-              centerLabel = (
-                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-[22px] font-extrabold opacity-60 pointer-events-none select-none" style={{textShadow:'0 0 8px #0002'}}>
-                  N#{idx+1}
-                </span>
-              );
+            if (idx !== -1) newRank = idx + 1;
           }
           return (
             <div key={`${song.title}-${song.difficulty}`} className="relative">
-              {centerLabel}
-              <SongRecordCard song={{ ...song, ratingValue: Number(song.ratingValue.toFixed(2)) }} small />
+              <SongRecordCard song={{ ...song, ratingValue: Number(song.ratingValue.toFixed(2)) }} small bestRank={bestRank} newRank={newRank} />
             </div>
           );
         })}
