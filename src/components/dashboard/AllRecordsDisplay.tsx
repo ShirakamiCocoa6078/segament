@@ -1,7 +1,7 @@
 // 파일 경로: src/components/dashboard/AllRecordsDisplay.tsx
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { SongRecordCard } from './SongRecordCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
@@ -20,8 +20,6 @@ export interface SongData {
 export interface AllRecordsDisplayProps {
   data: SongData[];
 }
-
-// ...existing code...
 
 type SortKey = keyof SongData;
 type SortDirection = 'asc' | 'desc';
@@ -54,15 +52,12 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [primarySort, setPrimarySort] = useState<{ key: SortKey, dir: SortDirection }>({ key: 'ratingValue', dir: 'desc' });
   const [secondarySort, setSecondarySort] = useState<{ key: SortKey | 'none', dir: SortDirection }>({ key: 'level', dir: 'desc' });
-// ...existing code...
 
-  // Best30/New20 순위 계산 (레이팅 내림차순 기준)
   const bestList = data.filter(song => song.ratingListType === 'best');
   const newList = data.filter(song => song.ratingListType === 'new');
   const sortedBestList = [...bestList].sort((a, b) => b.ratingValue - a.ratingValue);
   const sortedNewList = [...newList].sort((a, b) => b.ratingValue - a.ratingValue);
 
-  // 페이지 사이즈 변경 시 로컬 저장
   const handlePageSizeChange = (value: string) => {
     const num = Number(value);
     setPageSize(num);
@@ -72,7 +67,6 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
     }
   };
 
-  // 정렬
   const sortedData = useMemo(() => {
     const difficultyOrder = ['ULT', 'MAS', 'EXP', 'ADV', 'BAS'];
     const compare = (a: SongData, b: SongData, key: SortKey) => {
@@ -103,7 +97,6 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
     });
   }, [data, primarySort, secondarySort]);
 
-  // 페이지네이션
   const totalPages = pageSize === 0 ? 1 : Math.ceil(sortedData.length / pageSize);
   const paginatedData = useMemo(() => {
     if (pageSize === 0) {
@@ -118,12 +111,15 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
     sortSetter(prev => ({ ...prev, dir: prev.dir === 'asc' ? 'desc' : 'asc' }));
   };
 
-  // 카드 오버레이 스타일
-  // 오버레이 제거, 중앙 텍스트 표시
+  useEffect(() => {
+    if (pageSize !== 0) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentPage, pageSize]);
 
   return (
     <div>
-      {/* 정렬/페이지네이션 컨트롤 */}
+      {/* 정렬/페이지네이션 컨트롤 + 상단 페이지 이동 */}
       <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-4 p-4 bg-card rounded-lg border">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">1차 정렬:</span>
@@ -157,18 +153,37 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
             </SelectContent>
           </Select>
         </div>
-      </div>
+        {/* 상단 페이지 이동 컨트롤 */}
+        {totalPages > 1 && (
+          <div className="flex items-center gap-2 ml-auto">
+            <Button variant="outline" size="icon" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+              <ArrowUp className="h-4 w-4" />
+            </Button>
+            <span className="text-sm">{currentPage} / {totalPages}</span>
+            <Button variant="outline" size="icon" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
+              <ArrowDown className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+  </div>
+
+  return (
+    <div>
       {/* 카드 그리드: 2열, 카드 크기 축소, 오버레이 적용 */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {paginatedData.map((song) => {
           let bestRank: number | null = null;
           let newRank: number | null = null;
           if (song.ratingListType === 'best') {
             const idx = sortedBestList.findIndex(s => s.title === song.title && s.difficulty === song.difficulty);
-            if (idx !== -1) bestRank = idx + 1;
+            if (idx !== -1) {
+              bestRank = idx + 1;
+            }
           } else if (song.ratingListType === 'new') {
             const idx = sortedNewList.findIndex(s => s.title === song.title && s.difficulty === song.difficulty);
-            if (idx !== -1) newRank = idx + 1;
+            if (idx !== -1) {
+              newRank = idx + 1;
+            }
           }
           return (
             <div key={`${song.title}-${song.difficulty}`} className="relative">
@@ -190,5 +205,6 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
         </div>
       )}
     </div>
+  </div>
   );
 }
