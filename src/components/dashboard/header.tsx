@@ -1,7 +1,6 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -18,32 +17,6 @@ import Link from "next/link";
 
 export function Header() {
   const { data: session } = useSession();
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [mode, setMode] = useState<'pc' | 'mobile'>(() => {
-    if (typeof window !== 'undefined') {
-      const localMode = localStorage.getItem('uiMode');
-      if (localMode === 'mobile' || localMode === 'pc') {
-        return localMode;
-      }
-    }
-    return 'pc';
-  });
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('uiMode', mode);
-    }
-  }, [mode]);
-
-  const handleModeChange = () => {
-    setMode(prev => {
-      const nextMode = prev === 'pc' ? 'mobile' : 'pc';
-      localStorage.setItem('uiMode', nextMode);
-      // 모드 변경 시 자동 새로고침
-      window.location.reload();
-      return nextMode;
-    });
-  };
 
   if (!session) {
     return null;
@@ -55,13 +28,6 @@ export function Header() {
         <SidebarTrigger />
       </div>
       <div className="flex w-full items-center justify-end gap-4">
-        {/* 모바일/PC 모드 전환 버튼 */}
-        <button
-          className="px-3 py-1 rounded border text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-700 transition"
-          onClick={handleModeChange}
-        >
-          {mode === 'pc' ? '모바일 모드로 변경' : 'PC 모드로 변경'}
-        </button>
   {/* next-themes 기반 ThemeToggle 드롭다운 */}
   <ThemeToggle />
         <DropdownMenu>
