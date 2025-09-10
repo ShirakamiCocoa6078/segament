@@ -165,10 +165,7 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
             </Button>
           </div>
         )}
-  </div>
-
-  return (
-    <div>
+      </div>
       {/* 카드 그리드: 2열, 카드 크기 축소, 오버레이 적용 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {paginatedData.map((song) => {
@@ -205,6 +202,5 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
         </div>
       )}
     </div>
-  </div>
   );
 }
