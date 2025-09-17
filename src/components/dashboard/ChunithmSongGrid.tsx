@@ -28,6 +28,45 @@ interface ChunithmSongGridProps {
 }
 
 export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
+  // 레이팅표 생성 팝업 상태 및 로직
+  const [showRatingImgPopup, setShowRatingImgPopup] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleOpenRatingImgPopup = async () => {
+    setShowRatingImgPopup(true);
+    setLoading(true);
+    setImgUrl(null);
+    setError(null);
+    try {
+      const res = await fetch('/api/v1/img/MakeRatingImg');
+      if (!res.ok) throw new Error('이미지 생성 실패');
+      const blob = await res.blob();
+      setImgUrl(URL.createObjectURL(blob));
+    } catch (e: any) {
+      setError(e.message || '알 수 없는 오류');
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleCloseRatingImgPopup = () => {
+    setShowRatingImgPopup(false);
+    setImgUrl(null);
+    setError(null);
+    setLoading(false);
+  };
+  const handleDownload = () => {
+    if (!imgUrl) return;
+    const nickname = 'user'; // TODO: 실제 닉네임 연동
+    const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const filename = `${nickname}_${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.png`;
+    const a = document.createElement('a');
+    a.href = imgUrl;
+    a.download = filename;
+    a.click();
+  };
   // 임시 곡 입력 상태
   const [tempSongs, setTempSongs] = useState<SongData[]>([]);
   const [tempTitle, setTempTitle] = useState('');
@@ -164,11 +203,16 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
 
   return (
     <div className="w-full space-y-4">
-      <div className="text-center mb-4">
-  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-          {type === 'best' ? 'Best 30' : 'New 20'}
-        </h3>
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+      <div className="mb-4">
+        <div className="flex flex-row items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+            {type === 'best' ? 'Best 30' : 'New 20'}
+          </h3>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition ml-4" onClick={handleOpenRatingImgPopup}>
+            레이팅표 생성
+          </button>
+        </div>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mt-2">
           <p className="text-sm text-gray-500">
             {allSongs.length}곡 표시
           </p>
@@ -187,6 +231,30 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
           )}
         </div>
       </div>
+      {/* 팝업 UI (베타: 버튼 클릭 시 화면 중앙에 표시, 실제 이미지/스피너/다운로드/오류 처리 등은 후속 구현) */}
+      {showRatingImgPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 shadow-lg min-w-[400px] min-h-[200px] flex flex-col items-center">
+            <div className="mb-4 text-lg font-bold">레이팅표 생성</div>
+            {loading && (
+              <div className="flex flex-col items-center justify-center mb-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-2" />
+                <div>이미지 생성 중...</div>
+              </div>
+            )}
+            {error && (
+              <div className="text-red-600 mb-4">{error}</div>
+            )}
+            {imgUrl && !loading && !error && (
+              <>
+                <img src={imgUrl} alt="레이팅표" className="mb-4 max-w-full max-h-[600px] border" />
+                <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mb-2" onClick={handleDownload}>다운로드</button>
+              </>
+            )}
+            <button className="mt-2 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" onClick={handleCloseRatingImgPopup}>닫기</button>
+          </div>
+        </div>
+      )}
       
       <div className={`grid ${config.className} ${config.gap} justify-items-center`}>
         {allSongs.map((song, index) => {

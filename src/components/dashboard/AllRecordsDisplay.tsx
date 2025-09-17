@@ -58,6 +58,12 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
   const sortedBestList = [...bestList].sort((a, b) => b.ratingValue - a.ratingValue);
   const sortedNewList = [...newList].sort((a, b) => b.ratingValue - a.ratingValue);
 
+  // 팝업 상태
+  const [showRatingImgPopup, setShowRatingImgPopup] = useState(false);
+  // 버튼 클릭 핸들러
+  const handleOpenRatingImgPopup = () => setShowRatingImgPopup(true);
+  const handleCloseRatingImgPopup = () => setShowRatingImgPopup(false);
+
   const handlePageSizeChange = (value: string) => {
     const num = Number(value);
     setPageSize(num);
@@ -120,6 +126,16 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
   return (
     <div>
       {/* 정렬/페이지네이션 컨트롤 + 상단 페이지 이동 */}
+      {/* 팝업 UI (베타: 버튼 클릭 시 화면 중앙에 표시, 실제 이미지/스피너/다운로드/오류 처리 등은 후속 구현) */}
+      {showRatingImgPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 shadow-lg min-w-[400px] min-h-[200px] flex flex-col items-center">
+            <div className="mb-4 text-lg font-bold">레이팅표 생성 (베타)</div>
+            <div className="mb-4">이미지 생성 기능은 추후 구현됩니다.</div>
+            <Button variant="outline" onClick={handleCloseRatingImgPopup}>닫기</Button>
+          </div>
+        </div>
+      )}
       <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-4 p-4 bg-card rounded-lg border">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">1차 정렬:</span>
@@ -167,6 +183,16 @@ export function AllRecordsDisplay({ data }: AllRecordsDisplayProps) {
         )}
       </div>
       {/* 카드 그리드: 2열, 카드 크기 축소, 오버레이 적용 */}
+      {/* 팝업 UI (베타: 버튼 클릭 시 화면 중앙에 표시, 실제 이미지/스피너/다운로드/오류 처리 등은 후속 구현) */}
+      {showRatingImgPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 shadow-lg min-w-[400px] min-h-[200px] flex flex-col items-center">
+            <div className="mb-4 text-lg font-bold">레이팅표 생성 (베타)</div>
+            <div className="mb-4">이미지 생성 기능은 추후 구현됩니다.</div>
+            <Button variant="outline" onClick={handleCloseRatingImgPopup}>닫기</Button>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {paginatedData.map((song) => {
           let bestRank: number | null = null;
