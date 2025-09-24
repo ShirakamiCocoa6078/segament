@@ -435,18 +435,6 @@
       }
     },
     "niconico": {
-      "music_idx_2894": {
-        "music_name": "ずんだシェイキング"
-      },
-      "music_idx_2852": {
-        "music_name": "オブソミート"
-      },
-      "music_idx_2853": {
-        "music_name": "スーパーヒーロー"
-      },
-      "music_idx_2854": {
-        "music_name": "カルチャ"
-      },
       "music_idx_2839": {
         "music_name": "ブタサンダー"
       },
@@ -2181,12 +2169,6 @@
       },
       "music_idx_2526": {
         "music_name": "華麗なる死闘"
-      },
-      "music_idx_2862": {
-        "music_name": "スパイダーダンス"
-      },
-      "music_idx_2895": {
-        "music_name": "夢と希望"
       },
       "music_idx_2308": {
         "music_name": "Advance（CHUNITHM edit）"
@@ -9049,18 +9031,6 @@
       "music_idx_2821": {
         "music_name": "はいよろこんで"
       },
-      "music_idx_2894": {
-        "music_name": "ずんだシェイキング"
-      },
-      "music_idx_2852": {
-        "music_name": "オブソミート"
-      },
-      "music_idx_2853": {
-        "music_name": "スーパーヒーロー"
-      },
-      "music_idx_2854": {
-        "music_name": "カルチャ"
-      },
       "music_idx_2839": {
         "music_name": "ブタサンダー"
       },
@@ -9084,12 +9054,6 @@
       },
       "music_idx_2825": {
         "music_name": "最終鬼畜妹フランドール・S (Chroma Remix)"
-      },
-      "music_idx_2862": {
-        "music_name": "スパイダーダンス"
-      },
-      "music_idx_2895": {
-        "music_name": "夢と希望"
       },
       "music_idx_2816": {
         "music_name": "RE Aoharu"
@@ -9413,10 +9377,6 @@
       },
       "music_idx_159": {
         "music_name": "ジングルベル",
-        "diff": "BASIC"
-      },
-      "music_idx_2853": {
-        "music_name": "スーパーヒーロー",
         "diff": "BASIC"
       },
       "music_idx_2839": {
@@ -9945,10 +9905,6 @@
       },
       "music_idx_395": {
         "music_name": "レッツゴー!陰陽師",
-        "diff": "BASIC"
-      },
-      "music_idx_2862": {
-        "music_name": "スパイダーダンス",
         "diff": "BASIC"
       },
       "music_idx_2308": {
@@ -10783,18 +10739,6 @@
       },
       "music_idx_244": {
         "music_name": "回レ！雪月花",
-        "diff": "BASIC"
-      },
-      "music_idx_2894": {
-        "music_name": "ずんだシェイキング",
-        "diff": "BASIC"
-      },
-      "music_idx_2852": {
-        "music_name": "オブソミート",
-        "diff": "BASIC"
-      },
-      "music_idx_2854": {
-        "music_name": "カルチャ",
         "diff": "BASIC"
       },
       "music_idx_2840": {
@@ -12243,10 +12187,6 @@
       },
       "music_idx_2526": {
         "music_name": "華麗なる死闘",
-        "diff": "BASIC"
-      },
-      "music_idx_2895": {
-        "music_name": "夢と希望",
         "diff": "BASIC"
       },
       "music_idx_2542": {
@@ -15549,10 +15489,6 @@
         "music_name": "ジングルベル",
         "diff": "ADVANCED"
       },
-      "music_idx_2853": {
-        "music_name": "スーパーヒーロー",
-        "diff": "ADVANCED"
-      },
       "music_idx_2839": {
         "music_name": "ブタサンダー",
         "diff": "ADVANCED"
@@ -17359,18 +17295,6 @@
         "music_name": "若い力 -SEGA HARD GIRLS MIX-",
         "diff": "ADVANCED"
       },
-      "music_idx_2894": {
-        "music_name": "ずんだシェイキング",
-        "diff": "ADVANCED"
-      },
-      "music_idx_2852": {
-        "music_name": "オブソミート",
-        "diff": "ADVANCED"
-      },
-      "music_idx_2854": {
-        "music_name": "カルチャ",
-        "diff": "ADVANCED"
-      },
       "music_idx_2840": {
         "music_name": "私の歯医者さん",
         "diff": "ADVANCED"
@@ -18237,10 +18161,6 @@
       },
       "music_idx_2526": {
         "music_name": "華麗なる死闘",
-        "diff": "ADVANCED"
-      },
-      "music_idx_2862": {
-        "music_name": "スパイダーダンス",
         "diff": "ADVANCED"
       },
       "music_idx_2308": {
@@ -19637,10 +19557,6 @@
         "music_name": "Outlaw's Lullaby",
         "diff": "ADVANCED"
       },
-      "music_idx_2895": {
-        "music_name": "夢と希望",
-        "diff": "ADVANCED"
-      },
       "music_idx_2542": {
         "music_name": "Burn it All",
         "diff": "ADVANCED"
@@ -20907,10 +20823,6 @@
       },
       "music_idx_37": {
         "music_name": "鳥の詩",
-        "diff": "EXPERT"
-      },
-      "music_idx_2853": {
-        "music_name": "スーパーヒーロー",
         "diff": "EXPERT"
       },
       "music_idx_2840": {
@@ -23187,10 +23099,6 @@
         "music_name": "回レ！雪月花",
         "diff": "EXPERT"
       },
-      "music_idx_2852": {
-        "music_name": "オブソミート",
-        "diff": "EXPERT"
-      },
       "music_idx_2842": {
         "music_name": "え？あぁ、そう。- 10th Anniversary Edition -",
         "diff": "EXPERT"
@@ -24261,10 +24169,6 @@
         "music_name": "ハッピーエンドをはじめから",
         "diff": "EXPERT"
       },
-      "music_idx_2854": {
-        "music_name": "カルチャ",
-        "diff": "EXPERT"
-      },
       "music_idx_2841": {
         "music_name": "少女A",
         "diff": "EXPERT"
@@ -24563,10 +24467,6 @@
       },
       "music_idx_629": {
         "music_name": "Candyland Symphony",
-        "diff": "EXPERT"
-      },
-      "music_idx_2895": {
-        "music_name": "夢と希望",
         "diff": "EXPERT"
       },
       "music_idx_2308": {
@@ -25199,10 +25099,6 @@
         "music_name": "Outlaw's Lullaby",
         "diff": "EXPERT"
       },
-      "music_idx_2862": {
-        "music_name": "スパイダーダンス",
-        "diff": "EXPERT"
-      },
       "music_idx_2817": {
         "music_name": "Unwelcome School",
         "diff": "EXPERT"
@@ -25599,10 +25495,6 @@
       },
       "music_idx_2242": {
         "music_name": "キルミーのベイベー！",
-        "diff": "EXPERT"
-      },
-      "music_idx_2894": {
-        "music_name": "ずんだシェイキング",
         "diff": "EXPERT"
       },
       "music_idx_2740": {
@@ -28091,10 +27983,6 @@
         "music_name": "回レ！雪月花",
         "diff": "MASTER"
       },
-      "music_idx_2853": {
-        "music_name": "スーパーヒーロー",
-        "diff": "MASTER"
-      },
       "music_idx_2814": {
         "music_name": "リアライズ",
         "diff": "MASTER"
@@ -30139,14 +30027,6 @@
         "music_name": "純情-SAKURA-",
         "diff": "MASTER"
       },
-      "music_idx_2894": {
-        "music_name": "ずんだシェイキング",
-        "diff": "MASTER"
-      },
-      "music_idx_2852": {
-        "music_name": "オブソミート",
-        "diff": "MASTER"
-      },
       "music_idx_2721": {
         "music_name": "ザムザ",
         "diff": "MASTER"
@@ -30545,10 +30425,6 @@
       },
       "music_idx_2526": {
         "music_name": "華麗なる死闘",
-        "diff": "MASTER"
-      },
-      "music_idx_2895": {
-        "music_name": "夢と希望",
         "diff": "MASTER"
       },
       "music_idx_2308": {
@@ -31146,22 +31022,6 @@
       "music_idx_150": {
         "music_name": "brilliant better",
         "diff": "ULTIMA"
-      },
-      "music_idx_59": {
-        "music_name": "Invitation",
-        "diff": "ULTIMA"
-      },
-      "music_idx_288": {
-        "music_name": "First Twinkle",
-        "diff": "ULTIMA"
-      },
-      "music_idx_438": {
-        "music_name": "WE GOTTA SOUL",
-        "diff": "ULTIMA"
-      },
-      "music_idx_1101": {
-        "music_name": "ハルシナイト",
-        "diff": "ULTIMA"
       }
     },
     "LEVEL 14": {
@@ -31303,10 +31163,6 @@
       },
       "music_idx_2252": {
         "music_name": "BlackFlagBreaker!!",
-        "diff": "MASTER"
-      },
-      "music_idx_2854": {
-        "music_name": "カルチャ",
         "diff": "MASTER"
       },
       "music_idx_2841": {
@@ -32444,10 +32300,6 @@
       "music_idx_95": {
         "music_name": "砂漠のハンティングガール♡",
         "diff": "ULTIMA"
-      },
-      "music_idx_399": {
-        "music_name": "最愛テトラグラマトン",
-        "diff": "ULTIMA"
       }
     },
     "LEVEL 14+": {
@@ -32641,10 +32493,6 @@
       },
       "music_idx_2525": {
         "music_name": "本物のヒーローとの戦い",
-        "diff": "MASTER"
-      },
-      "music_idx_2862": {
-        "music_name": "スパイダーダンス",
         "diff": "MASTER"
       },
       "music_idx_2542": {
@@ -33219,16 +33067,8 @@
         "music_name": "風仁雷仁",
         "diff": "ULTIMA"
       },
-      "music_idx_145": {
-        "music_name": "Change Our MIRAI！",
-        "diff": "ULTIMA"
-      },
       "music_idx_331": {
         "music_name": "猛進ソリストライフ！",
-        "diff": "ULTIMA"
-      },
-      "music_idx_53": {
-        "music_name": "Teriqma",
         "diff": "ULTIMA"
       },
       "music_idx_107": {
@@ -33237,14 +33077,6 @@
       },
       "music_idx_152": {
         "music_name": "Gustav Battle",
-        "diff": "ULTIMA"
-      },
-      "music_idx_73": {
-        "music_name": "MUSIC PЯAYER",
-        "diff": "ULTIMA"
-      },
-      "music_idx_230": {
-        "music_name": "Hyperion",
         "diff": "ULTIMA"
       },
       "music_idx_435": {
@@ -33791,10 +33623,6 @@
       },
       "music_idx_333": {
         "music_name": "Oshama Scramble!",
-        "diff": "ULTIMA"
-      },
-      "music_idx_76": {
-        "music_name": "luna blu",
         "diff": "ULTIMA"
       },
       "music_idx_63": {

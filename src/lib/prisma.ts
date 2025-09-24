@@ -24,10 +24,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // 애플리케이션 종료 시 Prisma 연결 정리
-if (typeof window === 'undefined') {
-  process.on('beforeExit', async () => {
-    await client.$disconnect();
-  });
-}
+// Edge Runtime(서버리스) 환경에서는 process.on 사용 금지
+// if (typeof window === 'undefined' && typeof process !== 'undefined' && process.on) {
+//   process.on('beforeExit', async () => {
+//     await client.$disconnect();
+//   });
+// }
 
 export default client;

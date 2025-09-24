@@ -3797,110 +3797,6 @@
   },
   {
     "meta": {
-      "id": "2894",
-      "title": "ずんだシェイキング",
-      "genre": "niconico",
-      "version": "CHUNITHM X-VERSE"
-    },
-    "data": {
-      "basic": {
-        "const": 3,
-        "level": "3"
-      },
-      "advanced": {
-        "const": 6,
-        "level": "6"
-      },
-      "expert": {
-        "level": "11",
-        "const": 11.1
-      },
-      "master": {
-        "level": "13+",
-        "const": 13.6
-      }
-    }
-  },
-  {
-    "meta": {
-      "id": "2852",
-      "title": "オブソミート",
-      "genre": "niconico",
-      "version": "CHUNITHM X-VERSE"
-    },
-    "data": {
-      "basic": {
-        "const": 3,
-        "level": "3"
-      },
-      "advanced": {
-        "const": 6,
-        "level": "6"
-      },
-      "expert": {
-        "const": 9.5,
-        "level": "9+"
-      },
-      "master": {
-        "level": "13+",
-        "const": 13.8
-      }
-    }
-  },
-  {
-    "meta": {
-      "id": "2853",
-      "title": "スーパーヒーロー",
-      "genre": "niconico",
-      "version": "CHUNITHM X-VERSE"
-    },
-    "data": {
-      "basic": {
-        "const": 2,
-        "level": "2"
-      },
-      "advanced": {
-        "const": 5,
-        "level": "5"
-      },
-      "expert": {
-        "const": 8,
-        "level": "8"
-      },
-      "master": {
-        "level": "12+",
-        "const": 12.5
-      }
-    }
-  },
-  {
-    "meta": {
-      "id": "2854",
-      "title": "カルチャ",
-      "genre": "niconico",
-      "version": "CHUNITHM X-VERSE"
-    },
-    "data": {
-      "basic": {
-        "const": 3,
-        "level": "3"
-      },
-      "advanced": {
-        "const": 6,
-        "level": "6"
-      },
-      "expert": {
-        "level": "10",
-        "const": 10
-      },
-      "master": {
-        "level": "14",
-        "const": 14
-      }
-    }
-  },
-  {
-    "meta": {
       "id": "2839",
       "title": "ブタサンダー",
       "genre": "niconico",
@@ -19059,58 +18955,6 @@
   },
   {
     "meta": {
-      "id": "2862",
-      "title": "スパイダーダンス",
-      "genre": "VARIETY",
-      "version": "CHUNITHM X-VERSE"
-    },
-    "data": {
-      "basic": {
-        "const": 2,
-        "level": "2"
-      },
-      "advanced": {
-        "const": 6,
-        "level": "6"
-      },
-      "expert": {
-        "level": "10+",
-        "const": 10.7
-      },
-      "master": {
-        "level": "14+",
-        "const": 14.5
-      }
-    }
-  },
-  {
-    "meta": {
-      "id": "2895",
-      "title": "夢と希望",
-      "genre": "VARIETY",
-      "version": "CHUNITHM X-VERSE"
-    },
-    "data": {
-      "basic": {
-        "const": 3,
-        "level": "3"
-      },
-      "advanced": {
-        "const": 7,
-        "level": "7"
-      },
-      "expert": {
-        "level": "10",
-        "const": 10.3
-      },
-      "master": {
-        "level": "13+",
-        "const": 13.5
-      }
-    }
-  },
-  {
-    "meta": {
       "id": "2308",
       "title": "Advance（CHUNITHM edit）",
       "genre": "VARIETY",
@@ -21879,9 +21723,6 @@
       "master": {
         "level": "12",
         "const": 12.3
-      },
-      "ultima": {
-        "level": "14+"
       }
     }
   },
@@ -29554,9 +29395,6 @@
       "master": {
         "level": "11+",
         "const": 11.8
-      },
-      "ultima": {
-        "level": "13+"
       }
     }
   },
@@ -29957,9 +29795,6 @@
       "master": {
         "level": "13+",
         "const": 13.5
-      },
-      "ultima": {
-        "level": "14+"
       }
     }
   },
@@ -30124,9 +29959,6 @@
       "master": {
         "level": "14+",
         "const": 14.5
-      },
-      "ultima": {
-        "level": "15"
       }
     }
   },
@@ -30551,9 +30383,6 @@
       "master": {
         "level": "14",
         "const": 14
-      },
-      "ultima": {
-        "level": "14+"
       }
     }
   },
@@ -30866,9 +30695,6 @@
       "master": {
         "level": "11",
         "const": 11.4
-      },
-      "ultima": {
-        "level": "13+"
       }
     }
   },
@@ -31025,9 +30851,6 @@
       "master": {
         "level": "13+",
         "const": 13.5
-      },
-      "ultima": {
-        "level": "14+"
       }
     }
   },
@@ -31288,9 +31111,6 @@
       "master": {
         "level": "13+",
         "const": 13.7
-      },
-      "ultima": {
-        "level": "14"
       }
     }
   },
@@ -31837,9 +31657,6 @@
       "master": {
         "level": "12+",
         "const": 12.5
-      },
-      "ultima": {
-        "level": "13+"
       }
     }
   },
@@ -35332,9 +35149,6 @@
       "master": {
         "level": "11+",
         "const": 11.7
-      },
-      "ultima": {
-        "level": "13+"
       }
     }
   },
@@ -39853,16 +39667,16 @@
         "level": "6"
       },
       "advanced": {
-        "level": "10",
-        "const": 10
+        "const": 10,
+        "level": "10"
       },
       "expert": {
-        "level": "13+",
-        "const": 13.8
+        "const": "13.5?",
+        "level": "13+"
       },
       "master": {
-        "level": "15",
-        "const": 15.4
+        "const": 15.4,
+        "level": "15"
       }
     }
   }

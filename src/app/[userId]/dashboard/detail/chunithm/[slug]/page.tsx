@@ -214,6 +214,7 @@ export default function UserChunithmDetailPage() {
               <ChunithmSongGrid 
                 songs={profile.gameData?.ratingLists.best || []} 
                 type="best"
+                canShowRatingImgBtn={accessMode.mode === 'owner'}
               />
             </CardContent>
           </Card>
@@ -224,6 +225,7 @@ export default function UserChunithmDetailPage() {
               <ChunithmSongGrid 
                 songs={profile.gameData?.ratingLists.new || []} 
                 type="new"
+                canShowRatingImgBtn={accessMode.mode === 'owner'}
               />
             </CardContent>
           </Card>

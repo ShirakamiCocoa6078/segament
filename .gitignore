@@ -47,3 +47,7 @@ firestore-debug.log
 
 #jacket downloader
 /public/node_modules
+
+#song data downloader
+/songDataScript/node_modules
+/songDataScript/.env

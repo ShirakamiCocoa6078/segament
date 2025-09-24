@@ -25,9 +25,11 @@ interface SongData {
 interface ChunithmSongGridProps {
   songs: SongData[];
   type: 'best' | 'new';
+  canShowRatingImgBtn?: boolean;
 }
 
 export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
+  const canShowRatingImgBtn = typeof arguments[0].canShowRatingImgBtn === 'boolean' ? arguments[0].canShowRatingImgBtn : true;
   // 레이팅표 생성 팝업 상태 및 로직
   const [showRatingImgPopup, setShowRatingImgPopup] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -208,9 +210,11 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
             {type === 'best' ? 'Best 30' : 'New 20'}
           </h3>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition ml-4" onClick={handleOpenRatingImgPopup}>
-            레이팅표 생성
-          </button>
+          {canShowRatingImgBtn && (
+            <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition ml-4" onClick={handleOpenRatingImgPopup}>
+              레이팅표 생성
+            </button>
+          )}
         </div>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mt-2">
           <p className="text-sm text-gray-500">
