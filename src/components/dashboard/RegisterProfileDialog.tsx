@@ -52,17 +52,17 @@ export default function RegisterProfileDialog() {
           <div className="text-sm">
             <p className="font-bold">1. 아래 버튼을 눌러 북마크릿 코드를 복사하세요.</p>
             <Button onClick={handleCopy} className="w-full mt-2">
-              Segament 만능 북마크릿 복사하기
+              Segament 북마크릿 복사하기
             </Button>
           </div>
           <div className="text-sm">
             <p className="font-bold">2. 브라우저에 새 북마크를 만들고, 'URL' 또는 '주소' 필드에 복사한 코드를 붙여넣으세요.</p>
             <p className="text-xs text-muted-foreground mt-1">
-              (이름은 'Segament 가져오기' 등으로 설정하면 편리합니다.)
+              (이름은 'Segament' 등으로 설정하면 편리합니다.)
             </p>
           </div>
            <div className="text-sm">
-            <p className="font-bold">3. CHUNITHM-NET 등 공식 사이트에 로그인 후, 방금 만든 북마크릿을 클릭하세요.</p>
+            <p className="font-bold">3. CHUNITHM-NET, MAIMAI-NET등 공식 사이트에 로그인 후, 만든 북마크릿을 실행하세요.</p>
              <p className="text-xs text-muted-foreground mt-1">
               데이터 가져오기가 완료되면 이 페이지는 자동으로 새로고침될 수 있습니다.
             </p>

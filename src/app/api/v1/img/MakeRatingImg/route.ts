@@ -39,8 +39,17 @@ export async function GET(req: NextRequest) {
     }
     // ratingLists에서 best30, new20 추출
     const ratingLists = profile.gameData.ratingLists as any;
-  const best30 = Array.isArray(ratingLists.best30) ? ratingLists.best30 : [];
-  const new20 = Array.isArray(ratingLists.new20) ? ratingLists.new20 : [];
+    // 실제 DB 구조에 맞게 필드명 매핑 (예: best → best30, new → new20)
+    const best30 = Array.isArray(ratingLists.best30)
+      ? ratingLists.best30
+      : Array.isArray(ratingLists.best)
+        ? ratingLists.best
+        : [];
+    const new20 = Array.isArray(ratingLists.new20)
+      ? ratingLists.new20
+      : Array.isArray(ratingLists.new)
+        ? ratingLists.new
+        : [];
     const image = new ImageResponse(
       React.createElement('div', {
         style: {
