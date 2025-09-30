@@ -8,7 +8,7 @@ import { useCallback } from "react";
 
 export default function Home() {
   const handleSignIn = useCallback(() => {
-    signIn('google', { callbackUrl: '/auth/verify' });
+    signIn('google', { callbackUrl: '/auth/verify' }, { prompt: 'select_account' });
   }, []);
 
 
