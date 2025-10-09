@@ -23541,6 +23541,32 @@
   },
   {
     "meta": {
+      "id": "2870",
+      "title": "ソウルのピース",
+      "genre": "イロドリミドリ",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 5,
+        "level": "5"
+      },
+      "expert": {
+        "level": "10+",
+        "const": 10.6
+      },
+      "master": {
+        "level": "13+",
+        "const": 13.7
+      }
+    }
+  },
+  {
+    "meta": {
       "id": "1012",
       "title": "Jack the GAME",
       "genre": "イロドリミドリ",
@@ -39859,6 +39885,110 @@
       "expert": {
         "level": "13+",
         "const": 13.8
+      },
+      "master": {
+        "level": "15",
+        "const": 15.4
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2866",
+      "title": "ナラク・オン・エア",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "level": "12",
+        "const": 12
+      },
+      "master": {
+        "level": "14",
+        "const": 14.2
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2867",
+      "title": "システム",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 5,
+        "level": "5"
+      },
+      "expert": {
+        "level": "11",
+        "const": 11.4
+      },
+      "master": {
+        "level": "13+",
+        "const": 13.6
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2868",
+      "title": "恋伯色",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "master": {
+        "level": "13+",
+        "const": 13.8
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2869",
+      "title": "OUTRAGE",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 6,
+        "level": "6"
+      },
+      "advanced": {
+        "level": "10",
+        "const": 10.4
+      },
+      "expert": {
+        "level": "14",
+        "const": 14
       },
       "master": {
         "level": "15",

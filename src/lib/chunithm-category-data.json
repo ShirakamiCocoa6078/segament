@@ -2694,6 +2694,9 @@
       "music_idx_2847": {
         "music_name": "単位がない！"
       },
+      "music_idx_2870": {
+        "music_name": "ソウルのピース"
+      },
       "music_idx_1012": {
         "music_name": "Jack the GAME"
       },
@@ -4569,6 +4572,18 @@
       },
       "music_idx_2858": {
         "music_name": "Everything Will Be One"
+      },
+      "music_idx_2866": {
+        "music_name": "ナラク・オン・エア"
+      },
+      "music_idx_2867": {
+        "music_name": "システム"
+      },
+      "music_idx_2868": {
+        "music_name": "恋伯色"
+      },
+      "music_idx_2869": {
+        "music_name": "OUTRAGE"
       }
     }
   },
@@ -9106,6 +9121,9 @@
       "music_idx_2847": {
         "music_name": "単位がない！"
       },
+      "music_idx_2870": {
+        "music_name": "ソウルのピース"
+      },
       "music_idx_2859": {
         "music_name": "Burn!!!"
       },
@@ -9168,6 +9186,18 @@
       },
       "music_idx_2858": {
         "music_name": "Everything Will Be One"
+      },
+      "music_idx_2866": {
+        "music_name": "ナラク・オン・エア"
+      },
+      "music_idx_2867": {
+        "music_name": "システム"
+      },
+      "music_idx_2868": {
+        "music_name": "恋伯色"
+      },
+      "music_idx_2869": {
+        "music_name": "OUTRAGE"
       }
     }
   },
@@ -12653,6 +12683,10 @@
         "music_name": "単位がない！",
         "diff": "BASIC"
       },
+      "music_idx_2870": {
+        "music_name": "ソウルのピース",
+        "diff": "BASIC"
+      },
       "music_idx_1012": {
         "music_name": "Jack the GAME",
         "diff": "BASIC"
@@ -13932,6 +13966,10 @@
       "music_idx_2857": {
         "music_name": "Challenger!!",
         "diff": "BASIC"
+      },
+      "music_idx_2867": {
+        "music_name": "システム",
+        "diff": "BASIC"
       }
     },
     "LEVEL 4": {
@@ -15001,6 +15039,14 @@
       },
       "music_idx_2855": {
         "music_name": "内臓♡マニピ",
+        "diff": "BASIC"
+      },
+      "music_idx_2866": {
+        "music_name": "ナラク・オン・エア",
+        "diff": "BASIC"
+      },
+      "music_idx_2868": {
+        "music_name": "恋伯色",
         "diff": "BASIC"
       },
       "music_idx_2776": {
@@ -16573,6 +16619,10 @@
         "music_name": "単位がない！",
         "diff": "ADVANCED"
       },
+      "music_idx_2870": {
+        "music_name": "ソウルのピース",
+        "diff": "ADVANCED"
+      },
       "music_idx_685": {
         "music_name": "ライトスピード・デイズ",
         "diff": "ADVANCED"
@@ -17064,6 +17114,10 @@
       "music_idx_2834": {
         "music_name": "luminoid love PART2",
         "diff": "ADVANCED"
+      },
+      "music_idx_2867": {
+        "music_name": "システム",
+        "diff": "ADVANCED"
       }
     },
     "LEVEL 6": {
@@ -17101,6 +17155,10 @@
       },
       "music_idx_2858": {
         "music_name": "Everything Will Be One",
+        "diff": "BASIC"
+      },
+      "music_idx_2869": {
+        "music_name": "OUTRAGE",
         "diff": "BASIC"
       },
       "music_idx_2849": {
@@ -19329,6 +19387,14 @@
       },
       "music_idx_2833": {
         "music_name": "並行天涯",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2866": {
+        "music_name": "ナラク・オン・エア",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2868": {
+        "music_name": "恋伯色",
         "diff": "ADVANCED"
       }
     },
@@ -24146,6 +24212,10 @@
       "music_idx_2836": {
         "music_name": "エモーション・キャプチャー",
         "diff": "EXPERT"
+      },
+      "music_idx_2868": {
+        "music_name": "恋伯色",
+        "diff": "EXPERT"
       }
     },
     "LEVEL 10": {
@@ -24203,6 +24273,10 @@
       },
       "music_idx_2858": {
         "music_name": "Everything Will Be One",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2869": {
+        "music_name": "OUTRAGE",
         "diff": "ADVANCED"
       },
       "music_idx_2851": {
@@ -25283,6 +25357,10 @@
         "music_name": "The Greatest Night",
         "diff": "EXPERT"
       },
+      "music_idx_2870": {
+        "music_name": "ソウルのピース",
+        "diff": "EXPERT"
+      },
       "music_idx_246": {
         "music_name": "なるとなぎのパーフェクトロックンロール教室",
         "diff": "EXPERT"
@@ -25995,6 +26073,10 @@
       },
       "music_idx_2845": {
         "music_name": "Star Saveler",
+        "diff": "EXPERT"
+      },
+      "music_idx_2867": {
+        "music_name": "システム",
         "diff": "EXPERT"
       },
       "music_idx_2359": {
@@ -27171,6 +27253,10 @@
       },
       "music_idx_2646": {
         "music_name": "Fire Engine73",
+        "diff": "EXPERT"
+      },
+      "music_idx_2866": {
+        "music_name": "ナラク・オン・エア",
         "diff": "EXPERT"
       },
       "music_idx_2776": {
@@ -30691,6 +30777,10 @@
         "music_name": "単位がない！",
         "diff": "MASTER"
       },
+      "music_idx_2870": {
+        "music_name": "ソウルのピース",
+        "diff": "MASTER"
+      },
       "music_idx_1012": {
         "music_name": "Jack the GAME",
         "diff": "MASTER"
@@ -31107,6 +31197,14 @@
         "music_name": "ラブリージャッジメント",
         "diff": "MASTER"
       },
+      "music_idx_2867": {
+        "music_name": "システム",
+        "diff": "MASTER"
+      },
+      "music_idx_2868": {
+        "music_name": "恋伯色",
+        "diff": "MASTER"
+      },
       "music_idx_38": {
         "music_name": "天ノ弱",
         "diff": "ULTIMA"
@@ -31279,6 +31377,10 @@
       },
       "music_idx_2846": {
         "music_name": "Tru'nembra",
+        "diff": "EXPERT"
+      },
+      "music_idx_2869": {
+        "music_name": "OUTRAGE",
         "diff": "EXPERT"
       },
       "music_idx_2716": {
@@ -32315,6 +32417,10 @@
       },
       "music_idx_2857": {
         "music_name": "Challenger!!",
+        "diff": "MASTER"
+      },
+      "music_idx_2866": {
+        "music_name": "ナラク・オン・エア",
         "diff": "MASTER"
       },
       "music_idx_2683": {
@@ -33723,6 +33829,10 @@
       },
       "music_idx_2858": {
         "music_name": "Everything Will Be One",
+        "diff": "MASTER"
+      },
+      "music_idx_2869": {
+        "music_name": "OUTRAGE",
         "diff": "MASTER"
       },
       "music_idx_455": {
