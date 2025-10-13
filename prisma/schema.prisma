@@ -1,31 +1,52 @@
-// 파일 경로: prisma/schema.prisma
-
+// 1. 데이터베이스 연결 설정
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// 2. Prisma 클라이언트 생성기 설정
 generator client {
   provider = "prisma-client-js"
 }
 
+// --- Enum 타입 정의 ---
+// 게임 종류를 명확히 하기 위한 Enum
+enum GameType {
+  CHUNITHM
+  MAIMAI
+}
+
+// 서버 지역을 명확히 하기 위한 Enum
+enum Region {
+  JP
+  INT
+}
+
+
+// --- 모델 정의 ---
+
+// 3. NextAuth.js 인증 필수 모델
+// 사용자 계정의 핵심 정보를 담는 모델
 model User {
   id            String    @id @default(cuid())
+  userId        String    @unique
   name          String?
-  username      String?   @unique
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  gameProfiles  GameProfile[]
+
+  // 관계 설정
+  accounts     Account[]
+  sessions     Session[]
+  gameProfiles GameProfile[]
 }
 
+// 소셜 로그인 제공자 정보를 관리하는 모델
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
+  id                String @id @default(cuid())
+  userSystemId      String
   type              String
   provider          String
   providerAccountId String
@@ -36,74 +57,70 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userSystemId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
 }
 
+// 사용자 로그인 세션 정보를 관리하는 모델
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       String
+  userSystemId String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userSystemId], references: [id], onDelete: Cascade)
 }
 
+// 이메일 인증 등 일회성 토큰을 관리하는 모델
 model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
+
   @@unique([identifier, token])
 }
 
+
+// 4. 서비스 핵심 애플리케이션 모델
+// 사용자의 게임 프로필 전체 정보를 관리하는 모델
 model GameProfile {
-  id            String    @id @default(cuid())
-  userId        String
-  gameType      String
-  region        String
-  playerName    String
-  rating        Float     @default(0)
-  overPower     Float     @default(0)
-  level         Int       @default(0)
-  playCount     Int       @default(0)
+  profileId    String @id @default(cuid())
+  userSystemId String
+
+  // --- 기본 정보 ---
+  gameType     GameType?
+  region       Region?
+  playerName   String?
+  friendCode   String?
+  isPublic     Boolean  @default(true) // [수정] true/false 값만 갖도록 Optional(?) 제거
+  // [수정] DateTime 타입으로 변경하여 날짜 관련 연산(정렬, 비교 등)에 용이하도록 함
+  // TODO: 북마클릿에서 수집한 문자열 형태의 날짜를 DateTime 객체로 변환하여 저장하는 로직 구현 필요
+  lastPlayDate DateTime?
+
+  // --- 분리된 핵심 게임 데이터 (권장안 적용) ---
+  level         Int?
+  rating        Float?
+  overPower     Float?
+  playCount     Int?
+
+  // --- 그룹화된 JSON 정보 ---
+  // playerInfo: { "teamName": "Team Name", "battleRankImg": "url", "teamEmblemColor": "#FFFFFF", "classEmblem": { "top": "url", "base": "url" }, "character": { "image": "url", "background": "url" }, "nameplateImage": "url" }
+  playerInfo    Json? // 프로필 꾸미기 관련 URL 등
+  // honors: [{ "type": "trophy", "name": "Honor Name", "rarity": "gold" }]
   honors        Json?
-  teamName      String?
-  lastPlayDate  String?
-  battleRankImg String?
-  friendCode    String?
-  
-  // --- 신규 추가 필드 ---
-  teamEmblemColor     String? // 팀 엠블럼 색상
-  classEmblemTop      String? // 코스 엠블럼 (Top)
-  classEmblemBase     String? // 코스 엠블럼 (Base)
-  characterImage      String? // 캐릭터 이미지 URL
-  characterBackground String? // 캐릭터 배경 URL
-  nameplateImage      String? // 네임플레이트 이미지 URL
-  
-  // --- 레이팅 히스토리 ---
-  ratingHistory       Json?   // {"2025-08-12|11:04": 17.11, "2025-08-13|13:22": 17.12}
+  // ratingHistory: { "2025-10-09": 17.50, "2025-10-08": 17.49 }
+  ratingHistory Json?
+  // playlogs: [{ "songId": "1234", "difficulty": "MASTER", "score": 1009000, "clearType": "AJC", "playDate": "..." }]
+  playlogs      Json? // 수천개의 플레이 기록
+  // ratingLists: { "best": [{ "songId": "1234", ... }], "new": [{ "songId": "5678", ... }] }
+  ratingLists   Json? // 레이팅 대상 곡 목록
 
-  // --- 프로필 공개여부 ---
-  isPublic            Boolean  @default(true)
+  // --- 타임스탬프 및 관계 설정 ---
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userSystemId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  gameData      GameData?
-
-  @@unique([userId, gameType, region])
-}
-
-// --- 신규 모델 ---
-// 기존의 GamePlaylog와 RatingList를 대체합니다.
-model GameData {
-  id          String @id @default(cuid())
-  profileId   String @unique
-  
-  // 플레이 기록 전체를 담는 JSON 필드
-  playlogs    Json?
-  // 레이팅 리스트(Best, New)를 담는 JSON 필드
-  ratingLists Json?
-  
-  updatedAt   DateTime @updatedAt
-  profile     GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  // 한 유저가 동일 게임/지역 프로필을 중복 생성하는 것을 방지
+  @@unique([userSystemId, gameType, region])
 }
