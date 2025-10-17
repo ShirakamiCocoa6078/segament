@@ -34,9 +34,11 @@
         };
 
         const collectPlayerData = (playerDataDoc, customiseDoc) => {
+            const profile = {};
             const playerInfo = {};
-            // --- 기존 데이터 수집 ---
-            playerInfo.playerName = utils.normalize(playerDataDoc.querySelector('.player_name_in')?.innerText);
+
+            // --- 기본 프로필 정보 수집 ---
+            profile.playerName = utils.normalize(playerDataDoc.querySelector('.player_name_in')?.innerText);
             const ratingImages = playerDataDoc.querySelectorAll('.player_rating_num_block img');
             let ratingStr = '';
             ratingImages.forEach(img => {
@@ -46,12 +48,27 @@
                     if (match) ratingStr += match[1].slice(-1);
                 }
             });
-            playerInfo.rating = parseFloat(ratingStr) || 0;
+            profile.rating = parseFloat(ratingStr) || 0;
             const opText = utils.normalize(playerDataDoc.querySelector('.player_overpower_text')?.innerText);
-            if (opText) playerInfo.overPower = parseFloat(opText.split(' ')[0]);
+            if (opText) profile.overPower = parseFloat(opText.split(' ')[0]);
             const rebornLv = parseInt(playerDataDoc.querySelector('.player_reborn')?.innerText || '0');
             const mainLv = parseInt(playerDataDoc.querySelector('.player_lv')?.innerText || '0');
-            playerInfo.level = (rebornLv * 100) + mainLv;
+            profile.level = (rebornLv * 100) + mainLv;
+            profile.lastPlayDate = utils.normalize(playerDataDoc.querySelector('.player_lastplaydate_text')?.innerText);
+            const playCountElement = playerDataDoc.querySelector('.user_data_play_count .user_data_text');
+            const playCountText = playCountElement ? utils.normalize(playCountElement.innerText) : '0';
+            profile.playCount = parseInt(playCountText.replace(/,/g, '')) || 0;
+            
+            // --- 레이팅 히스토리를 위한 타임스탬프 생성 ---
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            profile.ratingTimestamp = `${year}-${month}-${day}|${hour}:${minute}`;
+
+            // --- playerInfo (꾸미기 정보) 수집 ---
             const honors = [];
             playerDataDoc.querySelectorAll('.player_honor_short').forEach(honor => {
                 const text = utils.normalize(honor.querySelector('.player_honor_text span')?.innerText);
@@ -65,23 +82,8 @@
             });
             playerInfo.honors = honors;
             playerInfo.teamName = utils.normalize(playerDataDoc.querySelector('.player_team_name')?.innerText);
-            playerInfo.lastPlayDate = utils.normalize(playerDataDoc.querySelector('.player_lastplaydate_text')?.innerText);
             playerInfo.friendCode = utils.normalize(playerDataDoc.querySelector('.user_data_friend_tap span[style*="display:none"]')?.innerText);
-            const playCountElement = playerDataDoc.querySelector('.user_data_play_count .user_data_text');
-            const playCountText = playCountElement ? utils.normalize(playCountElement.innerText) : '0';
-            playerInfo.playCount = parseInt(playCountText.replace(/,/g, '')) || 0;
             playerInfo.battleRankImg = playerDataDoc.querySelector('.player_battlerank img')?.src;
-
-            // --- 레이팅 히스토리를 위한 타임스탬프 생성 ---
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hour = String(now.getHours()).padStart(2, '0');
-            const minute = String(now.getMinutes()).padStart(2, '0');
-            playerInfo.ratingTimestamp = `${year}-${month}-${day}|${hour}:${minute}`;
-
-            // --- 신규 데이터 수집 ---
             const teamEmblem = playerDataDoc.querySelector('.player_data_right > div[class*="player_team_emblem_"]');
             if (teamEmblem) {
                 const classMatch = teamEmblem.className.match(/player_team_emblem_(\w+)/);
@@ -100,7 +102,10 @@
             }
             playerInfo.nameplateImage = customiseDoc.querySelector('div.nameplate_now img')?.src;
             
-            return playerInfo;
+            // 최종적으로 profile 객체에 playerInfo를 할당
+            profile.playerInfo = playerInfo;
+
+            return profile;
         };
         
         const collectRatingList = async (url) => {
