@@ -435,6 +435,12 @@
       }
     },
     "niconico": {
+      "music_idx_2874": {
+        "music_name": "はじまりの未来"
+      },
+      "music_idx_2875": {
+        "music_name": "Worlders"
+      },
       "music_idx_2894": {
         "music_name": "ずんだシェイキング"
       },
@@ -1334,6 +1340,15 @@
       }
     },
     "東方Project": {
+      "music_idx_2871": {
+        "music_name": "Idoratrize World"
+      },
+      "music_idx_2872": {
+        "music_name": "Necromantic"
+      },
+      "music_idx_2873": {
+        "music_name": "Galaxy Collapse"
+      },
       "music_idx_2825": {
         "music_name": "最終鬼畜妹フランドール・S (Chroma Remix)"
       },
@@ -9064,6 +9079,12 @@
       "music_idx_2821": {
         "music_name": "はいよろこんで"
       },
+      "music_idx_2874": {
+        "music_name": "はじまりの未来"
+      },
+      "music_idx_2875": {
+        "music_name": "Worlders"
+      },
       "music_idx_2894": {
         "music_name": "ずんだシェイキング"
       },
@@ -9096,6 +9117,15 @@
       },
       "music_idx_2824": {
         "music_name": "モ　ミ　ア　ゲ　ヲ　シ　ャ　カ　ア　ゲ　ヲ"
+      },
+      "music_idx_2871": {
+        "music_name": "Idoratrize World"
+      },
+      "music_idx_2872": {
+        "music_name": "Necromantic"
+      },
+      "music_idx_2873": {
+        "music_name": "Galaxy Collapse"
       },
       "music_idx_2825": {
         "music_name": "最終鬼畜妹フランドール・S (Chroma Remix)"
@@ -9443,6 +9473,14 @@
       },
       "music_idx_159": {
         "music_name": "ジングルベル",
+        "diff": "BASIC"
+      },
+      "music_idx_2874": {
+        "music_name": "はじまりの未来",
+        "diff": "BASIC"
+      },
+      "music_idx_2875": {
+        "music_name": "Worlders",
         "diff": "BASIC"
       },
       "music_idx_2853": {
@@ -11553,6 +11591,14 @@
       },
       "music_idx_83": {
         "music_name": "ロストワンの号哭",
+        "diff": "BASIC"
+      },
+      "music_idx_2871": {
+        "music_name": "Idoratrize World",
+        "diff": "BASIC"
+      },
+      "music_idx_2872": {
+        "music_name": "Necromantic",
         "diff": "BASIC"
       },
       "music_idx_2825": {
@@ -14037,6 +14083,10 @@
         "music_name": "ラクガキスト",
         "diff": "BASIC"
       },
+      "music_idx_2873": {
+        "music_name": "Galaxy Collapse",
+        "diff": "BASIC"
+      },
       "music_idx_2787": {
         "music_name": "超最終鬼畜妹フランドール・S",
         "diff": "BASIC"
@@ -15595,6 +15645,14 @@
         "music_name": "ジングルベル",
         "diff": "ADVANCED"
       },
+      "music_idx_2874": {
+        "music_name": "はじまりの未来",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2875": {
+        "music_name": "Worlders",
+        "diff": "ADVANCED"
+      },
       "music_idx_2853": {
         "music_name": "スーパーヒーロー",
         "diff": "ADVANCED"
@@ -16141,6 +16199,10 @@
       },
       "music_idx_117": {
         "music_name": "M.S.S.Planet",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2872": {
+        "music_name": "Necromantic",
         "diff": "ADVANCED"
       },
       "music_idx_2643": {
@@ -17939,6 +18001,10 @@
       },
       "music_idx_83": {
         "music_name": "ロストワンの号哭",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2871": {
+        "music_name": "Idoratrize World",
         "diff": "ADVANCED"
       },
       "music_idx_2792": {
@@ -22171,6 +22237,14 @@
         "music_name": "Paradisus-Paradoxum",
         "diff": "EXPERT"
       },
+      "music_idx_2874": {
+        "music_name": "はじまりの未来",
+        "diff": "EXPERT"
+      },
+      "music_idx_2875": {
+        "music_name": "Worlders",
+        "diff": "EXPERT"
+      },
       "music_idx_2741": {
         "music_name": "ゆりかご",
         "diff": "EXPERT"
@@ -22917,6 +22991,10 @@
       }
     },
     "LEVEL 9+": {
+      "music_idx_2873": {
+        "music_name": "Galaxy Collapse",
+        "diff": "ADVANCED"
+      },
       "music_idx_1043": {
         "music_name": "Lemegeton -little key of solomon-",
         "diff": "ADVANCED"
@@ -23535,6 +23613,10 @@
       },
       "music_idx_27": {
         "music_name": "タイガーランペイジ",
+        "diff": "EXPERT"
+      },
+      "music_idx_2872": {
+        "music_name": "Necromantic",
         "diff": "EXPERT"
       },
       "music_idx_2413": {
@@ -24513,6 +24595,10 @@
       },
       "music_idx_157": {
         "music_name": "ギガンティックO.T.N",
+        "diff": "EXPERT"
+      },
+      "music_idx_2871": {
+        "music_name": "Idoratrize World",
         "diff": "EXPERT"
       },
       "music_idx_2524": {
@@ -28177,6 +28263,14 @@
         "music_name": "回レ！雪月花",
         "diff": "MASTER"
       },
+      "music_idx_2874": {
+        "music_name": "はじまりの未来",
+        "diff": "MASTER"
+      },
+      "music_idx_2875": {
+        "music_name": "Worlders",
+        "diff": "MASTER"
+      },
       "music_idx_2853": {
         "music_name": "スーパーヒーロー",
         "diff": "MASTER"
@@ -29459,6 +29553,10 @@
         "music_name": "ロストワンの号哭",
         "diff": "MASTER"
       },
+      "music_idx_2872": {
+        "music_name": "Necromantic",
+        "diff": "MASTER"
+      },
       "music_idx_2523": {
         "music_name": "インターネットサバイバー",
         "diff": "MASTER"
@@ -29923,6 +30021,10 @@
       },
       "music_idx_2182": {
         "music_name": "初音天地開闢神話",
+        "diff": "EXPERT"
+      },
+      "music_idx_2873": {
+        "music_name": "Galaxy Collapse",
         "diff": "EXPERT"
       },
       "music_idx_2398": {
@@ -31525,6 +31627,10 @@
       },
       "music_idx_157": {
         "music_name": "ギガンティックO.T.N",
+        "diff": "MASTER"
+      },
+      "music_idx_2871": {
+        "music_name": "Idoratrize World",
         "diff": "MASTER"
       },
       "music_idx_2792": {
@@ -33373,6 +33479,10 @@
       },
       "music_idx_2641": {
         "music_name": "マシンガンポエムドール",
+        "diff": "MASTER"
+      },
+      "music_idx_2873": {
+        "music_name": "Galaxy Collapse",
         "diff": "MASTER"
       },
       "music_idx_2787": {

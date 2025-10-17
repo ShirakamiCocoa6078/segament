@@ -3797,6 +3797,58 @@
   },
   {
     "meta": {
+      "id": "2874",
+      "title": "はじまりの未来",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 2,
+        "level": "2"
+      },
+      "advanced": {
+        "const": 5,
+        "level": "5"
+      },
+      "expert": {
+        "const": 9,
+        "level": "9"
+      },
+      "master": {
+        "level": "12+",
+        "const": 12.9
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2875",
+      "title": "Worlders",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 2,
+        "level": "2"
+      },
+      "advanced": {
+        "const": 5,
+        "level": "5"
+      },
+      "expert": {
+        "const": 9,
+        "level": "9"
+      },
+      "master": {
+        "level": "12+",
+        "const": 12.8
+      }
+    }
+  },
+  {
+    "meta": {
       "id": "2894",
       "title": "ずんだシェイキング",
       "genre": "niconico",
@@ -11650,6 +11702,84 @@
       "ultima": {
         "level": "14",
         "const": 14.2
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2871",
+      "title": "Idoratrize World",
+      "genre": "東方Project",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "level": "10",
+        "const": 10.4
+      },
+      "master": {
+        "level": "14",
+        "const": 14.1
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2872",
+      "title": "Necromantic",
+      "genre": "東方Project",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 5,
+        "level": "5"
+      },
+      "expert": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "master": {
+        "const": 13,
+        "level": "13"
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2873",
+      "title": "Galaxy Collapse",
+      "genre": "東方Project",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "expert": {
+        "level": "13+",
+        "const": 13.8
+      },
+      "master": {
+        "level": "15",
+        "const": 15.3
       }
     }
   },
@@ -21881,7 +22011,8 @@
         "const": 12.3
       },
       "ultima": {
-        "level": "14+"
+        "level": "14+",
+        "const": 14.6
       }
     }
   },
@@ -29582,7 +29713,8 @@
         "const": 11.8
       },
       "ultima": {
-        "level": "13+"
+        "level": "13+",
+        "const": 13.5
       }
     }
   },
@@ -29985,7 +30117,8 @@
         "const": 13.5
       },
       "ultima": {
-        "level": "14+"
+        "level": "14+",
+        "const": 14.9
       }
     }
   },
@@ -30152,7 +30285,8 @@
         "const": 14.5
       },
       "ultima": {
-        "level": "15"
+        "level": "15",
+        "const": 15.3
       }
     }
   },
@@ -30579,7 +30713,8 @@
         "const": 14
       },
       "ultima": {
-        "level": "14+"
+        "level": "14+",
+        "const": 14.8
       }
     }
   },
@@ -30894,7 +31029,8 @@
         "const": 11.4
       },
       "ultima": {
-        "level": "13+"
+        "level": "13+",
+        "const": 13.7
       }
     }
   },
@@ -31053,7 +31189,8 @@
         "const": 13.5
       },
       "ultima": {
-        "level": "14+"
+        "level": "14+",
+        "const": 14.7
       }
     }
   },
@@ -31316,7 +31453,8 @@
         "const": 13.7
       },
       "ultima": {
-        "level": "14"
+        "level": "14",
+        "const": 14.2
       }
     }
   },
@@ -31865,7 +32003,8 @@
         "const": 12.5
       },
       "ultima": {
-        "level": "13+"
+        "level": "13+",
+        "const": 13.6
       }
     }
   },
@@ -35360,7 +35499,8 @@
         "const": 11.7
       },
       "ultima": {
-        "level": "13+"
+        "level": "13+",
+        "const": 13.7
       }
     }
   },
