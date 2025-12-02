@@ -36,17 +36,18 @@ export default function UserDashboardPage() {
   });
 
   useEffect(() => {
+    const userIdStr = String(userId);
+    const sessionUserId = String(session?.user?.userId);
+    if (!userIdStr) return;
+    // 세션 userId와 URL userId가 일치하면 즉시 owner로 상태 갱신
+    const isOwner = sessionUserId === userIdStr;
+    setAccessMode({
+      mode: isOwner ? 'owner' : 'visitor',
+      canEdit: isOwner,
+      showPrivateData: isOwner
+    });
     const fetchProfiles = async () => {
-      const userIdStr = String(userId);
-      const sessionUserId = String(session?.user?.userId);
-      if (!userIdStr) return;
       try {
-        const isOwner = sessionUserId === userIdStr;
-        setAccessMode({
-          mode: isOwner ? 'owner' : 'visitor',
-          canEdit: isOwner,
-          showPrivateData: isOwner
-        });
         const endpoint = isOwner
           ? '/api/dashboard'
           : `/api/profile/public/${userIdStr}`;
