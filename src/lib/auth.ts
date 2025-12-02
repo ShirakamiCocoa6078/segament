@@ -4,9 +4,53 @@ import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
+
+// PrismaAdapter가 커스텀 스키마(userSystemId)와 호환되도록 프록시를 생성합니다.
+// 이 프록시는 PrismaAdapter가 'account' 또는 'session' 모델에 대해 쿼리를 실행할 때,
+// 'userId' 필드를 'userSystemId'로 동적으로 변환하여 스키마 불일치 문제를 해결합니다.
+const getPrismaProxy = (prisma: PrismaClient) => {
+  return new Proxy(prisma, {
+    get: (target, prop: string) => {
+      if (prop === 'account' || prop === 'session') {
+        const model = (target as any)[prop];
+        return new Proxy(model, {
+          get: (modelTarget, modelProp: string) => {
+            const originalMethod = modelTarget[modelProp];
+            if (['create', 'update', 'upsert', 'findUnique', 'findFirst', 'findMany'].includes(modelProp) && typeof originalMethod === 'function') {
+              return (...args: any[]) => {
+                const params = args[0] || {};
+                
+                const mapUserIdToUserSystemId = (obj: any) => {
+                  if (obj && obj.userId) {
+                    obj.userSystemId = obj.userId;
+                    delete obj.userId;
+                  }
+                };
+
+                // Prisma 쿼리의 다양한 부분에서 필드 이름 매핑을 수행합니다.
+                if (params.where) mapUserIdToUserSystemId(params.where);
+                if (params.data) mapUserIdToUserSystemId(params.data);
+                if (params.create) mapUserIdToUserSystemId(params.create);
+                if (params.update) mapUserIdToUserSystemId(params.update);
+                
+                return originalMethod.apply(modelTarget, args);
+              };
+            }
+            return originalMethod;
+          },
+        });
+      }
+      return (target as any)[prop];
+    },
+  });
+};
+
+// 생성된 프록시를 PrismaAdapter에 전달합니다.
+const prismaProxy = getPrismaProxy(prisma);
 
 export const authOptions: AuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prismaProxy),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -41,7 +85,6 @@ export const authOptions: AuthOptions = {
         params.append('name', profile.name);
       }
       // Google 프로필 이미지 URL을 가져옵니다.
-      // NextAuth.js v4의 GoogleProfile 타입에서는 'picture' 속성으로 제공될 수 있습니다.
       const image = (profile as any).picture || user.image;
       if (image) {
         params.append('image', image);
