@@ -112,10 +112,18 @@ export const authOptions: AuthOptions = {
       }
       return token;
     },
-    session({ session, token }) {
+    async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.userId = token.userId as string;
+        // userId가 없으면 DB에서 조회해서라도 반드시 넣어줌
+        if (token.userId) {
+          session.user.userId = token.userId as string;
+        } else if (token.id) {
+          const dbUser = await prisma.user.findUnique({ where: { id: token.id as string } });
+          if (dbUser?.userId) {
+            session.user.userId = dbUser.userId;
+          }
+        }
       }
       return session;
     },
