@@ -31,22 +31,20 @@ export default function UserDashboardPage() {
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      if (typeof userId !== 'string') return;
-      
+      const userIdStr = String(userId);
+      const sessionUserId = String(session?.user?.userId);
+      if (!userIdStr) return;
       try {
-        const isOwner = session?.user?.userId === userId;
+        const isOwner = sessionUserId === userIdStr;
         setAccessMode({
           mode: isOwner ? 'owner' : 'visitor',
           canEdit: isOwner,
           showPrivateData: isOwner
         });
-
-        const endpoint = isOwner 
+        const endpoint = isOwner
           ? '/api/dashboard'
-          : `/api/profile/public/${userId}`;
-          
+          : `/api/profile/public/${userIdStr}`;
         const response = await fetch(endpoint);
-        
         if (!response.ok) {
           if (response.status === 403) {
             setAccessMode(prev => ({ ...prev, mode: 'private' }));
@@ -57,7 +55,6 @@ export default function UserDashboardPage() {
             throw new Error('프로필 정보를 불러오는데 실패했습니다.');
           }
         }
-        
         const data = await response.json();
         setProfiles(data.profiles || []);
       } catch (err) {
@@ -66,7 +63,6 @@ export default function UserDashboardPage() {
         setIsLoading(false);
       }
     };
-
     if (status !== 'loading') {
       fetchProfiles();
     }
@@ -108,7 +104,9 @@ export default function UserDashboardPage() {
     );
   }
 
-  const isOwner = accessMode.mode === 'owner';
+  const userIdStr = String(userId);
+  const sessionUserId = String(session?.user?.userId);
+  const isOwner = sessionUserId === userIdStr && accessMode.mode === 'owner';
 
   // 프로필 렌더링 분기
   let visibleProfiles = profiles;
