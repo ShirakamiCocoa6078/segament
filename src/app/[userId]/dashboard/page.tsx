@@ -116,6 +116,8 @@ export default function UserDashboardPage() {
 
   return (
     <div className="container mx-auto p-2 sm:p-4">
+      {/* 임시 디버그: 세션 userId 및 전체 세션 콘솔 출력 */}
+      {(() => { console.log('세션 userId:', session?.user?.userId); console.log('세션 전체:', session); })()}
       {isOwner ? (
         visibleProfiles.length > 0 ? (
           <div>
