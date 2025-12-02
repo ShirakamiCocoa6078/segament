@@ -17,9 +17,15 @@ interface AccessMode {
 }
 
 export default function UserDashboardPage() {
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    // 임시 디버그: 세션 userId 및 전체 세션 콘솔 출력
+    console.log('세션 userId:', session?.user?.userId);
+    console.log('세션 전체:', session);
+  }, [session]);
   const params = useParams();
   const { userId } = params;
-  const { data: session, status } = useSession();
+  // (중복 useEffect 제거)
   const [profiles, setProfiles] = useState<ProfileSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -116,8 +122,6 @@ export default function UserDashboardPage() {
 
   return (
     <div className="container mx-auto p-2 sm:p-4">
-      {/* 임시 디버그: 세션 userId 및 전체 세션 콘솔 출력 */}
-      {(() => { console.log('세션 userId:', session?.user?.userId); console.log('세션 전체:', session); })()}
       {isOwner ? (
         visibleProfiles.length > 0 ? (
           <div>
