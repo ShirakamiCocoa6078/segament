@@ -51,8 +51,8 @@ export function LoginForm() {
         const userResponse = await fetch('/api/user/profile-status');
         if (userResponse.ok) {
           const userData = await userResponse.json();
-          if (userData.user?.id) {
-            router.push(`/${userData.user.id}/dashboard`);
+          if (userData.user?.userId) {
+            router.push(`/${userData.user.userId}/dashboard`);
           } else {
             router.push("/");
           }

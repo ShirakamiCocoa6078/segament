@@ -25,8 +25,8 @@ export default function VerifyPage() {
             const userResponse = await fetch('/api/user/profile-status');
             if (userResponse.ok) {
               const userData = await userResponse.json();
-              if (userData.user?.id) {
-                router.replace(`/${userData.user.id}/dashboard`);
+              if (userData.user?.userId) {
+                router.replace(`/${userData.user.userId}/dashboard`);
               } else {
                 // id가 없다면 메인 페이지로
                 router.replace("/");

@@ -35,6 +35,7 @@ export async function GET(req: Request) {
         hasProfile: true, 
         user: { 
           id: user.id,
+          userId: user.userId,
           email: user.email 
         } 
       }, { status: 200 });
@@ -43,6 +44,7 @@ export async function GET(req: Request) {
         hasProfile: false, 
         user: { 
           id: user.id,
+          userId: user.userId,
           email: user.email 
         } 
       }, { status: 200 });
