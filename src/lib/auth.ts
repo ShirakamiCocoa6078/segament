@@ -100,15 +100,22 @@ export const authOptions: AuthOptions = {
       return `/signup?${params.toString()}`;
     },
 
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.userId = dbUser.userId;
+        }
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.userId = token.userId as string;
       }
       return session;
     },
