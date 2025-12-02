@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
+import { GameType, Region } from '@prisma/client';
 
 export async function GET(
   request: NextRequest,
@@ -22,7 +23,7 @@ export async function GET(
 
     // 유저가 존재하는지 확인
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { userId: userId },
       select: { 
         id: true, 
         email: true, 
@@ -44,13 +45,10 @@ export async function GET(
     // 프로필 데이터 가져오기
     const profile = await prisma.gameProfile.findFirst({
       where: {
-        userId: userId,
-        gameType: gameType,
-        region: region,
+        userSystemId: userId,
+        gameType: gameType as GameType,
+        region: region as Region,
       },
-      include: {
-        gameData: true,
-      }
     });
 
     if (!profile) {
@@ -74,16 +72,13 @@ export async function GET(
       rating: profile.rating,
       level: profile.level,
       honors: profile.honors,
-      teamName: profile.teamName,
       playCount: profile.playCount,
-      gameData: {
-        // 레이팅 리스트 제공
-        ratingLists: profile.gameData?.ratingLists || { best: [], new: [] },
-        // 본인인 경우에만 전체 플레이 로그 제공
-        ...(isOwner && {
-          playlogs: profile.gameData?.playlogs || []
-        })
-      }
+      // 레이팅 리스트 제공
+      ratingLists: profile.ratingLists || { best: [], new: [] },
+      // 본인인 경우에만 전체 플레이 로그 제공
+      ...(isOwner && {
+        playlogs: profile.playlogs || []
+      })
     };
 
     return NextResponse.json({ 

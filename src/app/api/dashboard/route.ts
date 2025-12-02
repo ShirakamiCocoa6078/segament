@@ -25,7 +25,7 @@ export async function GET(): Promise<NextResponse<DashboardResponse | { error: s
           include: {
             gameProfiles: {
               select: {
-                id: true,
+                profileId: true,
                 gameType: true,
                 region: true,
                 playerName: true,

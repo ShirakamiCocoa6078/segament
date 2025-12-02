@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     await prisma.$transaction(async (tx) => {
       // 2-1. 혹시 모를 중복 아이디 재확인
       const existingUserById = await tx.user.findUnique({
-        where: { id: username },
+        where: { userId: username },
       });
 
       if (existingUserById) {
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       // 2-3. User 레코드 생성
       const newUser = await tx.user.create({
         data: {
-          id: username, // 사용자가 입력한 고유 아이디
+          userId: username, // 사용자가 입력한 고유 아이디
           name: nickname, // 사용자가 입력한 닉네임
           email: email,
           image: image,
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
       // 2-4. Account 레코드 생성 (User와 연결)
       await tx.account.create({
         data: {
-          userId: newUser.id,
+          userSystemId: newUser.id,
           type: 'oauth',
           provider: provider,
           providerAccountId: providerAccountId,

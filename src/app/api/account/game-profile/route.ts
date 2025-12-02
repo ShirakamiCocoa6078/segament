@@ -19,14 +19,9 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Profile ID is required' }, { status: 400 });
     }
 
-    // First, delete related GameData
-    await prisma.gameData.deleteMany({
-      where: { profileId: profileId },
-    });
-
     // Then, delete the GameProfile
     await prisma.gameProfile.delete({
-      where: { id: profileId, userId: session.user.id },
+      where: { profileId: profileId, userSystemId: session.user.id },
     });
 
     return NextResponse.json({ message: 'Game profile deleted successfully' });

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
+import { GameType, Region } from '@prisma/client';
 import songData from '@/lib/chunithmSongData.json';
 
 export async function GET(request: NextRequest) {
@@ -22,26 +23,23 @@ export async function GET(request: NextRequest) {
   try {
     const gameProfile = await prisma.gameProfile.findUnique({
       where: {
-        userId_gameType_region: {
-          userId: session.user.id,
-          gameType: gameType.toUpperCase(),
-          region: region.toUpperCase(),
+        userSystemId_gameType_region: {
+          userSystemId: session.user.id,
+          gameType: gameType.toUpperCase() as GameType,
+          region: region.toUpperCase() as Region,
         },
-      },
-      include: {
-        gameData: true,
       },
     });
 
-    if (!gameProfile || !gameProfile.gameData || !gameProfile.gameData.ratingLists) {
+    if (!gameProfile || !gameProfile.playlogs) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
     // 곡 전체 개수
     const totalSongs = Array.isArray(songData) ? songData.length : 0;
     // 플레이한 곡 개수
-    const playedSongs = Array.isArray(gameProfile.gameData.playlogs)
-      ? gameProfile.gameData.playlogs.length
+    const playedSongs = Array.isArray(gameProfile.playlogs)
+      ? (gameProfile.playlogs as any[]).length
       : 0;
     // 플레이 퍼센트
     const playPercentage = totalSongs > 0 ? Math.round((playedSongs / totalSongs) * 10000) / 100 : 0;
@@ -57,8 +55,8 @@ export async function GET(request: NextRequest) {
           difficultyBreakdown[diffKey].total += 1;
         }
       }
-      if (Array.isArray(gameProfile.gameData.playlogs)) {
-        for (const log of gameProfile.gameData.playlogs) {
+      if (Array.isArray(gameProfile.playlogs)) {
+        for (const log of gameProfile.playlogs as any[]) {
           if (log && typeof log === 'object' && 'difficulty' in log && typeof log.difficulty === 'string') {
             const diffKey = log.difficulty.toLowerCase();
             if (difficultyBreakdown[diffKey]) {

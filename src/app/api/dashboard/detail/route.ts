@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
+import { GameType, Region } from '@prisma/client';
 import { calculateRating } from '@/lib/ratingUtils';
 import songData from '@/lib/chunithmSongData.json';
 
@@ -56,23 +57,20 @@ export async function GET(request: NextRequest) {
   try {
     const gameProfile = await prisma.gameProfile.findUnique({
       where: {
-        userId_gameType_region: {
-          userId: session.user.id,
-          gameType: gameType.toUpperCase(),
-          region: region.toUpperCase(),
+        userSystemId_gameType_region: {
+          userSystemId: session.user.id,
+          gameType: gameType.toUpperCase() as GameType,
+          region: region.toUpperCase() as Region,
         },
-      },
-      include: {
-        gameData: true,
       },
     });
 
-    if (!gameProfile || !gameProfile.gameData || !gameProfile.gameData.ratingLists) {
+    if (!gameProfile || !gameProfile.ratingLists) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
     
     // JSON 데이터에 대한 안전한 타입 캐스팅
-    const gameData = gameProfile.gameData as unknown as GameDataStructure;
+    const gameData = gameProfile as unknown as GameDataStructure;
     const ratingLists = gameData.ratingLists;
     
     // null 체크를 포함한 안전한 맵핑
@@ -181,7 +179,7 @@ export async function GET(request: NextRequest) {
         }
     };
     
-    const enrichedProfile = { ...gameProfile, gameData: enrichedGameData };
+    const enrichedProfile = { ...gameProfile, ...enrichedGameData };
 
     const bestCount = enrichedGameData.ratingLists.best.length;
     const newCount = enrichedGameData.ratingLists.new.length;

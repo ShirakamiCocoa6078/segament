@@ -13,15 +13,15 @@ export async function POST(req: Request) {
   }
 
   try {
-  const { name, username, publicStates } = await req.json();
+    const { name, userId, publicStates } = await req.json();
 
-    if (username) {
+    if (userId) {
       const existingUser = await prisma.user.findUnique({
-        where: { username },
+        where: { userId },
       });
 
       if (existingUser && existingUser.id !== session.user.id) {
-        return NextResponse.json({ error: 'Username already taken' }, { status: 409 });
+        return NextResponse.json({ error: 'User ID already taken' }, { status: 409 });
       }
     }
 
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       where: { id: session.user.id },
       data: {
         name: name,
-        username: username,
+        userId: userId,
       },
     });
 
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       const profileIds = Object.keys(publicStates);
       for (const profileId of profileIds) {
         await prisma.gameProfile.update({
-          where: { id: profileId },
+          where: { profileId: profileId },
           data: { isPublic: !!publicStates[profileId] },
         });
       }

@@ -12,11 +12,11 @@ export async function GET(
 
     // 사용자 존재 여부 및 프로필 공개 설정 확인
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { userId: userId },
       include: {
         gameProfiles: {
           select: {
-            id: true,
+            profileId: true,
             gameType: true,
             region: true,
             playerName: true,
@@ -44,12 +44,14 @@ export async function GET(
     }
 
     // 공개 프로필 데이터만 반환 (민감한 정보 제외)
-    const publicProfiles = user.gameProfiles.map(profile => ({
-      id: profile.id,
-      gameType: profile.gameType,
-      region: profile.region,
-      playerName: profile.playerName,
-      rating: profile.rating,
+    const publicProfiles = user.gameProfiles
+    .filter(profile => profile.gameType && profile.region && profile.playerName && profile.rating !== null)
+    .map(profile => ({
+      id: profile.profileId,
+      gameType: profile.gameType!,
+      region: profile.region!,
+      playerName: profile.playerName!,
+      rating: profile.rating!,
       isPublic: typeof profile.isPublic === 'boolean' ? profile.isPublic : true,
       // playCount 등 민감한 정보는 제외
     }));

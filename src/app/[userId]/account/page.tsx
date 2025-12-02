@@ -26,7 +26,7 @@ export default function AccountPage() {
     if (session) {
       setName(session.user.name || '');
       // @ts-ignore
-      setUsername(session.user.username || '');
+      setUsername(session.user.userId || '');
       // 실제 게임 프로필 fetch
       if (session.user.id) {
         fetch('/api/dashboard')
@@ -54,7 +54,7 @@ export default function AccountPage() {
     if (!username) {
       return;
     }
-    const res = await fetch(`/api/account/check-username?username=${username}`);
+    const res = await fetch(`/api/account/check-username?userId=${username}`);
     const data = await res.json();
     setUsernameAvailable(data.isAvailable);
   };

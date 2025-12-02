@@ -17,21 +17,17 @@ export async function DELETE(req: Request) {
 
     // Perform deletion in a transaction to ensure atomicity
     await prisma.$transaction([
-      // Delete related GameData
-      prisma.gameData.deleteMany({
-        where: { profile: { userId: userId } },
-      }),
-      // Delete related GameProfiles
+      // Delete related GameProfiles (GameData is now part of GameProfile)
       prisma.gameProfile.deleteMany({
-        where: { userId: userId },
+        where: { userSystemId: userId },
       }),
       // Delete related Accounts
       prisma.account.deleteMany({
-        where: { userId: userId },
+        where: { userSystemId: userId },
       }),
       // Delete related Sessions
       prisma.session.deleteMany({
-        where: { userId: userId },
+        where: { userSystemId: userId },
       }),
       // Finally, delete the User
       prisma.user.delete({

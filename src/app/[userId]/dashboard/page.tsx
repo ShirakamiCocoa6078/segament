@@ -34,7 +34,7 @@ export default function UserDashboardPage() {
       if (typeof userId !== 'string') return;
       
       try {
-        const isOwner = session?.user?.id === userId;
+        const isOwner = session?.user?.userId === userId;
         setAccessMode({
           mode: isOwner ? 'owner' : 'visitor',
           canEdit: isOwner,
@@ -70,7 +70,7 @@ export default function UserDashboardPage() {
     if (status !== 'loading') {
       fetchProfiles();
     }
-  }, [userId, session?.user?.id, status]);
+  }, [userId, session?.user?.userId, status]);
 
   if (status === 'loading' || isLoading) {
     return <LoadingState />;
@@ -188,7 +188,7 @@ export default function UserDashboardPage() {
               ) : (
                 <button
                   className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-                  onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}
+                  onClick={() => { window.location.href = `/${session.user.userId}/dashboard`; }}
                 >내 대시보드로 이동</button>
               )}
             </div>
