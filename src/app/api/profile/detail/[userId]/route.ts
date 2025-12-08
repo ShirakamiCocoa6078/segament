@@ -67,11 +67,36 @@ export async function GET(
     }
 
     // 공개용 데이터 구성
+
+    // playerInfo에서 friendCode, honors, teamName 등 추출
+    let honors = undefined;
+    let friendCode = undefined;
+    let teamName = undefined;
+    let teamEmblemColor = undefined;
+    let characterImage = undefined;
+    let playerInfo = undefined;
+    if (profile.playerInfo) {
+      try {
+        playerInfo = typeof profile.playerInfo === 'string' ? JSON.parse(profile.playerInfo) : profile.playerInfo;
+        honors = playerInfo.honors;
+        friendCode = playerInfo.friendCode;
+        teamName = playerInfo.teamName;
+        teamEmblemColor = playerInfo.teamEmblemColor;
+        characterImage = playerInfo.characterImage;
+      } catch (e) {
+        // 파싱 실패시 무시
+      }
+    }
+
     const publicProfile = {
       playerName: profile.playerName,
       rating: profile.rating,
       level: profile.level,
-      honors: profile.honors,
+      honors,
+      friendCode,
+      teamName,
+      teamEmblemColor,
+      characterImage,
       playCount: profile.playCount,
       // 레이팅 리스트 제공
       ratingLists: profile.ratingLists || { best: [], new: [] },

@@ -191,11 +191,7 @@ export default function UserChunithmDetailPage() {
             {/* ...프로필 아바타 등 표시 가능... */}
           </div>
         )}
-        {accessMode.mode === 'visitor' && (
-          <div className="text-sm text-muted-foreground bg-gray-100 px-3 py-1 rounded">
-            공개 프로필 보기
-          </div>
-        )}
+        {/* '공개 프로필 보기' 버튼 제거됨 */}
       </div>
 
       <ProfileDisplay profile={profile} />
