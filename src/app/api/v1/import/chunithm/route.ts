@@ -29,10 +29,21 @@ function round4(val: number) {
 // 곡별 평균 계산
 function getAverageRating(ratingLists: { best: any[], new: any[] }) {
   let bestRatingSum = 0;
+
   for (const song of ratingLists.best) {
-    const songData = chunithmSongData.find((s: any) => s.id.toString() === song.id.toString());
-    if (songData) {
-      const sheet = songData.sheets.find((sh: any) => sh.difficulty.toUpperCase() === song.difficulty.toUpperCase());
+    if (!song || song.id === undefined || song.id === null) {
+      // song.id가 없으면 건너뜀
+      continue;
+    }
+    const songData = chunithmSongData.find((s: any) => {
+      if (!s || s.id === undefined || s.id === null) return false;
+      return s.id.toString() === song.id.toString();
+    });
+    if (songData && Array.isArray(songData.sheets)) {
+      const sheet = songData.sheets.find((sh: any) => {
+        if (!sh || !sh.difficulty) return false;
+        return sh.difficulty.toUpperCase() === (song.difficulty ? song.difficulty.toUpperCase() : '');
+      });
       if (sheet) {
         bestRatingSum += calculateRating(sheet.const, song.score);
       }
@@ -41,9 +52,18 @@ function getAverageRating(ratingLists: { best: any[], new: any[] }) {
 
   let newRatingSum = 0;
   for (const song of ratingLists.new) {
-    const songData = chunithmSongData.find((s: any) => s.id.toString() === song.id.toString());
-    if (songData) {
-      const sheet = songData.sheets.find((sh: any) => sh.difficulty.toUpperCase() === song.difficulty.toUpperCase());
+    if (!song || song.id === undefined || song.id === null) {
+      continue;
+    }
+    const songData = chunithmSongData.find((s: any) => {
+      if (!s || s.id === undefined || s.id === null) return false;
+      return s.id.toString() === song.id.toString();
+    });
+    if (songData && Array.isArray(songData.sheets)) {
+      const sheet = songData.sheets.find((sh: any) => {
+        if (!sh || !sh.difficulty) return false;
+        return sh.difficulty.toUpperCase() === (song.difficulty ? song.difficulty.toUpperCase() : '');
+      });
       if (sheet) {
         newRatingSum += calculateRating(sheet.const, song.score);
       }
