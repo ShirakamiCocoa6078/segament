@@ -99,7 +99,7 @@ export async function POST(req: Request) {
 
     const result = await prisma.$transaction(async (tx) => {
       // 기존 프로필 조회
-      const existingProfile = await tx.gameProfile.findUnique({
+      const existingProfile = await prisma.gameProfile.findUnique({
         where: { userSystemId_gameType_region: { userSystemId: session.user.id, gameType, region } }
       });
 
@@ -121,7 +121,7 @@ export async function POST(req: Request) {
       const { ratingTimestamp, ...profileData } = profile;
 
       // 북마크릿 데이터 저장
-      const gameProfile = await tx.gameProfile.upsert({
+      const gameProfile = await prisma.gameProfile.upsert({
         where: { userSystemId_gameType_region: { userSystemId: session.user.id, gameType, region } },
         update: {
           ...profileData,

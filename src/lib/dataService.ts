@@ -8,6 +8,7 @@ import { GameType, Region } from '@prisma/client';
  * @param region - 서버 지역 (JP, INT)
  * @returns GameProfile 객체 또는 null
  */
+// [OK] userSystemId는 내부용 cuid(고유 식별자)로만 사용해야 하며, 외부 노출/URL에는 사용하지 않음
 export async function getGameProfileByUserSystemId(userSystemId: string, gameType: GameType, region: Region) {
   try {
     const gameProfile = await prisma.gameProfile.findUnique({
@@ -21,33 +22,31 @@ export async function getGameProfileByUserSystemId(userSystemId: string, gameTyp
     });
     return gameProfile;
   } catch (error) {
-    console.error('Error fetching game profile by system ID:', error);
+    console.error('Error fetching game profile by userSystemId:', error);
     return null;
   }
 }
 
+import { getUserIdToCuid } from './userService';
+
 /**
- * 사용자 ID(닉네임)를 기반으로 사용자의 게임 프로필을 조회합니다.
- * 공개 프로필 조회 등 외부 시스템에서 사용될 수 있습니다.
- * @param userId - 사용자가 설정한 고유 ID (닉네임)
+ * userId(공개용) → userSystemId(cuid)로 변환 후, cuid 기반으로 조회
+ * @param userId - 공개용 userId(닉네임 등)
  * @param gameType - 게임 종류 (CHUNITHM 등)
  * @param region - 서버 지역 (JP, INT)
  * @returns GameProfile 객체 또는 null
+ * [주의] userId는 공개용(닉네임 등)으로만 사용, DB join 등 내부 참조에는 반드시 userSystemId(cuid) 사용해야 함
+ * [개선] userId를 먼저 userSystemId(cuid)로 변환한 뒤, 내부적으로 userSystemId 기반으로 조회하도록 리팩터링
  */
 export async function getGameProfileByUserId(userId: string, gameType: GameType, region: Region) {
   try {
-    const gameProfile = await prisma.gameProfile.findFirst({
-      where: {
-        user: {
-          userId: userId,
-        },
-        gameType: gameType,
-        region: region,
-      },
-    });
-    return gameProfile;
+    const userSystemId = await getUserIdToCuid(userId);
+    if (!userSystemId) {
+      return null;
+    }
+    return await getGameProfileByUserSystemId(userSystemId, gameType, region);
   } catch (error) {
-    console.error('Error fetching game profile by user ID:', error);
+    console.error('Error fetching game profile by userId (via cuid):', error);
     return null;
   }
 }

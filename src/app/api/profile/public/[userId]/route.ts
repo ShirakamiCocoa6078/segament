@@ -44,17 +44,19 @@ export async function GET(
     }
 
     // 공개 프로필 데이터만 반환 (민감한 정보 제외)
+
     const publicProfiles = user.gameProfiles
-    .filter(profile => profile.gameType && profile.region && profile.playerName && profile.rating !== null)
-    .map(profile => ({
-      id: profile.profileId,
-      gameType: profile.gameType!,
-      region: profile.region!,
-      playerName: profile.playerName!,
-      rating: profile.rating!,
-      isPublic: typeof profile.isPublic === 'boolean' ? profile.isPublic : true,
-      // playCount 등 민감한 정보는 제외
-    }));
+      .filter((profile: any) => profile.gameType && profile.region && profile.playerName && profile.rating !== null)
+      .map((profile: any) => ({
+        id: profile.profileId,
+        userId: user.userId, // ProfileSummary 타입에 맞게 공개용 userId 추가
+        gameType: profile.gameType!,
+        region: profile.region!,
+        playerName: profile.playerName!,
+        rating: profile.rating!,
+        isPublic: typeof profile.isPublic === 'boolean' ? profile.isPublic : true,
+        // playCount 등 민감한 정보는 제외
+      }));
 
     return NextResponse.json({ profiles: publicProfiles });
 

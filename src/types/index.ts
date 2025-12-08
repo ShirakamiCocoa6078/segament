@@ -2,8 +2,12 @@
 
 // 공통 타입 정의
 
+
+
+// id: cuid(내부 고유 id), userId: 공개용 id(고유, 변경 가능성 있음)
 export interface ProfileSummary {
-  id: string;
+  id: string; // 내부 DB용 cuid
+  userId: string; // 공개용 userId 
   gameType: string;
   region: string;
   playerName: string;
@@ -11,9 +15,12 @@ export interface ProfileSummary {
   isPublic: boolean;
 }
 
+
+
+// id: cuid(내부 고유 id), userId: 공개용 id(고유, 변경 가능성 있음)
 export interface GameProfile {
-  id: string;
-  userId: string;
+  id: string; // 내부 DB용 cuid
+  userId: string; // 공개용 userId 
   gameType: string;
   region: string;
   playerName: string;
@@ -22,8 +29,12 @@ export interface GameProfile {
   updatedAt: Date;
 }
 
+
+
+// id: cuid(내부 고유 id), userId: 공개용 id(고유, 변경 가능성 있음)
 export interface User {
-  id: string;
+  id: string; // 내부 DB용 cuid
+  userId: string; // 공개용 userId (URL, 외부 노출 등에서만 사용)
   email: string;
   name?: string | null;
   image?: string | null;

@@ -19,13 +19,12 @@ interface AccessMode {
 export default function UserDashboardPage() {
   const { data: session, status } = useSession();
   useEffect(() => {
-    // 임시 디버그: 세션 userId 및 전체 세션 콘솔 출력
-    console.log('세션 userId:', session?.user?.userId);
+    // 임시 디버그: 세션 id 및 전체 세션 콘솔 출력
+    console.log('세션 id:', session?.user?.id);
     console.log('세션 전체:', session);
   }, [session]);
   const params = useParams();
-  const { userId } = params;
-  // (중복 useEffect 제거)
+  const { id } = params;
   const [profiles, setProfiles] = useState<ProfileSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,11 +35,11 @@ export default function UserDashboardPage() {
   });
 
   useEffect(() => {
-    const userIdStr = String(userId);
-    const sessionUserId = String(session?.user?.userId);
-    if (!userIdStr) return;
-    // 세션 userId와 URL userId가 일치하면 즉시 owner로 상태 갱신
-    const isOwner = sessionUserId === userIdStr;
+    const idStr = String(id);
+    const sessionId = String(session?.user?.id);
+    if (!idStr) return;
+    // 세션 id와 URL id가 일치하면 즉시 owner로 상태 갱신
+    const isOwner = sessionId === idStr;
     setAccessMode({
       mode: isOwner ? 'owner' : 'visitor',
       canEdit: isOwner,
@@ -50,7 +49,7 @@ export default function UserDashboardPage() {
       try {
         const endpoint = isOwner
           ? '/api/dashboard'
-          : `/api/profile/public/${userIdStr}`;
+          : `/api/profile/public/${idStr}`;
         const response = await fetch(endpoint);
         if (!response.ok) {
           if (response.status === 403) {
@@ -73,7 +72,7 @@ export default function UserDashboardPage() {
     if (status !== 'loading') {
       fetchProfiles();
     }
-  }, [userId, session?.user?.userId, status]);
+  }, [id, session?.user?.id, status]);
 
   if (status === 'loading' || isLoading) {
     return <LoadingState />;
@@ -111,9 +110,9 @@ export default function UserDashboardPage() {
     );
   }
 
-  const userIdStr = String(userId);
-  const sessionUserId = String(session?.user?.userId);
-  const isOwner = sessionUserId === userIdStr && accessMode.mode === 'owner';
+  const idStr = String(id);
+  const sessionId = String(session?.user?.id);
+  const isOwner = sessionId === idStr && accessMode.mode === 'owner';
 
   // 프로필 렌더링 분기
   let visibleProfiles = profiles;
@@ -137,7 +136,7 @@ export default function UserDashboardPage() {
                 <ProfileCard 
                   key={profile.id} 
                   profile={profile} 
-                  userId={userId as string}
+                  userId={id as string}
                   accessMode={accessMode}
                 />
               ))}
@@ -161,7 +160,7 @@ export default function UserDashboardPage() {
           <div>
             <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
               <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left w-full sm:w-auto">
-                {`${userId}님의 프로필`}
+                {`${id}님의 프로필`}
               </h1>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -169,7 +168,7 @@ export default function UserDashboardPage() {
                 <ProfileCard 
                   key={profile.id} 
                   profile={profile} 
-                  userId={userId as string}
+                  userId={id as string}
                   accessMode={accessMode}
                 />
               ))}
@@ -193,7 +192,7 @@ export default function UserDashboardPage() {
               ) : (
                 <button
                   className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-                  onClick={() => { window.location.href = `/${session.user.userId}/dashboard`; }}
+                  onClick={() => { window.location.href = `/${session.user.id}/dashboard`; }}
                 >내 대시보드로 이동</button>
               )}
             </div>

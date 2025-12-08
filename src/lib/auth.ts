@@ -6,9 +6,9 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import { PrismaClient } from "@prisma/client";
 
-// PrismaAdapter가 커스텀 스키마(userSystemId)와 호환되도록 프록시를 생성합니다.
-// 이 프록시는 PrismaAdapter가 'account' 또는 'session' 모델에 대해 쿼리를 실행할 때,
-// 'userId' 필드를 'userSystemId'로 동적으로 변환하여 스키마 불일치 문제를 해결합니다.
+// [리뉴얼 필요] PrismaAdapter가 커스텀 스키마(userSystemId/cuid, userId 분리)와 완전히 호환되는지 재점검 필요
+// [주의] 프록시에서 userId→userSystemId 변환이 누락되거나, 세션/토큰에 userId/cuid 혼용이 발생할 수 있음
+// [개선] PrismaAdapter 및 세션/토큰 로직에서 id(내부용 cuid), userId(공개용) 필드가 명확히 분리되어야 함
 const getPrismaProxy = (prisma: PrismaClient) => {
   return new Proxy(prisma, {
     get: (target, prop: string) => {
@@ -100,22 +100,24 @@ export const authOptions: AuthOptions = {
       return `/signup?${params.toString()}`;
     },
 
+    // [리뉴얼 필요] jwt 토큰에 id(내부용 cuid), userId(공개용) 필드가 혼용되지 않도록 주의
     async jwt({ token, user }) {
       if (user) {
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
         });
         if (dbUser) {
-          token.id = dbUser.id;
-          token.userId = dbUser.userId;
+          token.id = dbUser.id; // 내부용 cuid
+          token.userId = dbUser.userId; // 공개용 userId
         }
       }
       return token;
     },
+    // [리뉴얼 필요] 세션 객체에도 id(내부용 cuid), userId(공개용) 필드가 혼용되지 않도록 주의
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        // userId가 없으면 DB에서 조회해서라도 반드시 넣어줌
+        session.user.id = token.id as string; // 내부용 cuid
+        // userId가 없으면 DB에서 조회해서라도 반드시 넣어줌 (공개용 userId)
         if (token.userId) {
           session.user.userId = token.userId as string;
         } else if (token.id) {
