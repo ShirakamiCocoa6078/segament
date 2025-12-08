@@ -130,10 +130,23 @@ export async function GET(
 
     // playlogs (본인만)
     const playlogs = isOwner ? (profile.playlogs || []) : [];
-    const ratingLists = profile.ratingLists || { best: [], new: [] };
+
+    // ratingLists가 string이면 파싱, 아니면 그대로 사용
+    let ratingLists: any = profile.ratingLists;
+    if (typeof ratingLists === 'string') {
+      try {
+        ratingLists = JSON.parse(ratingLists);
+      } catch {
+        ratingLists = { best: [], new: [] };
+      }
+    }
+    if (!ratingLists || typeof ratingLists !== 'object') {
+      ratingLists = { best: [], new: [] };
+    }
+    const safePlaylogs = Array.isArray(playlogs) ? playlogs : [];
     const enrichedRatingLists = {
-      best: processList(ratingLists.best, playlogs),
-      new: processList(ratingLists.new, playlogs),
+      best: processList(Array.isArray(ratingLists.best) ? ratingLists.best : [], safePlaylogs),
+      new: processList(Array.isArray(ratingLists.new) ? ratingLists.new : [], safePlaylogs),
     };
 
     const publicProfile = {
