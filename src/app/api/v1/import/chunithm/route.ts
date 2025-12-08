@@ -1,3 +1,7 @@
+// Health check용 GET 엔드포인트 (북마크릿에서 임포트 API 사전 체크)
+export async function GET() {
+  return NextResponse.json({ status: 'ok', message: 'Chunithm import API is available.' }, { status: 200 });
+}
 // 파일 경로: src/app/api/v1/import/chunithm/route.ts
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';

@@ -56,13 +56,19 @@ export default function UserDashboardPage() {
             setAccessMode(prev => ({ ...prev, mode: 'private' }));
             throw new Error('프로필이 비공개로 설정되어 있습니다.');
           } else if (response.status === 404) {
-            throw new Error('사용자를 찾을 수 없습니다.');
+            setError('존재하지 않는 사용자입니다.');
+            setProfiles([]);
+            return;
           } else {
             throw new Error('프로필 정보를 불러오는데 실패했습니다.');
           }
         }
         const data = await response.json();
         setProfiles(data.profiles || []);
+        // 공개 프로필이 없을 때 별도 안내
+        if (!isOwner && (data.profiles || []).length === 0) {
+          setError('열람 가능한 공개 프로필이 존재하지 않습니다.');
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
       } finally {
@@ -79,7 +85,7 @@ export default function UserDashboardPage() {
   }
 
   if (error) {
-    // 비공개 프로필 안내만 표시, 자동 리다이렉트 없음
+    // 비공개 프로필 안내
     if (accessMode.mode === 'private') {
       return (
         <div className="container mx-auto p-4">
@@ -96,7 +102,41 @@ export default function UserDashboardPage() {
         </div>
       );
     }
-    // 그 외 에러는 안내만 표시
+    // 존재하지 않는 사용자 안내
+    if (error === '존재하지 않는 사용자입니다.') {
+      return (
+        <div className="container mx-auto p-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <p className="text-red-500 mb-4">{error}</p>
+                <p className="text-muted-foreground mb-4">
+                  해당 userId에 해당하는 사용자를 찾을 수 없습니다.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+    // 공개 프로필 없음 안내
+    if (error === '열람 가능한 공개 프로필이 존재하지 않습니다.') {
+      return (
+        <div className="container mx-auto p-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <p className="text-red-500 mb-4">{error}</p>
+                <p className="text-muted-foreground mb-4">
+                  이 사용자는 모든 게임 프로필을 비공개로 설정했거나, 등록된 프로필이 없습니다.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+    // 기타 에러 안내
     return (
       <div className="container mx-auto p-4">
         <Card>
