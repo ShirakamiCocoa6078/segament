@@ -18,6 +18,8 @@ interface AccessMode {
 
 export default function UserDashboardPage() {
   const { data: session, status } = useSession();
+  const params = useParams();
+  const { id } = params; // id는 실제로 userId(공개용)임
   useEffect(() => {
     // 상세 디버그: 세션, params, 판정 로직, fetch endpoint 등 모두 출력
     console.log('[DEBUG] 세션 전체:', session);
@@ -25,8 +27,6 @@ export default function UserDashboardPage() {
     console.log('[DEBUG] params.id:', id);
     console.log('[DEBUG] session.user.userId:', session?.user?.userId);
   }, [session, params, id]);
-  const params = useParams();
-  const { id } = params; // id는 실제로 userId(공개용)임
   const [profiles, setProfiles] = useState<ProfileSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
