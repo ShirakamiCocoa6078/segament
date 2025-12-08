@@ -20,15 +20,12 @@ export default function UserDashboardPage() {
   const { data: session, status } = useSession();
   const params = useParams();
   const { userId: id } = params; // id는 실제로 userId(공개용)임
-  useEffect(() => {
-    // 핵심 상태만 디버그 출력: owner/visitor, accessMode, 공개 프로필 여부
-    console.log('[DEBUG] 판정 로직: idStr=', id, 'sessionUserId=', session?.user?.userId);
-  }, [session, id]);
+  // ...existing code...
   const [profiles, setProfiles] = useState<ProfileSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [accessMode, setAccessMode] = useState<AccessMode>({ 
-    mode: 'pending', 
+    mode: 'visitor', 
     canEdit: false, 
     showPrivateData: false 
   });
@@ -62,17 +59,10 @@ export default function UserDashboardPage() {
         }
         const data = await response.json();
         setProfiles(data.profiles || []);
-        // 공개 프로필 여부 디버그 출력
-        if (!isOwner) {
-          const publicCount = (data.profiles || []).filter((p: any) => p.isPublic).length;
-          console.log('[DEBUG] 공개 프로필 개수:', publicCount, '전체:', (data.profiles || []).length);
-        }
         // 공개 프로필이 없을 때 별도 안내
         if (!isOwner && (data.profiles || []).length === 0) {
           setError('열람 가능한 공개 프로필이 존재하지 않습니다.');
         }
-        // accessMode 상태 디버그 출력
-        console.log('[DEBUG] accessMode:', isOwner ? 'owner' : 'visitor', accessMode);
       } catch (err) {
         setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
       } finally {
@@ -85,7 +75,7 @@ export default function UserDashboardPage() {
   }, [id, session?.user?.userId, status]);
 
   // owner/visitor 판정이 확정되기 전에는 아무것도 렌더링하지 않음
-  if (status === 'loading' || isLoading || accessMode.mode === 'pending') {
+  if (status === 'loading' || isLoading) {
     return <LoadingState />;
   }
 
@@ -158,8 +148,7 @@ export default function UserDashboardPage() {
   const idStr = String(id);
   const sessionUserId = String(session?.user?.userId);
   const isOwner = sessionUserId === idStr && accessMode.mode === 'owner';
-  // 렌더링 시점의 판정 상태를 콘솔에 출력
-  console.log('[렌더링] accessMode:', accessMode, 'isOwner:', isOwner);
+  // ...existing code...
 
   // 프로필 렌더링 분기
   let visibleProfiles = profiles;
