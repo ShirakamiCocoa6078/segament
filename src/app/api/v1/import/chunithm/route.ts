@@ -88,8 +88,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: 'Not authenticated.' }, { status: 401 });
   }
 
+  let body: any = null;
   try {
-    const body = await req.json();
+    body = await req.json();
     console.log('[API 요청 body 디버그]', JSON.stringify(body, null, 2));
     const { gameType, region, profile, gameData } = body;
 
@@ -98,61 +99,23 @@ export async function POST(req: Request) {
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      // 기존 프로필 조회
-      const existingProfile = await prisma.gameProfile.findUnique({
-        where: { userSystemId_gameType_region: { userSystemId: session.user.id, gameType, region } }
-      });
-
-      // ratingHistory 구조화
-      let updatedRatingHistory: any = existingProfile?.ratingHistory ?? {};
-      const date = profile.ratingTimestamp?.split('|')[0] ?? '';
-
-      // 평균 레이팅 계산
-      const { bestAvg, newAvg } = getAverageRating(gameData.ratingLists);
-
-      // ratingHistory 업데이트
-      updatedRatingHistory = updateRatingHistory(updatedRatingHistory, date, {
-        rating: profile.rating,
-        bestAvg,
-        newAvg,
-      });
-
-      // ratingTimestamp는 데이터베이스에 저장하지 않음
-      const { ratingTimestamp, ...profileData } = profile;
-
-      // 북마크릿 데이터 저장
-      const gameProfile = await prisma.gameProfile.upsert({
-        where: { userSystemId_gameType_region: { userSystemId: session.user.id, gameType, region } },
-        update: {
-          ...profileData,
-          lastPlayDate: profile.lastPlayDate ? new Date(profile.lastPlayDate) : null,
-          ratingHistory: updatedRatingHistory,
-          playlogs: gameData.playlogs,
-          ratingLists: gameData.ratingLists,
-        },
-        create: {
-          ...profileData,
-          lastPlayDate: profile.lastPlayDate ? new Date(profile.lastPlayDate) : null,
-          userSystemId: session.user.id,
-          gameType,
-          region,
-          ratingHistory: updatedRatingHistory,
-          playlogs: gameData.playlogs,
-          ratingLists: gameData.ratingLists,
-        },
-      });
-
-      // GameData 테이블 관련 로직 삭제됨
-
-      // 평균값 계산 및 B30/N20 관련 로직 완전 삭제
-      // rating 값만 관리
-
+      // ...existing code...
       return gameProfile;
     });
 
     return NextResponse.json({ message: 'Data imported successfully.', profileId: result.profileId }, { status: 200 });
-  } catch (error) {
-    console.error('API Error in /api/v1/import/chunithm:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: any) {
+    // 상세 에러 로그: 에러 객체, 메시지, 스택, 요청 body, 세션 등
+    console.error('API Error in /api/v1/import/chunithm:', {
+      error,
+      message: error?.message,
+      stack: error?.stack,
+      requestBody: body,
+      session: session,
+    });
+    return NextResponse.json({
+      error: 'Internal Server Error',
+      detail: error?.message || String(error),
+    }, { status: 500 });
   }
 }
