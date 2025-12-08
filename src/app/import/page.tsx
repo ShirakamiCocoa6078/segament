@@ -56,10 +56,10 @@ export default function ImportPage() {
           setProgressValue(100);
 
           setTimeout(() => {
-            if (session?.user?.id) {
+            if (session?.user?.userId) {
               // 프로필 등록 후 즉시 사이드바/대시보드 갱신
               window.dispatchEvent(new Event('profileUpdated'));
-              window.location.href = `/${session.user.id}/dashboard`;
+              window.location.href = `/${session.user.userId}/dashboard`;
             } else {
               setErrorMessage('세션 정보를 찾을 수 없습니다. 로그인 후 다시 시도해주세요.');
             }

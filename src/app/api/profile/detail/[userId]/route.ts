@@ -42,10 +42,10 @@ export async function GET(
     const session = await getServerSession();
     const isOwner = session?.user?.email === user.email;
 
-    // 프로필 데이터 가져오기
+    // 프로필 데이터 가져오기 (userSystemId에는 user.id(cuid) 사용)
     const profile = await prisma.gameProfile.findFirst({
       where: {
-        userSystemId: userId,
+        userSystemId: user.id,
         gameType: gameType as GameType,
         region: region as Region,
       },
