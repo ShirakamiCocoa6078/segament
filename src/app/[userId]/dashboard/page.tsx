@@ -166,6 +166,14 @@ export default function UserDashboardPage() {
 
   return (
     <div className="container mx-auto p-2 sm:p-4">
+      {/* owner가 아닌 경우에만 추가 헤더 표시 */}
+      {!isOwner && (
+        <div className="mb-4">
+          <div className="bg-blue-100 text-blue-800 rounded px-4 py-2 text-center text-sm font-medium">
+            다른 사용자의 공개 프로필을 보고 있습니다.
+          </div>
+        </div>
+      )}
       {isOwner ? (
         visibleProfiles.length > 0 ? (
           <div>
