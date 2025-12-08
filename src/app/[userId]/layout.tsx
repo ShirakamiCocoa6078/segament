@@ -22,6 +22,7 @@ interface UserLayoutProps {
 export default function UserLayout({ children }: UserLayoutProps) {
   const params = useParams();
   const userId = params?.userId as string | undefined;
+  // [주의] userId는 URL 파라미터로 전달되지만, 실제로는 공개용 userId가 들어와야 하며, cuid가 들어올 경우 버그 발생 가능
   const { data: session, status } = useSession();
   const router = useRouter();
   
@@ -40,6 +41,7 @@ export default function UserLayout({ children }: UserLayoutProps) {
 
 
   const isOwner = session?.user?.id === userId;
+  // [주의] session.user.id는 내부용 cuid(id)임. userId(공개용)와 혼동 주의
 
   return (
     <SidebarProvider>

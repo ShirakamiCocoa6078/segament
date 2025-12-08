@@ -6,8 +6,8 @@
 
 // id: cuid(내부 고유 id), userId: 공개용 id(고유, 변경 가능성 있음)
 export interface ProfileSummary {
-  id: string; // 내부 DB용 cuid
-  userId: string; // 공개용 userId 
+  id: string; // [주의] 내부 DB용 cuid
+  userId: string; // 공개용 userId (URL, 외부 노출 등에서만 사용)
   gameType: string;
   region: string;
   playerName: string;
@@ -19,8 +19,8 @@ export interface ProfileSummary {
 
 // id: cuid(내부 고유 id), userId: 공개용 id(고유, 변경 가능성 있음)
 export interface GameProfile {
-  id: string; // 내부 DB용 cuid
-  userId: string; // 공개용 userId 
+  id: string; // [주의] 내부 DB용 cuid
+  userId: string; // 공개용 userId (URL, 외부 노출 등에서만 사용)
   gameType: string;
   region: string;
   playerName: string;
@@ -33,7 +33,7 @@ export interface GameProfile {
 
 // id: cuid(내부 고유 id), userId: 공개용 id(고유, 변경 가능성 있음)
 export interface User {
-  id: string; // 내부 DB용 cuid
+  id: string; // [주의] 내부 DB용 cuid
   userId: string; // 공개용 userId (URL, 외부 노출 등에서만 사용)
   email: string;
   name?: string | null;

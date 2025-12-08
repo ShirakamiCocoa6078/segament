@@ -139,7 +139,7 @@ export function SidebarNav() {
   return (
     <>
       <SidebarHeader>
-        <Link href={session?.user?.id ? `/${session.user.id}/dashboard` : "/"} className="flex items-center gap-2">
+        <Link href={session?.user?.userId ? `/${session.user.userId}/dashboard` : "/"} className="flex items-center gap-2">
           <SegamentLogo className="h-8 w-8 text-primary" />
           <span className="font-headline text-xl font-semibold text-primary group-data-[collapsible=icon]:hidden">
             Segament
@@ -199,21 +199,21 @@ export function SidebarNav() {
             <SidebarMenuSub>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButton asChild>
-                  <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/playPercent`}>
+                  <Link href={`/${session?.user?.userId}/dashboard/detail/chunithm/playPercent`}>
                     <span>순회 진행도(개발중)</span>
                   </Link>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButton asChild>
-                  <Link href={`/${session?.user?.id}/dashboard/detail/chunithm/ratingHistory`}>
+                  <Link href={`/${session?.user?.userId}/dashboard/detail/chunithm/ratingHistory`}>
                     <span>레이팅 성장 그래프(개발중)</span>
                   </Link>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButton asChild>
-                  <Link href={`/${session?.user?.id}/chunithm/calc/const`}>
+                  <Link href={`/${session?.user?.userId}/chunithm/calc/const`}>
                     <span>상수 계산기</span>
                   </Link>
                 </SidebarMenuSubButton>
