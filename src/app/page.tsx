@@ -40,8 +40,8 @@ export default function Home() {
   const { data: session, status } = require('next-auth/react').useSession();
   const router = require('next/navigation').useRouter();
   require('react').useEffect(() => {
-    if (status === 'authenticated' && session?.user?.id) {
-      router.replace(`/${session.user.id}/dashboard`);
+    if (status === 'authenticated' && session?.user?.userId) {
+      router.replace(`/${session.user.userId}/dashboard`);
     }
   }, [status, session, router]);
 
