@@ -88,6 +88,54 @@ export async function GET(
       }
     }
 
+
+    // chunithmSongData import (곡 정보 enrich용)
+    const songData = (await import('@/lib/chunithmSongData.json')).default;
+    const songMap = new Map((songData as any[]).map((song: any) => [song.meta.id.toString(), song]));
+
+    // 곡 정보 enrich 함수 (dashboard/detail과 동일)
+    function processList(list: any[] | undefined, playlogs: any[] = []) {
+      if (!list || !Array.isArray(list)) return [];
+      // playlogMap 생성
+      const playlogMap = new Map();
+      if (Array.isArray(playlogs)) {
+        playlogs.forEach((log: any) => {
+          const key = `${log.id}-${log.difficulty}`;
+          playlogMap.set(key, log);
+        });
+      }
+      return list.map(item => {
+        const songInfo = songMap.get(item.id?.toString?.() ?? '');
+        const difficultyKey = item.difficulty?.toLowerCase?.() ?? '';
+        const songDifficultyInfo = songInfo?.data?.[difficultyKey];
+        const enrichedItem: any = { ...item, level: 'N/A', const: 0, ratingValue: 0 };
+        if (songDifficultyInfo && typeof songDifficultyInfo.const === 'number') {
+          enrichedItem.const = songDifficultyInfo.const;
+          enrichedItem.level = songDifficultyInfo.level || 'N/A';
+        }
+        // playlog 정보 병합
+        const key = `${item.id}-${item.difficulty}`;
+        const playlogEntry = playlogMap.get(key);
+        if (playlogEntry) {
+          enrichedItem.clearType = playlogEntry.clearType;
+          enrichedItem.comboType = playlogEntry.comboType;
+          enrichedItem.fullChainType = playlogEntry.fullChainType;
+          enrichedItem.isFullCombo = playlogEntry.isFullCombo;
+          enrichedItem.isAllJustice = playlogEntry.isAllJustice;
+          enrichedItem.isAllJusticeCritical = playlogEntry.isAllJusticeCritical;
+        }
+        return enrichedItem;
+      });
+    }
+
+    // playlogs (본인만)
+    const playlogs = isOwner ? (profile.playlogs || []) : [];
+    const ratingLists = profile.ratingLists || { best: [], new: [] };
+    const enrichedRatingLists = {
+      best: processList(ratingLists.best, playlogs),
+      new: processList(ratingLists.new, playlogs),
+    };
+
     const publicProfile = {
       playerName: profile.playerName,
       rating: profile.rating,
@@ -98,17 +146,13 @@ export async function GET(
       teamEmblemColor,
       characterImage,
       playCount: profile.playCount,
-      // 레이팅 리스트 제공
-      ratingLists: profile.ratingLists || { best: [], new: [] },
-      // 본인인 경우에만 전체 플레이 로그 제공
-      ...(isOwner && {
-        playlogs: profile.playlogs || []
-      })
+      ratingLists: enrichedRatingLists,
+      ...(isOwner && { playlogs }),
     };
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       profile: publicProfile,
-      accessMode: isOwner ? 'owner' : 'visitor'
+      accessMode: isOwner ? 'owner' : 'visitor',
     });
 
   } catch (error) {
