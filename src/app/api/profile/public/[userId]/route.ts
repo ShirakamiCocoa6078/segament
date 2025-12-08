@@ -58,10 +58,10 @@ export async function GET(
         // playCount 등 민감한 정보는 제외
       }));
 
-    // 닉네임(혹은 name, username 등) 필드가 user에 있다고 가정
+    // 닉네임(혹은 name) 필드가 user에 있다고 가정
     return NextResponse.json({
       profiles: publicProfiles,
-      nickname: user.nickname || user.name || user.username || user.userId
+      nickname: user.name || user.userId
     });
 
   } catch (error) {
