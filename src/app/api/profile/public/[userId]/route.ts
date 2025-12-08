@@ -58,7 +58,11 @@ export async function GET(
         // playCount 등 민감한 정보는 제외
       }));
 
-    return NextResponse.json({ profiles: publicProfiles });
+    // 닉네임(혹은 name, username 등) 필드가 user에 있다고 가정
+    return NextResponse.json({
+      profiles: publicProfiles,
+      nickname: user.nickname || user.name || user.username || user.userId
+    });
 
   } catch (error) {
     console.error('Public profile API error:', error);

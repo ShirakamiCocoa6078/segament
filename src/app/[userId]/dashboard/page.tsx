@@ -28,7 +28,7 @@ export default function UserDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [accessMode, setAccessMode] = useState<AccessMode>({ 
-    mode: 'visitor', 
+    mode: 'pending', 
     canEdit: false, 
     showPrivateData: false 
   });
@@ -84,7 +84,8 @@ export default function UserDashboardPage() {
     }
   }, [id, session?.user?.userId, status]);
 
-  if (status === 'loading' || isLoading) {
+  // owner/visitor 판정이 확정되기 전에는 아무것도 렌더링하지 않음
+  if (status === 'loading' || isLoading || accessMode.mode === 'pending') {
     return <LoadingState />;
   }
 
@@ -157,6 +158,8 @@ export default function UserDashboardPage() {
   const idStr = String(id);
   const sessionUserId = String(session?.user?.userId);
   const isOwner = sessionUserId === idStr && accessMode.mode === 'owner';
+  // 렌더링 시점의 판정 상태를 콘솔에 출력
+  console.log('[렌더링] accessMode:', accessMode, 'isOwner:', isOwner);
 
   // 프로필 렌더링 분기
   let visibleProfiles = profiles;
@@ -166,13 +169,9 @@ export default function UserDashboardPage() {
 
   return (
     <div className="container mx-auto p-2 sm:p-4">
-      {/* owner가 아닌 경우에만 추가 헤더 표시 */}
+      {/* owner가 아닌 경우에만 userId의 프로필 제목 표시 */}
       {!isOwner && (
-        <div className="mb-4">
-          <div className="bg-blue-100 text-blue-800 rounded px-4 py-2 text-center text-sm font-medium">
-            다른 사용자의 공개 프로필을 보고 있습니다.
-          </div>
-        </div>
+        <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">{id}의 프로필</h2>
       )}
       {isOwner ? (
         visibleProfiles.length > 0 ? (

@@ -3,7 +3,7 @@
 
 import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from "@/components/dashboard/header";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
@@ -28,6 +28,22 @@ export default function UserLayout({ children }: UserLayoutProps) {
   
   // 자동 리다이렉트 제거: 비로그인 유저도 공개 프로필/대시보드 접근 허용
 
+  const isOwner = session?.user?.id === userId;
+  const [nickname, setNickname] = useState<string | null>(null);
+
+  // owner가 아니면 닉네임을 fetch
+  useEffect(() => {
+    if (!isOwner && userId) {
+      fetch(`/api/profile/public/${userId}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data && data.nickname) setNickname(data.nickname);
+        });
+    } else {
+      setNickname(null);
+    }
+  }, [isOwner, userId]);
+
   if (status === 'loading') {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -38,9 +54,6 @@ export default function UserLayout({ children }: UserLayoutProps) {
       </div>
     );
   }
-
-
-  const isOwner = session?.user?.id === userId;
   // [주의] session.user.id는 내부용 cuid(id)임. userId(공개용)와 혼동 주의
 
   return (
@@ -54,11 +67,9 @@ export default function UserLayout({ children }: UserLayoutProps) {
           <main className="flex-1 p-4">
             <div className="relative">
               {!isOwner && (
-                <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-sm text-blue-700">
-                    💡 다른 사용자의 공개 프로필을 보고 있습니다.
-                  </p>
-                </div>
+                <h2 className="text-2xl font-bold text-center mb-6 text-black dark:text-gray-200">
+                  {(nickname || userId) + '의 프로필'}
+                </h2>
               )}
               {children}
             </div>
