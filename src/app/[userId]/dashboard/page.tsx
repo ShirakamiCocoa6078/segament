@@ -21,12 +21,9 @@ export default function UserDashboardPage() {
   const params = useParams();
   const { userId: id } = params; // id는 실제로 userId(공개용)임
   useEffect(() => {
-    // 상세 디버그: 세션, params, 판정 로직, fetch endpoint 등 모두 출력
-    console.log('[DEBUG] 세션 전체:', session);
-    console.log('[DEBUG] useParams:', params);
-    console.log('[DEBUG] params.id:', id);
-    console.log('[DEBUG] session.user.userId:', session?.user?.userId);
-  }, [session, params, id]);
+    // 핵심 상태만 디버그 출력: owner/visitor, accessMode, 공개 프로필 여부
+    console.log('[DEBUG] 판정 로직: idStr=', id, 'sessionUserId=', session?.user?.userId);
+  }, [session, id]);
   const [profiles, setProfiles] = useState<ProfileSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,14 +36,7 @@ export default function UserDashboardPage() {
   useEffect(() => {
     const idStr = String(id);
     const sessionUserId = String(session?.user?.userId);
-    console.log('[DEBUG] 판정 로직: idStr=', idStr, 'sessionUserId=', sessionUserId);
-    if (!idStr) {
-      console.warn('[DEBUG] idStr가 비어있음, fetchProfiles 실행 안함');
-      return;
-    }
-    // 세션 userId와 URL userId가 일치하면 owner로 상태 갱신
     const isOwner = sessionUserId === idStr;
-    console.log('[DEBUG] isOwner:', isOwner);
     setAccessMode({
       mode: isOwner ? 'owner' : 'visitor',
       canEdit: isOwner,
@@ -57,11 +47,8 @@ export default function UserDashboardPage() {
         const endpoint = isOwner
           ? '/api/dashboard'
           : `/api/profile/public/${idStr}`;
-        console.log('[DEBUG] fetch endpoint:', endpoint);
         const response = await fetch(endpoint);
-        console.log('[DEBUG] fetch response:', response);
         if (!response.ok) {
-          console.warn('[DEBUG] fetch 실패:', response.status, response.statusText);
           if (response.status === 403) {
             setAccessMode(prev => ({ ...prev, mode: 'private' }));
             throw new Error('프로필이 비공개로 설정되어 있습니다.');
@@ -74,14 +61,19 @@ export default function UserDashboardPage() {
           }
         }
         const data = await response.json();
-        console.log('[DEBUG] fetch data:', data);
         setProfiles(data.profiles || []);
+        // 공개 프로필 여부 디버그 출력
+        if (!isOwner) {
+          const publicCount = (data.profiles || []).filter((p: any) => p.isPublic).length;
+          console.log('[DEBUG] 공개 프로필 개수:', publicCount, '전체:', (data.profiles || []).length);
+        }
         // 공개 프로필이 없을 때 별도 안내
         if (!isOwner && (data.profiles || []).length === 0) {
           setError('열람 가능한 공개 프로필이 존재하지 않습니다.');
         }
+        // accessMode 상태 디버그 출력
+        console.log('[DEBUG] accessMode:', isOwner ? 'owner' : 'visitor', accessMode);
       } catch (err) {
-        console.error('[DEBUG] fetchProfiles 에러:', err);
         setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
       } finally {
         setIsLoading(false);
