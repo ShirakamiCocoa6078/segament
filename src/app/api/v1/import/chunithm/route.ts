@@ -99,7 +99,49 @@ export async function POST(req: Request) {
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      // ...existing code...
+      // 기존 프로필 조회
+      const existingProfile = await tx.gameProfile.findUnique({
+        where: { userSystemId_gameType_region: { userSystemId: session.user.id, gameType, region } }
+      });
+
+      // ratingHistory 구조화
+      let updatedRatingHistory: any = existingProfile?.ratingHistory ?? {};
+      const date = profile.ratingTimestamp?.split('|')[0] ?? '';
+
+      // 평균 레이팅 계산
+      const { bestAvg, newAvg } = getAverageRating(gameData.ratingLists);
+
+      // ratingHistory 업데이트
+      updatedRatingHistory = updateRatingHistory(updatedRatingHistory, date, {
+        rating: profile.rating,
+        bestAvg,
+        newAvg,
+      });
+
+      // ratingTimestamp는 데이터베이스에 저장하지 않음
+      const { ratingTimestamp, ...profileData } = profile;
+
+      // 북마크릿 데이터 저장
+      const gameProfile = await tx.gameProfile.upsert({
+        where: { userSystemId_gameType_region: { userSystemId: session.user.id, gameType, region } },
+        update: {
+          ...profileData,
+          lastPlayDate: profile.lastPlayDate ? new Date(profile.lastPlayDate) : null,
+          ratingHistory: updatedRatingHistory,
+          playlogs: gameData.playlogs,
+          ratingLists: gameData.ratingLists,
+        },
+        create: {
+          ...profileData,
+          lastPlayDate: profile.lastPlayDate ? new Date(profile.lastPlayDate) : null,
+          userSystemId: session.user.id,
+          gameType,
+          region,
+          ratingHistory: updatedRatingHistory,
+          playlogs: gameData.playlogs,
+          ratingLists: gameData.ratingLists,
+        },
+      });
       return gameProfile;
     });
 
