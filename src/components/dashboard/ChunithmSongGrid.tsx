@@ -30,6 +30,18 @@ interface ChunithmSongGridProps {
 
 export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
   const canShowRatingImgBtn = typeof arguments[0].canShowRatingImgBtn === 'boolean' ? arguments[0].canShowRatingImgBtn : true;
+
+  // 디버깅: 전달된 곡 리스트와 타입 출력
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line no-console
+    console.log(`[ChunithmSongGrid] type=${type}, songs=`, songs, 'typeof:', typeof songs, 'isArray:', Array.isArray(songs));
+    if (songs && Array.isArray(songs)) {
+      songs.forEach((s, i) => {
+        // eslint-disable-next-line no-console
+        console.log(`[ChunithmSongGrid] song[${i}]`, s);
+      });
+    }
+  }
   // 레이팅표 생성 팝업 상태 및 로직
   const [showRatingImgPopup, setShowRatingImgPopup] = useState(false);
   const [loading, setLoading] = useState(false);

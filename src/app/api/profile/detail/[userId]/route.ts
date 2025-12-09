@@ -14,12 +14,7 @@ export async function GET(
     const region = searchParams.get('region');
     const { userId } = await params;
 
-    if (!gameType || !region) {
-      return NextResponse.json(
-        { error: 'gameType과 region이 필요합니다.' },
-        { status: 400 }
-      );
-    }
+    // ...existing code...
 
     // 유저가 존재하는지 확인
     const user = await prisma.user.findUnique({
@@ -162,6 +157,12 @@ export async function GET(
       ratingLists: enrichedRatingLists,
       ...(isOwner && { playlogs }),
     };
+
+    // enrich 후, 응답 반환 직전에만 디버깅 로그 출력
+    // eslint-disable-next-line no-console
+    console.log('[API/profile/detail] enrichedRatingLists.best', enrichedRatingLists.best);
+    // eslint-disable-next-line no-console
+    console.log('[API/profile/detail] enrichedRatingLists.new', enrichedRatingLists.new);
 
     return NextResponse.json({
       profile: publicProfile,

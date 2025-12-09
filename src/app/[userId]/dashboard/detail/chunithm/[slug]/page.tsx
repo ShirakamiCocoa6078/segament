@@ -23,13 +23,11 @@ interface ProfileDetail {
   teamEmblemColor?: string;
   characterImage?: string;
   playCount: number;
-  gameData?: {
-    playlogs: any[];
-    ratingLists: {
-        best: any[];
-        new: any[];
-    };
-  }
+  ratingLists?: {
+    best: any[];
+    new: any[];
+  };
+  playlogs?: any[];
 }
 
 interface AccessMode {
@@ -59,6 +57,9 @@ export default function UserChunithmDetailPage() {
       if (typeof slug !== 'string' || typeof userId !== 'string') {
         return;
       }
+      // fetch 시작 로그
+      // eslint-disable-next-line no-console
+      console.log('[UserChunithmDetailPage] fetchProfile called', { slug, userId });
       
       try {
         const isOwner = session?.user?.id === userId;
@@ -86,6 +87,12 @@ export default function UserChunithmDetailPage() {
         }
         
         const data = await response.json();
+        // eslint-disable-next-line no-console
+        console.log('[UserChunithmDetailPage] API response', data);
+        // eslint-disable-next-line no-console
+        console.log('[UserChunithmDetailPage] API profile.gameData', data.profile?.gameData);
+        // eslint-disable-next-line no-console
+        console.log('[UserChunithmDetailPage] API profile.ratingLists', data.profile?.ratingLists);
         setProfile(data.profile);
       } catch (err) {
         setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
@@ -207,8 +214,14 @@ export default function UserChunithmDetailPage() {
         <TabsContent value="best" className="mt-4 sm:mt-6">
           <Card>
             <CardContent className="pt-4 sm:pt-6">
+              {/* ChunithmSongGrid 전달값 로그 */}
+              {(() => {
+                // eslint-disable-next-line no-console
+                console.log('[UserChunithmDetailPage] ChunithmSongGrid props (best)', profile.ratingLists?.best);
+                return null;
+              })()}
               <ChunithmSongGrid 
-                songs={profile.gameData?.ratingLists.best || []} 
+                songs={profile.ratingLists?.best || []} 
                 type="best"
                 canShowRatingImgBtn={accessMode.mode === 'owner'}
               />
@@ -218,8 +231,14 @@ export default function UserChunithmDetailPage() {
         <TabsContent value="new" className="mt-4 sm:mt-6">
           <Card>
             <CardContent className="pt-4 sm:pt-6">
+              {/* ChunithmSongGrid 전달값 로그 */}
+              {(() => {
+                // eslint-disable-next-line no-console
+                console.log('[UserChunithmDetailPage] ChunithmSongGrid props (new)', profile.ratingLists?.new);
+                return null;
+              })()}
               <ChunithmSongGrid 
-                songs={profile.gameData?.ratingLists.new || []} 
+                songs={profile.ratingLists?.new || []} 
                 type="new"
                 canShowRatingImgBtn={accessMode.mode === 'owner'}
               />
@@ -230,7 +249,7 @@ export default function UserChunithmDetailPage() {
           <TabsContent value="all" className="mt-4 sm:mt-6">
             <Card>
               <CardContent className="pt-4 sm:pt-6">
-                <SongDataTable data={profile.gameData?.playlogs || []} showPagination={true} />
+                <SongDataTable data={profile.playlogs || []} showPagination={true} />
               </CardContent>
             </Card>
           </TabsContent>
