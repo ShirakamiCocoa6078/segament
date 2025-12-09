@@ -1,3 +1,13 @@
+/**
+ * 레이팅 배열을 받아 최대/최소/평균을 반환하는 헬퍼 함수
+ */
+export function getRatingStats(ratings: number[]) {
+  if (ratings.length === 0) return { max: 0, min: 0, average: 0 };
+  const max = Math.max(...ratings);
+  const min = Math.min(...ratings);
+  const average = Math.round((ratings.reduce((sum, r) => sum + r, 0) / ratings.length) * 10000) / 10000;
+  return { max, min, average };
+}
 // 파일 경로: src/lib/ratingUtils.ts
 
 /**

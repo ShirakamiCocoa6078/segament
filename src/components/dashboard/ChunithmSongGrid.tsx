@@ -1,10 +1,14 @@
-// 파일 경로: src/components/dashboard/ChunithmSongGrid.tsx
+
 'use client';
+// 파일 경로: src/components/dashboard/ChunithmSongGrid.tsx
+/* 최대/최소 레이팅은 정렬된 allSongs 배열의 첫 곡과 마지막 곡의 레이팅을 표시합니다. */
 
 import { ChunithmSongCard } from './ChunithmSongCard';
 import { calculateRating } from '@/lib/ratingUtils';
+import { getRatingStats } from '@/lib/ratingUtils';
 import chunithmSongData from '@/lib/chunithmSongData.json';
 import { useState } from 'react';
+import { getAppPageStaticInfo } from 'next/dist/build/analysis/get-page-static-info';
 
 interface SongData {
   id: string;
@@ -24,7 +28,7 @@ interface SongData {
 
 interface ChunithmSongGridProps {
   songs: SongData[];
-  type: 'best' | 'new';
+  type: 'best' | 'new' | 'nextVersionBest' | 'rating50';
   canShowRatingImgBtn?: boolean;
 }
 
@@ -33,12 +37,8 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
 
   // 디버깅: 전달된 곡 리스트와 타입 출력
   if (typeof window !== 'undefined') {
-    // eslint-disable-next-line no-console
-    console.log(`[ChunithmSongGrid] type=${type}, songs=`, songs, 'typeof:', typeof songs, 'isArray:', Array.isArray(songs));
     if (songs && Array.isArray(songs)) {
       songs.forEach((s, i) => {
-        // eslint-disable-next-line no-console
-        console.log(`[ChunithmSongGrid] song[${i}]`, s);
       });
     }
   }
@@ -138,6 +138,20 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
         className: 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3',
         gap: 'gap-4'
       };
+    } else if (type === 'nextVersionBest') {
+      return {
+        columns: 3,
+        maxSongs: 30,
+        className: 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3',
+        gap: 'gap-4'
+      };
+    }else if (type === 'rating50') {
+      return {
+        columns: 3,
+        maxSongs: 50,
+        className: 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3',
+        gap: 'gap-4'
+      };
     } else {
       return {
         columns: 3,
@@ -174,7 +188,6 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
   // 임시 곡도 enrichedSongs에 추가 후 레이팅 기준 내림차순 정렬
   const allSongs = type === 'new'
     ? [...enrichedSongs, ...tempSongs].sort((a, b) => {
-        // 레이팅 계산: 1009000점 초과면 보면상수+2.15, 아니면 calculateRating
         const getRating = (song: SongData) => {
           if (song.const && song.score) {
             if (song.score > 1009000) return song.const + 2.15;
@@ -184,7 +197,40 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
         };
         return getRating(b) - getRating(a);
       })
-    : enrichedSongs;
+    : type === 'nextVersionBest'
+      ? enrichedSongs
+          .sort((a, b) => {
+            // 1순위: 계산된 레이팅 값(내림차순)
+            const getRating = (song: SongData) => {
+              if (song.const && song.score) {
+                if (song.score > 1009000) return song.const + 2.15;
+                return calculateRating(song.const, song.score);
+              }
+              return 0;
+            };
+            const ratingDiff = getRating(b) - getRating(a);
+            if (ratingDiff !== 0) return ratingDiff;
+            // 2순위: 점수(내림차순)
+            return (b.score || 0) - (a.score || 0);
+          })
+          .slice(0, 30)
+      : type === 'rating50'
+        ? enrichedSongs
+            .sort((a, b) => {
+              // 1순위: 계산된 레이팅 값(내림차순)
+              const getRating = (song: SongData) => {
+                if (song.const && song.score) {
+                  if (song.score > 1009000) return song.const + 2.15;
+                  return calculateRating(song.const, song.score);
+                }
+                return 0;
+              };
+              const ratingDiff = getRating(b) - getRating(a);
+              if (ratingDiff !== 0) return ratingDiff;
+              // 2순위: 점수(내림차순)
+              return (b.score || 0) - (a.score || 0);
+            })
+        : enrichedSongs;
 
   // 레이팅 통계 계산 (임시 곡 포함 전체 곡 기준)
   const ratings = allSongs
@@ -198,14 +244,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
     });
 
   const averageRating = ratings.length > 0
-    ? Math.round((ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length) * 10000) / 10000
-    : 0;
-
-  const ratingStats = ratings.length > 0 ? {
-    max: Math.floor(Math.max(...ratings) * 100) / 100,
-    min: Math.floor(Math.min(...ratings) * 100) / 100,
-    average: averageRating
-  } : null;
+  const ratingStats = ratings.length > 0 ? getRatingStats(ratings) : null;
 
   if (displaySongs.length === 0) {
     return (
@@ -220,7 +259,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
       <div className="mb-4">
         <div className="flex flex-row items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-            {type === 'best' ? 'Best 30' : 'New 20'}
+            {type === 'best' ? 'Best 30' : type === 'new' ? 'New 20' : type === 'rating50' ? 'Rating 50' : 'NextVersion B30'}
           </h3>
           {canShowRatingImgBtn && (
             <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition ml-4" onClick={handleOpenRatingImgPopup}>
@@ -232,16 +271,24 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
           <p className="text-sm text-gray-500">
             {allSongs.length}곡 표시
           </p>
-          {ratingStats && (
+          {allSongs.length > 0 && (
             <div className="text-xs text-gray-600 flex flex-wrap gap-4 justify-center sm:justify-end">
               <span className="text-green-600 font-medium">
-                최대: {ratingStats.max.toFixed(2)}
+                최대: {(() => {
+                  const song = allSongs[0];
+                  let rating;
+                  rating = calculateRating(song.const!, song.score).toFixed(2);
+                  return rating;
+                })()}
               </span>
               <span className="text-red-600 font-medium">
-                최소: {ratingStats.min.toFixed(2)}
+                최소: {(() => {
+                  const song = allSongs[allSongs.length-1];
+                  return calculateRating(song.const!, song.score).toFixed(2);
+                })()}
               </span>
               <span className="text-blue-600 font-medium">
-                평균: {ratingStats.average.toFixed(4)}
+                평균: {ratingStats ? ratingStats.average.toFixed(4) : '-'}
               </span>
             </div>
           )}

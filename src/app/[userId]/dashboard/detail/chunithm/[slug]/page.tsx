@@ -58,8 +58,6 @@ export default function UserChunithmDetailPage() {
         return;
       }
       // fetch 시작 로그
-      // eslint-disable-next-line no-console
-      console.log('[UserChunithmDetailPage] fetchProfile called', { slug, userId });
       
       try {
         const isOwner = session?.user?.id === userId;
@@ -87,12 +85,6 @@ export default function UserChunithmDetailPage() {
         }
         
         const data = await response.json();
-        // eslint-disable-next-line no-console
-        console.log('[UserChunithmDetailPage] API response', data);
-        // eslint-disable-next-line no-console
-        console.log('[UserChunithmDetailPage] API profile.gameData', data.profile?.gameData);
-        // eslint-disable-next-line no-console
-        console.log('[UserChunithmDetailPage] API profile.ratingLists', data.profile?.ratingLists);
         setProfile(data.profile);
       } catch (err) {
         setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
@@ -207,6 +199,8 @@ export default function UserChunithmDetailPage() {
         <TabsList className="flex flex-wrap gap-2 sm:gap-4 justify-center sm:justify-start">
           <TabsTrigger value="best" className="text-base sm:text-lg px-2 sm:px-4 py-2">Best 30</TabsTrigger>
           <TabsTrigger value="new" className="text-base sm:text-lg px-2 sm:px-4 py-2">New 20</TabsTrigger>
+          <TabsTrigger value="Rating 50" className="text-base sm:text-lg px-2 sm:px-4 py-2">Rating 50</TabsTrigger>
+          <TabsTrigger value="nextVersionBest" className="text-base sm:text-lg px-2 sm:px-4 py-2">NextVersion B30</TabsTrigger>
           {accessMode.showPrivateData && (
             <TabsTrigger value="all" className="text-base sm:text-lg px-2 sm:px-4 py-2">All Records</TabsTrigger>
           )}
@@ -215,15 +209,10 @@ export default function UserChunithmDetailPage() {
           <Card>
             <CardContent className="pt-4 sm:pt-6">
               {/* ChunithmSongGrid 전달값 로그 */}
-              {(() => {
-                // eslint-disable-next-line no-console
-                console.log('[UserChunithmDetailPage] ChunithmSongGrid props (best)', profile.ratingLists?.best);
-                return null;
-              })()}
               <ChunithmSongGrid 
                 songs={profile.ratingLists?.best || []} 
                 type="best"
-                canShowRatingImgBtn={accessMode.mode === 'owner'}
+                canShowRatingImgBtn={accessMode.mode === 'visitor'}
               />
             </CardContent>
           </Card>
@@ -232,16 +221,41 @@ export default function UserChunithmDetailPage() {
           <Card>
             <CardContent className="pt-4 sm:pt-6">
               {/* ChunithmSongGrid 전달값 로그 */}
-              {(() => {
-                // eslint-disable-next-line no-console
-                console.log('[UserChunithmDetailPage] ChunithmSongGrid props (new)', profile.ratingLists?.new);
-                return null;
-              })()}
               <ChunithmSongGrid 
                 songs={profile.ratingLists?.new || []} 
                 type="new"
-                canShowRatingImgBtn={accessMode.mode === 'owner'}
+                canShowRatingImgBtn={accessMode.mode === 'visitor'}
               />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="Rating 50" className="mt-4 sm:mt-6">
+          <Card>
+            <CardContent className="pt-4 sm:pt-6">
+              {/* ChunithmSongGrid 전달값 로그 */}
+              <ChunithmSongGrid
+                songs={[
+                ...(profile.ratingLists?.best || []),
+                ...(profile.ratingLists?.new || [])
+                ]}
+                type="rating50"
+                canShowRatingImgBtn={accessMode.mode === 'visitor'}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="nextVersionBest" className="mt-4 sm:mt-6">
+          <Card>
+            <CardContent className="pt-4 sm:pt-6">
+            {/* NextVersion B30 탭용 ChunithmSongGrid - best와 new를 합친 모든 곡 표시 */}
+            <ChunithmSongGrid 
+              songs={[
+                ...(profile.ratingLists?.best || []),
+                ...(profile.ratingLists?.new || [])
+              ]}
+              type="nextVersionBest"
+              canShowRatingImgBtn={accessMode.mode === 'visitor'}
+            />
             </CardContent>
           </Card>
         </TabsContent>
