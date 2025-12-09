@@ -32,6 +32,7 @@ export function SignupForm() {
   };
 
   const handleCheckUsername = async () => {
+    const isValidUsername = /^[a-zA-Z0-9]{1,15}$/.test(username);
     if (!username.trim()) {
       toast({
         variant: "destructive",
@@ -39,7 +40,14 @@ export function SignupForm() {
       });
       return;
     }
-
+    if (!isValidUsername) {
+      toast({
+        variant: "destructive",
+        title: "아이디 형식 오류",
+        description: "영문과 숫자만 사용, 15자 이내로 입력해주세요.",
+      });
+      return;
+    }
     setIsCheckingUsername(true);
     try {
       const response = await fetch('/api/auth/check-username', {
@@ -49,10 +57,8 @@ export function SignupForm() {
         },
         body: JSON.stringify({ username }),
       });
-      
       const result = await response.json();
       setUsernameAvailability(result.isAvailable ? 'available' : 'taken');
-      
     } catch (error) {
       console.error('중복 확인 오류:', error);
       toast({
@@ -69,6 +75,7 @@ export function SignupForm() {
     e.preventDefault();
     
     // 유효성 검사
+    const isValidUsername = /^[a-zA-Z0-9]{1,15}$/.test(username);
     if (!nickname.trim() || !username.trim()) {
       toast({
         variant: "destructive",
@@ -77,7 +84,14 @@ export function SignupForm() {
       });
       return;
     }
-
+    if (!isValidUsername) {
+      toast({
+        variant: "destructive",
+        title: "아이디 형식 오류",
+        description: "영문과 숫자만 사용, 15자 이내로 입력해주세요.",
+      });
+      return;
+    }
     if (usernameAvailability !== 'available') {
       toast({
         variant: "destructive",
