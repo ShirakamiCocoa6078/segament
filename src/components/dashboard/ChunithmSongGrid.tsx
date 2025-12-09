@@ -141,7 +141,7 @@ export function ChunithmSongGrid({ songs, type }: ChunithmSongGridProps) {
     } else if (type === 'nextVersionBest') {
       return {
         columns: 3,
-        maxSongs: 30,
+        maxSongs: 50,
         className: 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3',
         gap: 'gap-4'
       };
