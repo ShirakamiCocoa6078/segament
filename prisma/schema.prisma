@@ -19,7 +19,7 @@ enum GameType {
 // 서버 지역을 명확히 하기 위한 Enum
 enum Region {
   JP
-  INT
+  INTL
 }
 
 
