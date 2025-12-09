@@ -2,7 +2,7 @@
 
 // 애플리케이션 상수
 export const APP_NAME = 'Segament';
-export const APP_DESCRIPTION = '당신의 리듬 게임 동반자.';
+export const APP_DESCRIPTION = '내수/국제판 프로필 등록 시스템';
 
 // 게임 관련 상수
 export const GAME_TYPES = {
