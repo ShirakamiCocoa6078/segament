@@ -435,6 +435,21 @@
       }
     },
     "niconico": {
+      "music_idx_2883": {
+        "music_name": "最愛人生ランナー"
+      },
+      "music_idx_2884": {
+        "music_name": "ウィーアーピコピコハンマーズ!!!!"
+      },
+      "music_idx_2885": {
+        "music_name": "ジェットブラック"
+      },
+      "music_idx_2886": {
+        "music_name": "トレジャーガーデン"
+      },
+      "music_idx_2887": {
+        "music_name": "電光刹歌"
+      },
       "music_idx_2874": {
         "music_name": "はじまりの未来"
       },
@@ -2514,6 +2529,9 @@
       },
       "music_idx_2826": {
         "music_name": "ニルヴの心臓"
+      },
+      "music_idx_2892": {
+        "music_name": "Kaleidoscope"
       }
     },
     "イロドリミドリ": {
@@ -2723,6 +2741,9 @@
       },
       "music_idx_2859": {
         "music_name": "Burn!!!"
+      },
+      "music_idx_2881": {
+        "music_name": "Hardsync"
       },
       "music_idx_684": {
         "music_name": "Black'n White JAMMIN' CATS"
@@ -3077,6 +3098,9 @@
       "music_idx_2848": {
         "music_name": "アージェントシンメトリー"
       },
+      "music_idx_2876": {
+        "music_name": "渦状銀河のシンフォニエッタ"
+      },
       "music_idx_802": {
         "music_name": "STARTLINER"
       },
@@ -3358,6 +3382,9 @@
       },
       "music_idx_2829": {
         "music_name": "Daydreama"
+      },
+      "music_idx_2882": {
+        "music_name": "しとしとと"
       }
     },
     "ORIGINAL": {
@@ -4599,6 +4626,30 @@
       },
       "music_idx_2869": {
         "music_name": "OUTRAGE"
+      },
+      "music_idx_2877": {
+        "music_name": "Warp Speed"
+      },
+      "music_idx_2878": {
+        "music_name": "In the Straying Story"
+      },
+      "music_idx_2879": {
+        "music_name": "PhenomenoN"
+      },
+      "music_idx_2880": {
+        "music_name": "輪廻玲々"
+      },
+      "music_idx_2888": {
+        "music_name": "hyperreality"
+      },
+      "music_idx_2889": {
+        "music_name": "Deep Blue"
+      },
+      "music_idx_2890": {
+        "music_name": "DEvourER"
+      },
+      "music_idx_2891": {
+        "music_name": "創 -汝ら新世界へ歩む者なり-"
       }
     }
   },
@@ -9079,6 +9130,21 @@
       "music_idx_2821": {
         "music_name": "はいよろこんで"
       },
+      "music_idx_2883": {
+        "music_name": "最愛人生ランナー"
+      },
+      "music_idx_2884": {
+        "music_name": "ウィーアーピコピコハンマーズ!!!!"
+      },
+      "music_idx_2885": {
+        "music_name": "ジェットブラック"
+      },
+      "music_idx_2886": {
+        "music_name": "トレジャーガーデン"
+      },
+      "music_idx_2887": {
+        "music_name": "電光刹歌"
+      },
       "music_idx_2874": {
         "music_name": "はじまりの未来"
       },
@@ -9148,6 +9214,9 @@
       "music_idx_2826": {
         "music_name": "ニルヴの心臓"
       },
+      "music_idx_2892": {
+        "music_name": "Kaleidoscope"
+      },
       "music_idx_2847": {
         "music_name": "単位がない！"
       },
@@ -9157,17 +9226,26 @@
       "music_idx_2859": {
         "music_name": "Burn!!!"
       },
+      "music_idx_2881": {
+        "music_name": "Hardsync"
+      },
       "music_idx_2828": {
         "music_name": "Energizing Flame"
       },
       "music_idx_2848": {
         "music_name": "アージェントシンメトリー"
       },
+      "music_idx_2876": {
+        "music_name": "渦状銀河のシンフォニエッタ"
+      },
       "music_idx_2827": {
         "music_name": "Individual on parade!"
       },
       "music_idx_2829": {
         "music_name": "Daydreama"
+      },
+      "music_idx_2882": {
+        "music_name": "しとしとと"
       },
       "music_idx_2836": {
         "music_name": "エモーション・キャプチャー"
@@ -9228,6 +9306,30 @@
       },
       "music_idx_2869": {
         "music_name": "OUTRAGE"
+      },
+      "music_idx_2877": {
+        "music_name": "Warp Speed"
+      },
+      "music_idx_2878": {
+        "music_name": "In the Straying Story"
+      },
+      "music_idx_2879": {
+        "music_name": "PhenomenoN"
+      },
+      "music_idx_2880": {
+        "music_name": "輪廻玲々"
+      },
+      "music_idx_2888": {
+        "music_name": "hyperreality"
+      },
+      "music_idx_2889": {
+        "music_name": "Deep Blue"
+      },
+      "music_idx_2890": {
+        "music_name": "DEvourER"
+      },
+      "music_idx_2891": {
+        "music_name": "創 -汝ら新世界へ歩む者なり-"
       }
     }
   },
@@ -10851,6 +10953,26 @@
       },
       "music_idx_244": {
         "music_name": "回レ！雪月花",
+        "diff": "BASIC"
+      },
+      "music_idx_2883": {
+        "music_name": "最愛人生ランナー",
+        "diff": "BASIC"
+      },
+      "music_idx_2884": {
+        "music_name": "ウィーアーピコピコハンマーズ!!!!",
+        "diff": "BASIC"
+      },
+      "music_idx_2885": {
+        "music_name": "ジェットブラック",
+        "diff": "BASIC"
+      },
+      "music_idx_2886": {
+        "music_name": "トレジャーガーデン",
+        "diff": "BASIC"
+      },
+      "music_idx_2887": {
+        "music_name": "電光刹歌",
         "diff": "BASIC"
       },
       "music_idx_2894": {
@@ -12529,6 +12651,10 @@
         "music_name": "A c i - L",
         "diff": "BASIC"
       },
+      "music_idx_2892": {
+        "music_name": "Kaleidoscope",
+        "diff": "BASIC"
+      },
       "music_idx_145": {
         "music_name": "Change Our MIRAI！",
         "diff": "BASIC"
@@ -14016,6 +14142,18 @@
       "music_idx_2867": {
         "music_name": "システム",
         "diff": "BASIC"
+      },
+      "music_idx_2877": {
+        "music_name": "Warp Speed",
+        "diff": "BASIC"
+      },
+      "music_idx_2878": {
+        "music_name": "In the Straying Story",
+        "diff": "BASIC"
+      },
+      "music_idx_2879": {
+        "music_name": "PhenomenoN",
+        "diff": "BASIC"
       }
     },
     "LEVEL 4": {
@@ -14443,6 +14581,10 @@
         "music_name": "一世嬉遊曲‐ディヴェルティメント‐",
         "diff": "BASIC"
       },
+      "music_idx_2881": {
+        "music_name": "Hardsync",
+        "diff": "BASIC"
+      },
       "music_idx_899": {
         "music_name": "conflict(斉唱)",
         "diff": "BASIC"
@@ -14575,6 +14717,10 @@
         "music_name": "Energizing Flame",
         "diff": "BASIC"
       },
+      "music_idx_2876": {
+        "music_name": "渦状銀河のシンフォニエッタ",
+        "diff": "BASIC"
+      },
       "music_idx_2562": {
         "music_name": "Prominence",
         "diff": "BASIC"
@@ -14661,6 +14807,10 @@
       },
       "music_idx_2597": {
         "music_name": "Stardust:RAY",
+        "diff": "BASIC"
+      },
+      "music_idx_2882": {
+        "music_name": "しとしとと",
         "diff": "BASIC"
       },
       "music_idx_202": {
@@ -15099,6 +15249,10 @@
         "music_name": "恋伯色",
         "diff": "BASIC"
       },
+      "music_idx_2890": {
+        "music_name": "DEvourER",
+        "diff": "BASIC"
+      },
       "music_idx_2776": {
         "music_name": "Paradoxes",
         "diff": "ADVANCED"
@@ -15367,6 +15521,10 @@
       },
       "music_idx_2846": {
         "music_name": "Tru'nembra",
+        "diff": "BASIC"
+      },
+      "music_idx_2888": {
+        "music_name": "hyperreality",
         "diff": "BASIC"
       },
       "music_idx_2850": {
@@ -15643,6 +15801,10 @@
       },
       "music_idx_159": {
         "music_name": "ジングルベル",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2885": {
+        "music_name": "ジェットブラック",
         "diff": "ADVANCED"
       },
       "music_idx_2874": {
@@ -17223,6 +17385,14 @@
         "music_name": "OUTRAGE",
         "diff": "BASIC"
       },
+      "music_idx_2880": {
+        "music_name": "輪廻玲々",
+        "diff": "BASIC"
+      },
+      "music_idx_2889": {
+        "music_name": "Deep Blue",
+        "diff": "BASIC"
+      },
       "music_idx_2849": {
         "music_name": "1番輝く星",
         "diff": "ADVANCED"
@@ -17477,6 +17647,18 @@
       },
       "music_idx_394": {
         "music_name": "若い力 -SEGA HARD GIRLS MIX-",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2883": {
+        "music_name": "最愛人生ランナー",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2886": {
+        "music_name": "トレジャーガーデン",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2887": {
+        "music_name": "電光刹歌",
         "diff": "ADVANCED"
       },
       "music_idx_2894": {
@@ -19462,9 +19644,17 @@
       "music_idx_2868": {
         "music_name": "恋伯色",
         "diff": "ADVANCED"
+      },
+      "music_idx_2879": {
+        "music_name": "PhenomenoN",
+        "diff": "ADVANCED"
       }
     },
     "LEVEL 7": {
+      "music_idx_2891": {
+        "music_name": "創 -汝ら新世界へ歩む者なり-",
+        "diff": "BASIC"
+      },
       "music_idx_2718": {
         "music_name": "I Wanna",
         "diff": "ADVANCED"
@@ -19491,6 +19681,10 @@
       },
       "music_idx_926": {
         "music_name": "Kadenz",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2884": {
+        "music_name": "ウィーアーピコピコハンマーズ!!!!",
         "diff": "ADVANCED"
       },
       "music_idx_2758": {
@@ -19901,6 +20095,10 @@
         "music_name": "ニルヴの心臓",
         "diff": "ADVANCED"
       },
+      "music_idx_2892": {
+        "music_name": "Kaleidoscope",
+        "diff": "ADVANCED"
+      },
       "music_idx_600": {
         "music_name": "管弦楽組曲 第3番 ニ長調「第2曲（G線上のアリア）」BWV.1068-2",
         "diff": "ADVANCED"
@@ -19919,6 +20117,10 @@
       },
       "music_idx_468": {
         "music_name": "奏者はただ背中と提琴で語るのみ",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2881": {
+        "music_name": "Hardsync",
         "diff": "ADVANCED"
       },
       "music_idx_804": {
@@ -19987,6 +20189,10 @@
       },
       "music_idx_2828": {
         "music_name": "Energizing Flame",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2876": {
+        "music_name": "渦状銀河のシンフォニエッタ",
         "diff": "ADVANCED"
       },
       "music_idx_2238": {
@@ -20259,6 +20465,18 @@
       },
       "music_idx_2857": {
         "music_name": "Challenger!!",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2877": {
+        "music_name": "Warp Speed",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2878": {
+        "music_name": "In the Straying Story",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2890": {
+        "music_name": "DEvourER",
         "diff": "ADVANCED"
       },
       "music_idx_133": {
@@ -20963,6 +21181,10 @@
       },
       "music_idx_2855": {
         "music_name": "内臓♡マニピ",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2888": {
+        "music_name": "hyperreality",
         "diff": "ADVANCED"
       },
       "music_idx_2779": {
@@ -23047,6 +23269,10 @@
         "music_name": "Singularity",
         "diff": "ADVANCED"
       },
+      "music_idx_2882": {
+        "music_name": "しとしとと",
+        "diff": "ADVANCED"
+      },
       "music_idx_201": {
         "music_name": "Contrapasso -inferno-",
         "diff": "ADVANCED"
@@ -24417,6 +24643,14 @@
         "music_name": "ハッピーエンドをはじめから",
         "diff": "EXPERT"
       },
+      "music_idx_2883": {
+        "music_name": "最愛人生ランナー",
+        "diff": "EXPERT"
+      },
+      "music_idx_2885": {
+        "music_name": "ジェットブラック",
+        "diff": "EXPERT"
+      },
       "music_idx_2854": {
         "music_name": "カルチャ",
         "diff": "EXPERT"
@@ -25223,6 +25457,10 @@
         "music_name": "Kadenz",
         "diff": "EXPERT"
       },
+      "music_idx_2886": {
+        "music_name": "トレジャーガーデン",
+        "diff": "EXPERT"
+      },
       "music_idx_2720": {
         "music_name": "イガク",
         "diff": "EXPERT"
@@ -25445,6 +25683,10 @@
       },
       "music_idx_2870": {
         "music_name": "ソウルのピース",
+        "diff": "EXPERT"
+      },
+      "music_idx_2881": {
+        "music_name": "Hardsync",
         "diff": "EXPERT"
       },
       "music_idx_246": {
@@ -25751,6 +25993,14 @@
       },
       "music_idx_2475": {
         "music_name": "Chaotic Ørder",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2880": {
+        "music_name": "輪廻玲々",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2889": {
+        "music_name": "Deep Blue",
         "diff": "ADVANCED"
       },
       "music_idx_2674": {
@@ -26165,6 +26415,10 @@
         "music_name": "システム",
         "diff": "EXPERT"
       },
+      "music_idx_2879": {
+        "music_name": "PhenomenoN",
+        "diff": "EXPERT"
+      },
       "music_idx_2359": {
         "music_name": "五等分のカタチ",
         "diff": "MASTER"
@@ -26322,6 +26576,14 @@
       "music_idx_2340": {
         "music_name": "To：Be Continued",
         "diff": "ADVANCED"
+      },
+      "music_idx_2884": {
+        "music_name": "ウィーアーピコピコハンマーズ!!!!",
+        "diff": "EXPERT"
+      },
+      "music_idx_2887": {
+        "music_name": "電光刹歌",
+        "diff": "EXPERT"
       },
       "music_idx_2658": {
         "music_name": "熱異常",
@@ -26577,6 +26839,10 @@
       },
       "music_idx_2856": {
         "music_name": "Steamed on the Beat",
+        "diff": "EXPERT"
+      },
+      "music_idx_2877": {
+        "music_name": "Warp Speed",
         "diff": "EXPERT"
       },
       "music_idx_2684": {
@@ -27039,6 +27305,10 @@
       },
       "music_idx_2652": {
         "music_name": "Forsaken Tale",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2891": {
+        "music_name": "創 -汝ら新世界へ歩む者なり-",
         "diff": "ADVANCED"
       },
       "music_idx_2391": {
@@ -27995,6 +28265,10 @@
         "music_name": "Energizing Flame",
         "diff": "EXPERT"
       },
+      "music_idx_2876": {
+        "music_name": "渦状銀河のシンフォニエッタ",
+        "diff": "EXPERT"
+      },
       "music_idx_1059": {
         "music_name": "Good bye, Merry-Go-Round.",
         "diff": "EXPERT"
@@ -28113,6 +28387,10 @@
       },
       "music_idx_2833": {
         "music_name": "並行天涯",
+        "diff": "EXPERT"
+      },
+      "music_idx_2890": {
+        "music_name": "DEvourER",
         "diff": "EXPERT"
       },
       "music_idx_2849": {
@@ -29089,6 +29367,10 @@
         "music_name": "Ai C",
         "diff": "EXPERT"
       },
+      "music_idx_2882": {
+        "music_name": "しとしとと",
+        "diff": "EXPERT"
+      },
       "music_idx_559": {
         "music_name": "otorii INNOVATED -[i]3-",
         "diff": "EXPERT"
@@ -29195,6 +29477,10 @@
       },
       "music_idx_2844": {
         "music_name": "あの日、あの部屋で、あったこと",
+        "diff": "EXPERT"
+      },
+      "music_idx_2878": {
+        "music_name": "In the Straying Story",
         "diff": "EXPERT"
       },
       "music_idx_2893": {
@@ -29311,6 +29597,10 @@
       },
       "music_idx_525": {
         "music_name": "Paradisus-Paradoxum",
+        "diff": "MASTER"
+      },
+      "music_idx_2885": {
+        "music_name": "ジェットブラック",
         "diff": "MASTER"
       },
       "music_idx_2839": {
@@ -30099,6 +30389,10 @@
         "music_name": "キミとボクへの葬送歌",
         "diff": "EXPERT"
       },
+      "music_idx_2892": {
+        "music_name": "Kaleidoscope",
+        "diff": "EXPERT"
+      },
       "music_idx_1106": {
         "music_name": "アポカリプスに反逆の焔を焚べろ",
         "diff": "EXPERT"
@@ -30279,6 +30573,10 @@
         "music_name": "Everything Will Be One",
         "diff": "EXPERT"
       },
+      "music_idx_2888": {
+        "music_name": "hyperreality",
+        "diff": "EXPERT"
+      },
       "music_idx_2850": {
         "music_name": "うい麦畑でつかまえて",
         "diff": "MASTER"
@@ -30325,6 +30623,10 @@
       },
       "music_idx_561": {
         "music_name": "純情-SAKURA-",
+        "diff": "MASTER"
+      },
+      "music_idx_2883": {
+        "music_name": "最愛人生ランナー",
         "diff": "MASTER"
       },
       "music_idx_2894": {
@@ -31485,6 +31787,10 @@
         "music_name": "OUTRAGE",
         "diff": "EXPERT"
       },
+      "music_idx_2880": {
+        "music_name": "輪廻玲々",
+        "diff": "EXPERT"
+      },
       "music_idx_2716": {
         "music_name": "アイデンティティ（104期NEW Ver.）",
         "diff": "MASTER"
@@ -31507,6 +31813,18 @@
       },
       "music_idx_2252": {
         "music_name": "BlackFlagBreaker!!",
+        "diff": "MASTER"
+      },
+      "music_idx_2884": {
+        "music_name": "ウィーアーピコピコハンマーズ!!!!",
+        "diff": "MASTER"
+      },
+      "music_idx_2886": {
+        "music_name": "トレジャーガーデン",
+        "diff": "MASTER"
+      },
+      "music_idx_2887": {
+        "music_name": "電光刹歌",
         "diff": "MASTER"
       },
       "music_idx_2854": {
@@ -32529,6 +32847,10 @@
         "music_name": "ナラク・オン・エア",
         "diff": "MASTER"
       },
+      "music_idx_2877": {
+        "music_name": "Warp Speed",
+        "diff": "MASTER"
+      },
       "music_idx_2683": {
         "music_name": "On your mark (104期 Ver.)",
         "diff": "ULTIMA"
@@ -32681,6 +33003,14 @@
       },
       "music_idx_2802": {
         "music_name": "Crossmythos Rhapsodia",
+        "diff": "EXPERT"
+      },
+      "music_idx_2889": {
+        "music_name": "Deep Blue",
+        "diff": "EXPERT"
+      },
+      "music_idx_2891": {
+        "music_name": "創 -汝ら新世界へ歩む者なり-",
         "diff": "EXPERT"
       },
       "music_idx_2865": {
@@ -32971,6 +33301,10 @@
         "music_name": "色彩過剰のダイアリーミュージック",
         "diff": "MASTER"
       },
+      "music_idx_2881": {
+        "music_name": "Hardsync",
+        "diff": "MASTER"
+      },
       "music_idx_538": {
         "music_name": "AMAZING MIGHTYYYY!!!!",
         "diff": "MASTER"
@@ -33121,6 +33455,10 @@
       },
       "music_idx_2782": {
         "music_name": "BOUNCE & DANCE",
+        "diff": "MASTER"
+      },
+      "music_idx_2882": {
+        "music_name": "しとしとと",
         "diff": "MASTER"
       },
       "music_idx_1011": {
@@ -33377,6 +33715,18 @@
       },
       "music_idx_2855": {
         "music_name": "内臓♡マニピ",
+        "diff": "MASTER"
+      },
+      "music_idx_2878": {
+        "music_name": "In the Straying Story",
+        "diff": "MASTER"
+      },
+      "music_idx_2879": {
+        "music_name": "PhenomenoN",
+        "diff": "MASTER"
+      },
+      "music_idx_2890": {
+        "music_name": "DEvourER",
         "diff": "MASTER"
       },
       "music_idx_2820": {
@@ -33637,6 +33987,10 @@
         "music_name": "ニルヴの心臓",
         "diff": "MASTER"
       },
+      "music_idx_2892": {
+        "music_name": "Kaleidoscope",
+        "diff": "MASTER"
+      },
       "music_idx_226": {
         "music_name": "Garakuta Doll Play",
         "diff": "MASTER"
@@ -33687,6 +34041,10 @@
       },
       "music_idx_2763": {
         "music_name": "躯樹の墓守",
+        "diff": "MASTER"
+      },
+      "music_idx_2876": {
+        "music_name": "渦状銀河のシンフォニエッタ",
         "diff": "MASTER"
       },
       "music_idx_784": {
@@ -33945,6 +34303,14 @@
         "music_name": "OUTRAGE",
         "diff": "MASTER"
       },
+      "music_idx_2880": {
+        "music_name": "輪廻玲々",
+        "diff": "MASTER"
+      },
+      "music_idx_2888": {
+        "music_name": "hyperreality",
+        "diff": "MASTER"
+      },
       "music_idx_455": {
         "music_name": "Vampire",
         "diff": "ULTIMA"
@@ -34121,6 +34487,14 @@
       },
       "music_idx_2846": {
         "music_name": "Tru'nembra",
+        "diff": "MASTER"
+      },
+      "music_idx_2889": {
+        "music_name": "Deep Blue",
+        "diff": "MASTER"
+      },
+      "music_idx_2891": {
+        "music_name": "創 -汝ら新世界へ歩む者なり-",
         "diff": "MASTER"
       }
     }

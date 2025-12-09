@@ -3797,6 +3797,136 @@
   },
   {
     "meta": {
+      "id": "2883",
+      "title": "最愛人生ランナー",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "level": "10",
+        "const": 10.2
+      },
+      "master": {
+        "level": "13+",
+        "const": 13.5
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2884",
+      "title": "ウィーアーピコピコハンマーズ!!!!",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 7,
+        "level": "7"
+      },
+      "expert": {
+        "level": "11+",
+        "const": 11.7
+      },
+      "master": {
+        "level": "14",
+        "const": 14.2
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2885",
+      "title": "ジェットブラック",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 5,
+        "level": "5"
+      },
+      "expert": {
+        "level": "10",
+        "const": 10.3
+      },
+      "master": {
+        "level": "13",
+        "const": 13.3
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2886",
+      "title": "トレジャーガーデン",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "level": "10+",
+        "const": 10.6
+      },
+      "master": {
+        "level": "14",
+        "const": 14.1
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2887",
+      "title": "電光刹歌",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "level": "11+",
+        "const": 11.9
+      },
+      "master": {
+        "level": "14",
+        "const": 14.1
+      }
+    }
+  },
+  {
+    "meta": {
       "id": "2874",
       "title": "はじまりの未来",
       "genre": "niconico",
@@ -11752,8 +11882,8 @@
         "level": "9+"
       },
       "master": {
-        "const": 13,
-        "level": "13"
+        "level": "13",
+        "const": 13
       }
     }
   },
@@ -21988,6 +22118,32 @@
   },
   {
     "meta": {
+      "id": "2892",
+      "title": "Kaleidoscope",
+      "genre": "VARIETY",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 7,
+        "level": "7"
+      },
+      "expert": {
+        "level": "13+",
+        "const": 13.5
+      },
+      "master": {
+        "level": "15",
+        "const": 15.2
+      }
+    }
+  },
+  {
+    "meta": {
       "id": "145",
       "title": "Change Our MIRAI！",
       "genre": "イロドリミドリ",
@@ -23797,6 +23953,32 @@
       "master": {
         "level": "14",
         "const": 14.1
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2881",
+      "title": "Hardsync",
+      "genre": "イロドリミドリ",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 7,
+        "level": "7"
+      },
+      "expert": {
+        "level": "10+",
+        "const": 10.7
+      },
+      "master": {
+        "level": "14+",
+        "const": 14.8
       }
     }
   },
@@ -26856,6 +27038,32 @@
   },
   {
     "meta": {
+      "id": "2876",
+      "title": "渦状銀河のシンフォニエッタ",
+      "genre": "ゲキマイ",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 7,
+        "level": "7"
+      },
+      "expert": {
+        "level": "12+",
+        "const": 12.9
+      },
+      "master": {
+        "level": "15",
+        "const": 15
+      }
+    }
+  },
+  {
+    "meta": {
       "id": "802",
       "title": "STARTLINER",
       "genre": "ゲキマイ",
@@ -29295,6 +29503,32 @@
       "master": {
         "level": "14",
         "const": 14.4
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2882",
+      "title": "しとしとと",
+      "genre": "ゲキマイ",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "expert": {
+        "level": "13",
+        "const": 13.1
+      },
+      "master": {
+        "level": "14+",
+        "const": 14.7
       }
     }
   },
@@ -40133,6 +40367,214 @@
       "master": {
         "level": "15",
         "const": 15.4
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2877",
+      "title": "Warp Speed",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 7,
+        "level": "7"
+      },
+      "expert": {
+        "level": "11+",
+        "const": 11.5
+      },
+      "master": {
+        "level": "14",
+        "const": 14.4
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2878",
+      "title": "In the Straying Story",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 7,
+        "level": "7"
+      },
+      "expert": {
+        "level": "13",
+        "const": 13.2
+      },
+      "master": {
+        "level": "14+",
+        "const": 14.5
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2879",
+      "title": "PhenomenoN",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "level": "11",
+        "const": 11.2
+      },
+      "master": {
+        "level": "14+",
+        "const": 14.9
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2880",
+      "title": "輪廻玲々",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 6,
+        "level": "6"
+      },
+      "advanced": {
+        "level": "11",
+        "const": 11
+      },
+      "expert": {
+        "level": "14",
+        "const": 14.3
+      },
+      "master": {
+        "level": "15",
+        "const": 15.4
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2888",
+      "title": "hyperreality",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 5,
+        "level": "5"
+      },
+      "advanced": {
+        "const": 8,
+        "level": "8"
+      },
+      "expert": {
+        "level": "13+",
+        "const": 13.6
+      },
+      "master": {
+        "level": "15",
+        "const": 15.2
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2889",
+      "title": "Deep Blue",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 6,
+        "level": "6"
+      },
+      "advanced": {
+        "level": "11",
+        "const": 11
+      },
+      "expert": {
+        "level": "14+",
+        "const": 14.5
+      },
+      "master": {
+        "level": "15+",
+        "const": 15.6
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2890",
+      "title": "DEvourER",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 7,
+        "level": "7"
+      },
+      "expert": {
+        "level": "12+",
+        "const": 12.8
+      },
+      "master": {
+        "level": "14+",
+        "const": 14.8
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2891",
+      "title": "創 -汝ら新世界へ歩む者なり-",
+      "genre": "ORIGINAL",
+      "version": "CHUNITHM X-VERSE"
+    },
+    "data": {
+      "basic": {
+        "const": 7,
+        "level": "7"
+      },
+      "advanced": {
+        "level": "12",
+        "const": 12
+      },
+      "expert": {
+        "level": "14+",
+        "const": 14.8
+      },
+      "master": {
+        "level": "15+",
+        "const": 15.7
       }
     }
   }
