@@ -24,7 +24,8 @@
         "const": 13
       },
       "ultima": {
-        "level": "14"
+        "level": "14",
+        "const": 14.1
       }
     }
   },

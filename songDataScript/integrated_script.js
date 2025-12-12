@@ -408,15 +408,19 @@ async function runStage3_FinalizeData() {
         }
         log('--- 2차 데이터 보정 완료 ---');
 
-        // 5. const가 0인 경우 사용자 수동 입력
+
+        // 5. const가 없거나 0/빈문자열/null이고 level만 있는 경우, 먼저 수동 입력
         log('--- ⌨️ 상수 수동 설정 시작 ---');
         for (const song of musicData) {
             const title = song.meta.title;
             for (const diff of Object.keys(song.data)) {
                 const diffData = song.data[diff];
-                // ?가 붙은 상수도 수동 입력 대상으로 체크
-                const isManualConst = (typeof diffData.const === 'string' && diffData.const.endsWith('?')) || (typeof diffData.const === 'number' && diffData.const === 0);
-                if ('const' in diffData && isManualConst && 'level' in diffData) {
+                // const가 없거나 0/빈문자열/null이고 level만 있는 경우
+                const isManualConst = (
+                    (!('const' in diffData) || diffData.const === 0 || diffData.const === null || diffData.const === "")
+                    && ('level' in diffData) && diffData.level && diffData.level !== ""
+                );
+                if (isManualConst) {
                     const level = diffData.level;
                     log(`📋 '${title}' 곡명을 복사해 입력창에 붙여넣으세요.`);
                     while (true) {
@@ -448,10 +452,34 @@ async function runStage3_FinalizeData() {
         }
         log('--- 상수 수동 설정 완료 ---');
 
-        await fs.writeJson(C.FINAL_SONG_DATA_FILE, musicData, { spaces: 2 });
-        log(`'${C.FINAL_SONG_DATA_FILE}' 파일 생성 완료.`);
-        await fs.writeJson(C.STAGE_3_COMPLETE_FLAG, { completedAt: new Date() });
-        log('3단계 성공적으로 완료.', 'success');
+        // --- 남은 항목(level은 있는데 const가 0/없음)만 level을 float로 변환해 const로 채우는 후처리 ---
+        let filledCount = 0;
+        for (const song of musicData) {
+            for (const diff of Object.keys(song.data)) {
+                const diffData = song.data[diff];
+                if ((!("const" in diffData) || diffData.const === 0 || diffData.const === null || diffData.const === "")
+                    && ("level" in diffData) && diffData.level && diffData.level !== "") {
+                    let levelStr = String(diffData.level);
+                    let constVal = null;
+                    if (levelStr.includes("+")) {
+                        constVal = parseFloat(levelStr.replace("+", ".5"));
+                    } else if (!isNaN(parseFloat(levelStr))) {
+                        constVal = parseFloat(levelStr);
+                    }
+                    if (constVal !== null && !isNaN(constVal)) {
+                        diffData.const = constVal;
+                        filledCount++;
+                        log(`[최종 const 보정] ${song.meta.title} (${diff}) -> ${diffData.const}`);
+                    }
+                }
+            }
+        }
+        log(`level만 있고 const가 없던 항목 ${filledCount}개를 level 기반으로 const로 보정 완료.`);
+
+            await fs.writeJson(C.FINAL_SONG_DATA_FILE, musicData, { spaces: 2 });
+            log(`'${C.FINAL_SONG_DATA_FILE}' 파일 생성 완료.`);
+            await fs.writeJson(C.STAGE_3_COMPLETE_FLAG, { completedAt: new Date() });
+            log('3단계 성공적으로 완료.', 'success');
     } catch (error) {
         log(`3단계 실행 중 오류 발생: ${error.message}`, 'error');
         console.error(error);
