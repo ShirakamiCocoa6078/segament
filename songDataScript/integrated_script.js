@@ -131,94 +131,46 @@ async function runStage1_ScrapeData() {
 }
 
 async function runStage2_UpdateFromAPIs() {
-    log('2단계 시작: API 데이터를 기준으로 기본 데이터셋 생성...');
+    log('3단계 시작: chunithmSongData2.json을 기반으로 sheetData.json 상수 병합...');
     try {
         // categoryData 로드
         const categoryData = await fs.readJson(C.CATEGORY_DATA_FILE);
 
-        // --- 1단계: chunithm_baseData.json 생성 ---
-        log('[Updater] [1/7] chunithm_baseData.json 생성을 시작합니다...');
-        // Chunirec API 데이터 가져오기
-        log('[Updater]  - Chunirec API에서 데이터를 가져오는 중...');
-        let response;
-        try {
-            response = await axios.get(`${API_BASE_URL}/music/showall.json`, apiConfig);
-        } catch (authError) {
-            log('[Updater]  - 인증 API 실패, 공개 API로 시도 중...');
-            response = await axios.get(`${API_BASE_URL}/music/showall.json`);
+        // --- chunithmSongData2.json을 baseData로 사용 ---
+        if (!await fs.exists(C.PREVIOUS_SONG_DATA_FILE)) {
+            throw new Error('chunithmSongData2.json 파일이 존재하지 않습니다.');
         }
-        const apiData = response.data;
-        log(`[Updater]  - Chunirec에서 ${apiData.length}개의 곡을 불러왔습니다.`);
+        let baseData = await fs.readJson(C.PREVIOUS_SONG_DATA_FILE);
+        log(`[Updater]  - chunithmSongData2.json에서 ${baseData.length}개의 곡을 불러왔습니다.`);
 
-        // Google Sheets 데이터 가져오기
-        log('[Updater]  - Google Sheets에서 상수 데이터를 가져오는 중...');
-        const sheets = google.sheets({ version: 'v4', auth: GOOGLE_API_KEY });
+        // sheetData.json에서 상수 데이터 병합
+        log('[Updater]  - sheetData.json에서 상수 데이터를 가져오는 중...');
+        const sheetData = await fs.readJson('sheetData.json');
+        function normalizeTitle(title) {
+            if (typeof title !== 'string') return '';
+            return title.toLowerCase().normalize('NFKC').replace(/\s+/g, '').replace(/[!"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]/g, '');
+        }
         const sheetDataMap = new Map();
-        const newSongsFromSheetOnly = new Map();
-        for (const sheetName of SHEET_NAMES_TO_FETCH) {
-            try {
-                const response = await sheets.spreadsheets.values.get({ spreadsheetId: GOOGLE_SHEET_ID, range: sheetName });
-                const rows = response.data.values;
-                if (!rows || rows.length === 0) continue;
-                // 新曲のみ 시트 파싱
-                if (sheetName === '新曲のみ') {
-                    let headerRowIndex = -1;
-                    for (let i = 0; i < rows.length; i++) {
-                        if (rows[i] && rows[i][0] === '曲名') { headerRowIndex = i; break; }
-                    }
-                    if (headerRowIndex === -1) continue;
-                    for (let i = headerRowIndex + 1; i < rows.length; i++) {
-                        const row = rows[i];
-                        if (!row || row.length === 0) continue;
-                        for (let j = 0; j < row.length; j += 6) {
-                            const title = row[j];
-                            const difficulty = normalizeDifficulty(row[j + 1]);
-                            const genre = row[j + 2];
-                            const level = row[j + 3];
-                            const constant = parseFloat(row[j + 4]);
-                            if (title && difficulty) {
-                                sheetDataMap.set(`${title}-${difficulty}`, { const: !isNaN(constant) ? constant : null, level: level || null });
-                                if (!newSongsFromSheetOnly.has(title)) {
-                                    newSongsFromSheetOnly.set(title, { title, genre, difficulties: new Map() });
-                                }
-                                newSongsFromSheetOnly.get(title).difficulties.set(difficulty, { level, const: !isNaN(constant) ? constant : null });
-                            }
-                        }
-                    }
-                } else {
-                    const header = rows.find(row => row.includes('曲名'));
-                    if (!header) continue;
-                    const colMap = header.reduce((map, col, index) => ({ ...map, [col]: index }), {});
-                    const dataStartIndex = rows.indexOf(header) + 1;
-                    for (let i = dataStartIndex; i < rows.length; i++) {
-                        const row = rows[i];
-                        if (!row || !row[colMap['曲名']]) continue;
-                        const title = row[colMap['曲名']];
-                        const difficulty = normalizeDifficulty(row[colMap['譜面']]);
-                        if (!title || !difficulty) continue;
-                        let constant = parseFloat(row[colMap['XVRS']]);
-                        if (isNaN(constant) || !row[colMap['XVRS']]) {
-                            const vrsValue = row[colMap['VRS']];
-                            if (vrsValue && String(vrsValue).trim() !== '新曲') {
-                                constant = parseFloat(vrsValue);
-                            }
-                        }
-                        if (!isNaN(constant)) {
-                            sheetDataMap.set(`${title}-${difficulty}`, { const: constant, level: null });
-                        }
-                    }
+        for (const [title, diffs] of Object.entries(sheetData)) {
+            for (const [diffRaw, vals] of Object.entries(diffs)) {
+                const diffMap = { BAS: 'basic', ADV: 'advanced', EXP: 'expert', MAS: 'master', ULT: 'ultima' };
+                const diffKey = diffMap[diffRaw] || diffRaw.toLowerCase();
+                let finalConst = vals.newVersion !== null ? vals.newVersion : vals.oldVersion;
+                if (finalConst !== null) {
+                    const normKey = `${normalizeTitle(title)}-${diffKey}`;
+                    sheetDataMap.set(normKey, { const: finalConst, level: null });
                 }
-            } catch (error) { log(`  - '${sheetName}' 시트 처리 중 오류 발생: ${error.message}`); }
+            }
         }
-        log(`[Updater]  - Google Sheets에서 ${sheetDataMap.size}개의 상수/레벨 데이터를 불러왔습니다.`);
+        log(`[Updater]  - sheetData.json에서 ${sheetDataMap.size}개의 상수 데이터를 불러왔습니다.`);
 
-        // Chunirec + Google Sheets 데이터 병합
-        log('[Updater]  - Chunirec과 Google Sheets 데이터를 병합하는 중...');
-        apiData.forEach(music => {
+        // baseData에 sheetDataMap의 상수(newVersion 우선) 반영
+        log('[Updater]  - baseData에 sheetData.json 상수 병합 중...');
+        baseData.forEach(music => {
             Object.keys(music.data).forEach(diffKey => {
-                const sheetKey = `${music.meta.title}-${diffKey}`;
-                if (sheetDataMap.has(sheetKey)) {
-                    const sheetInfo = sheetDataMap.get(sheetKey);
+                const normKey = `${normalizeTitle(music.meta.title)}-${diffKey}`;
+                if (sheetDataMap.has(normKey)) {
+                    const sheetInfo = sheetDataMap.get(normKey);
                     if (sheetInfo.const !== null) {
                         music.data[diffKey].const = sheetInfo.const;
                     }
@@ -229,24 +181,11 @@ async function runStage2_UpdateFromAPIs() {
             });
         });
 
-        // 新曲のみ 시트의 신곡 추가
-        const apiMusicTitles = new Set(apiData.map(m => m.meta.title));
-        newSongsFromSheetOnly.forEach((songInfo, title) => {
-            if (!apiMusicTitles.has(title)) {
-                const newSong = { meta: { id: `new_${title}`, title, genre: songInfo.genre }, data: {} };
-                songInfo.difficulties.forEach((diffInfo, diff) => {
-                    newSong.data[diff] = { level: diffInfo.level || "", const: diffInfo.const || 0 };
-                });
-                apiData.push(newSong);
-            }
-        });
-
-        await fs.writeJson(C.UPDATED_MUSIC_FILE, apiData, { spaces: 2 });
+        await fs.writeJson(C.UPDATED_MUSIC_FILE, baseData, { spaces: 2 });
         log(`✅ [1/7] chunithm_baseData.json 파일이 성공적으로 생성되었습니다.`);
 
-        // --- 2단계: 최종 데이터 병합 및 생성 ---
+        // --- 4단계: category-data.json을 기준으로 최종 데이터 구조 생성 ---
         log('[Updater] [2/7] category-data.json을 기준으로 최종 데이터 구조 생성...');
-        const baseData = apiData;
         const baseDataMap = new Map();
         baseData.forEach(song => baseDataMap.set(song.meta.title, song));
         const finalSongMap = new Map();
@@ -295,15 +234,14 @@ async function runStage2_UpdateFromAPIs() {
             }
         }
 
-        log('[Updater] [4/7] baseData.json의 상수로 data 객체 채우기...');
-        // baseData(Chunirec+Sheets)의 상수로 최종 데이터 채우기
+        log('[Updater] [4/7] baseData(시트 반영)로 상수 채우기...');
+        // baseData(시트 반영)의 상수로 최종 데이터 채우기
         finalSongMap.forEach(songEntry => {
             const baseSong = baseDataMap.get(songEntry.meta.title);
             if (baseSong) {
                  Object.keys(songEntry.data).forEach(diffKey => {
-                    const diffKeyCap = normalizeDifficulty(diffKey.toUpperCase());
-                    if (baseSong.data[diffKeyCap] && baseSong.data[diffKeyCap].const > 0) {
-                        songEntry.data[diffKey].const = baseSong.data[diffKeyCap].const;
+                    if (baseSong.data[diffKey] && baseSong.data[diffKey].const > 0) {
+                        songEntry.data[diffKey].const = baseSong.data[diffKey].const;
                     }
                  });
             }
@@ -335,6 +273,21 @@ async function runStage2_UpdateFromAPIs() {
             });
         });
 
+        // --- 최종 데이터 저장 직전 sheetDataMap을 한 번 더 덮어씌우기 (newVersion 우선 보장) ---
+        finalSongMap.forEach(songEntry => {
+            Object.keys(songEntry.data).forEach(diffKey => {
+                const normKey = `${normalizeTitle(songEntry.meta.title)}-${diffKey}`;
+                if (sheetDataMap.has(normKey)) {
+                    const sheetInfo = sheetDataMap.get(normKey);
+                    if (sheetInfo.const !== null) {
+                        songEntry.data[diffKey].const = sheetInfo.const;
+                    }
+                    if (sheetInfo.level) {
+                        songEntry.data[diffKey].level = sheetInfo.level;
+                    }
+                }
+            });
+        });
         const finalData = Array.from(finalSongMap.values());
         await fs.writeJson(C.UPDATED_MUSIC_FILE, finalData, { spaces: 2 });
         log(`'${C.UPDATED_MUSIC_FILE}' 파일 저장 완료. (총 ${finalData.length}곡)`);
@@ -436,8 +389,13 @@ async function runStage3_FinalizeData() {
                             if ('const' in diffData && diffData.const === 0 &&
                                 prefillLookup[songId][diff] && prefillLookup[songId][diff].const && prefillLookup[songId][diff].const !== 0) {
                                 const newConst = prefillLookup[songId][diff].const;
-                                diffData.const = newConst;
-                                log(`  ID: ${songId}, 제목: ${song.meta.title} - ${diff.toUpperCase()} 상수 자동 입력됨: ${newConst}`);
+                                // 기존 값과 다를 때만 로그 출력
+                                if (diffData.const != newConst) {
+                                    log(`  ID: ${songId}, 제목: ${song.meta.title} - ${diff.toUpperCase()} 상수 자동 입력됨: ${diffData.const} -> ${newConst}`);
+                                    diffData.const = newConst;
+                                } else {
+                                    diffData.const = newConst;
+                                }
                             }
                         }
                     }
