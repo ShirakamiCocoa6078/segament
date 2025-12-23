@@ -1,6 +1,58 @@
 [
   {
     "meta": {
+      "id": "2920",
+      "title": "アイドゥーミー！",
+      "genre": "POPS & ANIME",
+      "version": "CHUNITHM X-VERSE-X"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 5,
+        "level": "5"
+      },
+      "expert": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "master": {
+        "const": 13.6,
+        "level": "13+"
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2921",
+      "title": "Edelied",
+      "genre": "POPS & ANIME",
+      "version": "CHUNITHM X-VERSE-X"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "const": 9,
+        "level": "9"
+      },
+      "master": {
+        "const": 13.5,
+        "level": "13+"
+      }
+    }
+  },
+  {
+    "meta": {
       "id": "2896",
       "title": "BOW AND ARROW （アニメ・オープニングver.）",
       "genre": "POPS & ANIME",
@@ -3562,6 +3614,84 @@
       "ultima": {
         "level": "15",
         "const": 15
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2922",
+      "title": "㋰責任集合体",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE-X"
+    },
+    "data": {
+      "basic": {
+        "const": 2,
+        "level": "2"
+      },
+      "advanced": {
+        "const": 5,
+        "level": "5"
+      },
+      "expert": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "master": {
+        "const": 13.3,
+        "level": "13"
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2923",
+      "title": "バカ通信",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE-X"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 7.5,
+        "level": "7+"
+      },
+      "expert": {
+        "const": 11.3,
+        "level": "11"
+      },
+      "master": {
+        "const": 14.4,
+        "level": "14"
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2924",
+      "title": "ヤババイナ",
+      "genre": "niconico",
+      "version": "CHUNITHM X-VERSE-X"
+    },
+    "data": {
+      "basic": {
+        "const": 4,
+        "level": "4"
+      },
+      "advanced": {
+        "const": 7,
+        "level": "7"
+      },
+      "expert": {
+        "const": 11.8,
+        "level": "11+"
+      },
+      "master": {
+        "const": 14.3,
+        "level": "14"
       }
     }
   },

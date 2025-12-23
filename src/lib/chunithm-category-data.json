@@ -1,6 +1,12 @@
 {
   "genre": {
     "POPS & ANIME": {
+      "music_idx_2920": {
+        "music_name": "アイドゥーミー！"
+      },
+      "music_idx_2921": {
+        "music_name": "Edelied"
+      },
       "music_idx_2896": {
         "music_name": "BOW AND ARROW （アニメ・オープニングver.）"
       },
@@ -408,6 +414,15 @@
       }
     },
     "niconico": {
+      "music_idx_2922": {
+        "music_name": "㋰責任集合体"
+      },
+      "music_idx_2923": {
+        "music_name": "バカ通信"
+      },
+      "music_idx_2924": {
+        "music_name": "ヤババイナ"
+      },
       "music_idx_2901": {
         "music_name": "モニタリング"
       },
@@ -4670,6 +4685,12 @@
   },
   "version": {
     "CHUNITHM X-VERSE-X": {
+      "music_idx_2920": {
+        "music_name": "アイドゥーミー！"
+      },
+      "music_idx_2921": {
+        "music_name": "Edelied"
+      },
       "music_idx_2896": {
         "music_name": "BOW AND ARROW （アニメ・オープニングver.）"
       },
@@ -4684,6 +4705,15 @@
       },
       "music_idx_2900": {
         "music_name": "一旦ステイ TONIGHT"
+      },
+      "music_idx_2922": {
+        "music_name": "㋰責任集合体"
+      },
+      "music_idx_2923": {
+        "music_name": "バカ通信"
+      },
+      "music_idx_2924": {
+        "music_name": "ヤババイナ"
       },
       "music_idx_2901": {
         "music_name": "モニタリング"
@@ -9593,6 +9623,10 @@
         "music_name": "ジングルベル",
         "diff": "BASIC"
       },
+      "music_idx_2922": {
+        "music_name": "㋰責任集合体",
+        "diff": "BASIC"
+      },
       "music_idx_2874": {
         "music_name": "はじまりの未来",
         "diff": "BASIC"
@@ -10571,6 +10605,14 @@
       }
     },
     "LEVEL 3": {
+      "music_idx_2920": {
+        "music_name": "アイドゥーミー！",
+        "diff": "BASIC"
+      },
+      "music_idx_2921": {
+        "music_name": "Edelied",
+        "diff": "BASIC"
+      },
       "music_idx_2896": {
         "music_name": "BOW AND ARROW （アニメ・オープニングver.）",
         "diff": "BASIC"
@@ -14189,6 +14231,14 @@
         "music_name": "I Wanna",
         "diff": "BASIC"
       },
+      "music_idx_2923": {
+        "music_name": "バカ通信",
+        "diff": "BASIC"
+      },
+      "music_idx_2924": {
+        "music_name": "ヤババイナ",
+        "diff": "BASIC"
+      },
       "music_idx_2740": {
         "music_name": "月光",
         "diff": "BASIC"
@@ -15579,6 +15629,10 @@
         "music_name": "轆轤首",
         "diff": "BASIC"
       },
+      "music_idx_2920": {
+        "music_name": "アイドゥーミー！",
+        "diff": "ADVANCED"
+      },
       "music_idx_2896": {
         "music_name": "BOW AND ARROW （アニメ・オープニングver.）",
         "diff": "ADVANCED"
@@ -15853,6 +15907,10 @@
       },
       "music_idx_159": {
         "music_name": "ジングルベル",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2922": {
+        "music_name": "㋰責任集合体",
         "diff": "ADVANCED"
       },
       "music_idx_2901": {
@@ -17444,6 +17502,10 @@
       "music_idx_2889": {
         "music_name": "Deep Blue",
         "diff": "BASIC"
+      },
+      "music_idx_2921": {
+        "music_name": "Edelied",
+        "diff": "ADVANCED"
       },
       "music_idx_2897": {
         "music_name": "Ave Mujica",
@@ -19715,6 +19777,10 @@
         "music_name": "レッド・ルーラー",
         "diff": "ADVANCED"
       },
+      "music_idx_2924": {
+        "music_name": "ヤババイナ",
+        "diff": "ADVANCED"
+      },
       "music_idx_2884": {
         "music_name": "ウィーアーピコピコハンマーズ!!!!",
         "diff": "ADVANCED"
@@ -20547,6 +20613,10 @@
       },
       "music_idx_2252": {
         "music_name": "BlackFlagBreaker!!",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2923": {
+        "music_name": "バカ通信",
         "diff": "ADVANCED"
       },
       "music_idx_2740": {
@@ -22359,6 +22429,10 @@
         "music_name": "轆轤首",
         "diff": "ADVANCED"
       },
+      "music_idx_2921": {
+        "music_name": "Edelied",
+        "diff": "EXPERT"
+      },
       "music_idx_2899": {
         "music_name": "怪獣",
         "diff": "EXPERT"
@@ -23409,6 +23483,10 @@
         "music_name": "Crossmythos Rhapsodia",
         "diff": "ADVANCED"
       },
+      "music_idx_2920": {
+        "music_name": "アイドゥーミー！",
+        "diff": "EXPERT"
+      },
       "music_idx_2896": {
         "music_name": "BOW AND ARROW （アニメ・オープニングver.）",
         "diff": "EXPERT"
@@ -23579,6 +23657,10 @@
       },
       "music_idx_244": {
         "music_name": "回レ！雪月花",
+        "diff": "EXPERT"
+      },
+      "music_idx_2922": {
+        "music_name": "㋰責任集合体",
         "diff": "EXPERT"
       },
       "music_idx_2852": {
@@ -26059,6 +26141,10 @@
         "music_name": "キルミーのベイベー！",
         "diff": "EXPERT"
       },
+      "music_idx_2923": {
+        "music_name": "バカ通信",
+        "diff": "EXPERT"
+      },
       "music_idx_2894": {
         "music_name": "ずんだシェイキング",
         "diff": "EXPERT"
@@ -26616,6 +26702,10 @@
       "music_idx_2340": {
         "music_name": "To：Be Continued",
         "diff": "ADVANCED"
+      },
+      "music_idx_2924": {
+        "music_name": "ヤババイナ",
+        "diff": "EXPERT"
       },
       "music_idx_2884": {
         "music_name": "ウィーアーピコピコハンマーズ!!!!",
@@ -29631,6 +29721,10 @@
         "music_name": "Paradisus-Paradoxum",
         "diff": "MASTER"
       },
+      "music_idx_2922": {
+        "music_name": "㋰責任集合体",
+        "diff": "MASTER"
+      },
       "music_idx_2901": {
         "music_name": "モニタリング",
         "diff": "MASTER"
@@ -30620,6 +30714,14 @@
       "music_idx_2919": {
         "music_name": "轆轤首",
         "diff": "EXPERT"
+      },
+      "music_idx_2920": {
+        "music_name": "アイドゥーミー！",
+        "diff": "MASTER"
+      },
+      "music_idx_2921": {
+        "music_name": "Edelied",
+        "diff": "MASTER"
       },
       "music_idx_2900": {
         "music_name": "一旦ステイ TONIGHT",
@@ -31877,6 +31979,14 @@
       },
       "music_idx_2252": {
         "music_name": "BlackFlagBreaker!!",
+        "diff": "MASTER"
+      },
+      "music_idx_2923": {
+        "music_name": "バカ通信",
+        "diff": "MASTER"
+      },
+      "music_idx_2924": {
+        "music_name": "ヤババイナ",
         "diff": "MASTER"
       },
       "music_idx_2884": {
