@@ -8,20 +8,20 @@
     },
     "data": {
       "basic": {
-        "const": 3,
-        "level": "3"
+        "level": "3",
+        "const": 3
       },
       "advanced": {
-        "const": 5,
-        "level": "5"
+        "level": "5",
+        "const": 5
       },
       "expert": {
-        "const": 9.5,
-        "level": "9+"
+        "level": "9+",
+        "const": 9.5
       },
       "master": {
-        "const": 13.6,
-        "level": "13+"
+        "level": "13+",
+        "const": 13.6
       }
     }
   },
@@ -34,20 +34,20 @@
     },
     "data": {
       "basic": {
-        "const": 3,
-        "level": "3"
+        "level": "3",
+        "const": 3
       },
       "advanced": {
-        "const": 6,
-        "level": "6"
+        "level": "6",
+        "const": 6
       },
       "expert": {
-        "const": 9,
-        "level": "9"
+        "level": "9",
+        "const": 9
       },
       "master": {
-        "const": 13.5,
-        "level": "13+"
+        "level": "13+",
+        "const": 13.5
       }
     }
   },
@@ -3626,20 +3626,20 @@
     },
     "data": {
       "basic": {
-        "const": 2,
-        "level": "2"
+        "level": "2",
+        "const": 2
       },
       "advanced": {
-        "const": 5,
-        "level": "5"
+        "level": "5",
+        "const": 5
       },
       "expert": {
-        "const": 9.5,
-        "level": "9+"
+        "level": "9+",
+        "const": 9.5
       },
       "master": {
-        "const": 13.3,
-        "level": "13"
+        "level": "13",
+        "const": 13.3
       }
     }
   },
@@ -3652,20 +3652,20 @@
     },
     "data": {
       "basic": {
-        "const": 4,
-        "level": "4"
+        "level": "4",
+        "const": 4
       },
       "advanced": {
-        "const": 7.5,
-        "level": "7+"
+        "level": "7+",
+        "const": 7.5
       },
       "expert": {
-        "const": 11.3,
-        "level": "11"
+        "level": "11",
+        "const": 11.3
       },
       "master": {
-        "const": 14.4,
-        "level": "14"
+        "level": "14",
+        "const": 14.4
       }
     }
   },
@@ -3678,20 +3678,20 @@
     },
     "data": {
       "basic": {
-        "const": 4,
-        "level": "4"
+        "level": "4",
+        "const": 4
       },
       "advanced": {
-        "const": 7,
-        "level": "7"
+        "level": "7",
+        "const": 7
       },
       "expert": {
-        "const": 11.8,
-        "level": "11+"
+        "level": "11+",
+        "const": 11.8
       },
       "master": {
-        "const": 14.3,
-        "level": "14"
+        "level": "14",
+        "const": 14.3
       }
     }
   },
@@ -11662,6 +11662,136 @@
       "ultima": {
         "level": "14",
         "const": 14.2
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2925",
+      "title": "A-Yah-YAh-YaH-YAH!",
+      "genre": "東方Project",
+      "version": "CHUNITHM X-VERSE-X"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "master": {
+        "const": 13.7,
+        "level": "13+"
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2926",
+      "title": "アマノジャクリバース feat. ｙｔｒ",
+      "genre": "東方Project",
+      "version": "CHUNITHM X-VERSE-X"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "const": 10.5,
+        "level": "10+"
+      },
+      "master": {
+        "const": 13.8,
+        "level": "13+"
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2927",
+      "title": "The Music of Violent Eating",
+      "genre": "東方Project",
+      "version": "CHUNITHM X-VERSE-X"
+    },
+    "data": {
+      "basic": {
+        "const": 5,
+        "level": "5"
+      },
+      "advanced": {
+        "const": 8,
+        "level": "8"
+      },
+      "expert": {
+        "const": 13.4,
+        "level": "13"
+      },
+      "master": {
+        "const": 15.1,
+        "level": "15"
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2928",
+      "title": "New World",
+      "genre": "東方Project",
+      "version": "CHUNITHM X-VERSE-X"
+    },
+    "data": {
+      "basic": {
+        "const": 3,
+        "level": "3"
+      },
+      "advanced": {
+        "const": 6,
+        "level": "6"
+      },
+      "expert": {
+        "const": 10.5,
+        "level": "10+"
+      },
+      "master": {
+        "const": 13.4,
+        "level": "13"
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "2929",
+      "title": "メイドノココロハアヤツリドール",
+      "genre": "東方Project",
+      "version": "CHUNITHM X-VERSE-X"
+    },
+    "data": {
+      "basic": {
+        "const": 2,
+        "level": "2"
+      },
+      "advanced": {
+        "const": 5,
+        "level": "5"
+      },
+      "expert": {
+        "const": 9.5,
+        "level": "9+"
+      },
+      "master": {
+        "const": 12.8,
+        "level": "12+"
       }
     }
   },

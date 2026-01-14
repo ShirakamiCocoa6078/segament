@@ -1334,6 +1334,21 @@
       }
     },
     "東方Project": {
+      "music_idx_2925": {
+        "music_name": "A-Yah-YAh-YaH-YAH!"
+      },
+      "music_idx_2926": {
+        "music_name": "アマノジャクリバース feat. ｙｔｒ"
+      },
+      "music_idx_2927": {
+        "music_name": "The Music of Violent Eating"
+      },
+      "music_idx_2928": {
+        "music_name": "New World"
+      },
+      "music_idx_2929": {
+        "music_name": "メイドノココロハアヤツリドール"
+      },
       "music_idx_2904": {
         "music_name": "Ultimate taste"
       },
@@ -4723,6 +4738,21 @@
       },
       "music_idx_2903": {
         "music_name": "キャンディークッキーチョコレート"
+      },
+      "music_idx_2925": {
+        "music_name": "A-Yah-YAh-YaH-YAH!"
+      },
+      "music_idx_2926": {
+        "music_name": "アマノジャクリバース feat. ｙｔｒ"
+      },
+      "music_idx_2927": {
+        "music_name": "The Music of Violent Eating"
+      },
+      "music_idx_2928": {
+        "music_name": "New World"
+      },
+      "music_idx_2929": {
+        "music_name": "メイドノココロハアヤツリドール"
       },
       "music_idx_2904": {
         "music_name": "Ultimate taste"
@@ -9979,6 +10009,10 @@
         "music_name": "M.S.S.Planet",
         "diff": "BASIC"
       },
+      "music_idx_2929": {
+        "music_name": "メイドノココロハアヤツリドール",
+        "diff": "BASIC"
+      },
       "music_idx_2642": {
         "music_name": "壊れた人形のマーチ",
         "diff": "BASIC"
@@ -11751,6 +11785,18 @@
       },
       "music_idx_83": {
         "music_name": "ロストワンの号哭",
+        "diff": "BASIC"
+      },
+      "music_idx_2925": {
+        "music_name": "A-Yah-YAh-YaH-YAH!",
+        "diff": "BASIC"
+      },
+      "music_idx_2926": {
+        "music_name": "アマノジャクリバース feat. ｙｔｒ",
+        "diff": "BASIC"
+      },
+      "music_idx_2928": {
+        "music_name": "New World",
         "diff": "BASIC"
       },
       "music_idx_2871": {
@@ -15429,6 +15475,10 @@
         "music_name": "初音ミクの消失",
         "diff": "BASIC"
       },
+      "music_idx_2927": {
+        "music_name": "The Music of Violent Eating",
+        "diff": "BASIC"
+      },
       "music_idx_386": {
         "music_name": "神威",
         "diff": "BASIC"
@@ -16463,6 +16513,10 @@
       },
       "music_idx_117": {
         "music_name": "M.S.S.Planet",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2929": {
+        "music_name": "メイドノココロハアヤツリドール",
         "diff": "ADVANCED"
       },
       "music_idx_2872": {
@@ -18269,6 +18323,18 @@
       },
       "music_idx_83": {
         "music_name": "ロストワンの号哭",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2925": {
+        "music_name": "A-Yah-YAh-YaH-YAH!",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2926": {
+        "music_name": "アマノジャクリバース feat. ｙｔｒ",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2928": {
+        "music_name": "New World",
         "diff": "ADVANCED"
       },
       "music_idx_2871": {
@@ -20979,6 +21045,10 @@
       },
       "music_idx_7": {
         "music_name": "初音ミクの消失",
+        "diff": "ADVANCED"
+      },
+      "music_idx_2927": {
+        "music_name": "The Music of Violent Eating",
         "diff": "ADVANCED"
       },
       "music_idx_670": {
@@ -23939,6 +24009,14 @@
         "music_name": "タイガーランペイジ",
         "diff": "EXPERT"
       },
+      "music_idx_2925": {
+        "music_name": "A-Yah-YAh-YaH-YAH!",
+        "diff": "EXPERT"
+      },
+      "music_idx_2929": {
+        "music_name": "メイドノココロハアヤツリドール",
+        "diff": "EXPERT"
+      },
       "music_idx_2872": {
         "music_name": "Necromantic",
         "diff": "EXPERT"
@@ -25625,6 +25703,14 @@
       },
       "music_idx_167": {
         "music_name": "脳漿炸裂ガール",
+        "diff": "EXPERT"
+      },
+      "music_idx_2926": {
+        "music_name": "アマノジャクリバース feat. ｙｔｒ",
+        "diff": "EXPERT"
+      },
+      "music_idx_2928": {
+        "music_name": "New World",
         "diff": "EXPERT"
       },
       "music_idx_2792": {
@@ -28887,6 +28973,10 @@
         "music_name": "千本桜",
         "diff": "MASTER"
       },
+      "music_idx_2929": {
+        "music_name": "メイドノココロハアヤツリドール",
+        "diff": "MASTER"
+      },
       "music_idx_2692": {
         "music_name": "有頂天ドリーマーズ",
         "diff": "MASTER"
@@ -29331,6 +29421,10 @@
       },
       "music_idx_631": {
         "music_name": "初音ミクの激唱",
+        "diff": "EXPERT"
+      },
+      "music_idx_2927": {
+        "music_name": "The Music of Violent Eating",
         "diff": "EXPERT"
       },
       "music_idx_2288": {
@@ -29963,6 +30057,10 @@
       },
       "music_idx_83": {
         "music_name": "ロストワンの号哭",
+        "diff": "MASTER"
+      },
+      "music_idx_2928": {
+        "music_name": "New World",
         "diff": "MASTER"
       },
       "music_idx_2872": {
@@ -31001,6 +31099,14 @@
       },
       "music_idx_27": {
         "music_name": "タイガーランペイジ",
+        "diff": "MASTER"
+      },
+      "music_idx_2925": {
+        "music_name": "A-Yah-YAh-YaH-YAH!",
+        "diff": "MASTER"
+      },
+      "music_idx_2926": {
+        "music_name": "アマノジャクリバース feat. ｙｔｒ",
         "diff": "MASTER"
       },
       "music_idx_2413": {
@@ -34043,6 +34149,10 @@
       },
       "music_idx_2641": {
         "music_name": "マシンガンポエムドール",
+        "diff": "MASTER"
+      },
+      "music_idx_2927": {
+        "music_name": "The Music of Violent Eating",
         "diff": "MASTER"
       },
       "music_idx_2873": {
